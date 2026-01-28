@@ -9,7 +9,7 @@ import com.example.inventariosapp.database.entity.InventoryEntity
 @Dao
 interface InventoryDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(items: List<InventoryEntity>)
+    suspend fun insertAll(items: List<InventoryEntity>): List<Long>
 
     @Query("SELECT * FROM inventory")
     suspend fun getAll(): List<InventoryEntity>
@@ -18,5 +18,5 @@ interface InventoryDao {
     suspend fun getByProductoId(productoId: Int): InventoryEntity?
 
     @Query("DELETE FROM inventory")
-    suspend fun clear()
+    suspend fun clear(): Int
 }

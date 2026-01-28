@@ -12,10 +12,10 @@ import com.example.inventariosapp.database.entity.PostSaleWithProducts
 @Dao
 interface PostSalesDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSale(sale: PostSaleEntity)
+    suspend fun insertSale(sale: PostSaleEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSaleProducts(products: List<PostSaleProductEntity>)
+    suspend fun insertSaleProducts(products: List<PostSaleProductEntity>): List<Long>
 
     @Transaction
     @Query("SELECT * FROM post_sales")
@@ -26,11 +26,11 @@ interface PostSalesDao {
     suspend fun getSaleById(id: String): PostSaleWithProducts?
 
     @Query("DELETE FROM post_sales")
-    suspend fun clearSales()
+    suspend fun clearSales(): Int
 
     @Query("DELETE FROM post_sales WHERE id = :id")
-    suspend fun deleteSaleById(id: String)
+    suspend fun deleteSaleById(id: String): Int
 
     @Query("UPDATE post_sales SET estatusVentaId = :newStatus WHERE id = :id")
-    suspend fun updateSaleStatusById(id: String, newStatus: Int)
+    suspend fun updateSaleStatusById(id: String, newStatus: Int): Int
 }

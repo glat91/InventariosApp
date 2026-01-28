@@ -4,7 +4,6 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.inventariosapp.model.product.ProductsResponseModel
-import com.google.gson.annotations.SerializedName
 
 @Entity(tableName = "product_table")
 data class ProductEntity(
@@ -21,7 +20,7 @@ data class ProductEntity(
     @ColumnInfo("precioVenta2") val precioVenta2: Double? = null,
     @ColumnInfo("precioVenta3") val precioVenta3: Double? = null,
     @ColumnInfo("precioVenta4") val precioVenta4: Double? = null,
-    @SerializedName("nombreUnidadMedida") val nombreUnidadMedida: String = ""
+    @ColumnInfo("nombreUnidadMedida") val nombreUnidadMedida: String = ""
 )
 
 fun ProductEntity.toModel() = ProductsResponseModel(
