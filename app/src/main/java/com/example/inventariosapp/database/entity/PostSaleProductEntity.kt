@@ -2,11 +2,13 @@ package com.example.inventariosapp.database.entity
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import java.util.UUID
 
 @Entity(
     tableName = "post_sale_products",
+    indices = [Index(value = ["postSaleId"])],
     foreignKeys = [
         ForeignKey(
             entity = PostSaleEntity::class,

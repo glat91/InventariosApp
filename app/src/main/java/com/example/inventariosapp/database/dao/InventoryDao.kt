@@ -8,7 +8,6 @@ import com.example.inventariosapp.database.entity.InventoryEntity
 
 @Dao
 interface InventoryDao {
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(items: List<InventoryEntity>)
 

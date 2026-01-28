@@ -9,10 +9,10 @@ import com.example.inventariosapp.database.entity.SalesEntity
 @Dao
 interface SalesDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSale(sale: SalesEntity)
+    suspend fun insertSale(sale: SalesEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAllSales(list: List<SalesEntity>)
+    suspend fun insertAllSales(list: List<SalesEntity>): List<Long>
 
     @Query("SELECT * FROM sales ORDER BY fechaVenta DESC")
     suspend fun getAllSales(): List<SalesEntity>
@@ -21,8 +21,12 @@ interface SalesDao {
     suspend fun getSaleByVentaId(ventaId: Int): SalesEntity?
 
     @Query("DELETE FROM sales")
-    suspend fun deleteAllSales()
+    suspend fun deleteAllSales(): Int
 
-    @Query("""SELECT * FROM sales WHERE fechaVenta BETWEEN :startDate AND :endDate ORDER BY fechaVenta DESC""")
+    @Query("""
+        SELECT * FROM sales 
+        WHERE fechaVenta BETWEEN :startDate AND :endDate 
+        ORDER BY fechaVenta DESC
+    """)
     suspend fun getSalesBetween(startDate: String, endDate: String): List<SalesEntity>
 }

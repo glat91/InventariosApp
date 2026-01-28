@@ -13,16 +13,16 @@ interface ClientDao {
     suspend fun getAllClients(): List<ClientEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun instertOne(clients: ClientEntity)
+    suspend fun insertOne(client: ClientEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun instertAll(clients: List<ClientEntity>)
+    suspend fun insertAll(clients: List<ClientEntity>): List<Long>
 
-    @Insert()
-    suspend fun instertById(client: ClientEntity)
+    @Insert
+    suspend fun insertById(client: ClientEntity): Long
 
     @Query("DELETE FROM client_table")
-    suspend fun deleteAllClient()
+    suspend fun deleteAllClient(): Int
 
     @Query("SELECT * FROM client_table WHERE nombreCliente LIKE '%' || :query || '%'")
     fun searchClients(query: String): Flow<List<ClientEntity>>

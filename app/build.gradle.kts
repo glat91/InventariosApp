@@ -1,14 +1,12 @@
 plugins {
     alias(libs.plugins.android.application)
-    id("com.google.devtools.ksp")
     id("org.jetbrains.kotlin.plugin.compose")
+    id("com.google.devtools.ksp")
 }
 
 android {
     namespace = "com.example.inventariosapp"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.inventariosapp"
@@ -39,59 +37,46 @@ android {
 }
 
 dependencies {
-    // Basic
+    // Core
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    // Add
-    implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
+
+    // Compose
     implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    // region Navigation
-    implementation(libs.androidx.navigation.runtime.android)
+
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Navigation
     implementation(libs.androidx.navigation.compose.android)
-    // endregion
-    // region Api Core
+
+    // Room (KSP)
+    implementation(libs.room)
+    implementation(libs.room.kotlin)
+    ksp(libs.room.compiler)
+
+    // Hilt (KSP)
+   // implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    implementation(libs.hilt.navigation.compose)
+
+    // Network
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter)
-    implementation(libs.androidx.espresso.core)
-    // endregion
-    // region DaggerHilt
-    implementation(libs.hilt.android)
-    implementation(libs.androidx.constraintlayout)
-    implementation(libs.androidx.constraintlayout.compose)
-    implementation(libs.androidx.foundation.android)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.compose.testing)
-    //implementation(libs.hilt.android.compiler)
-    ksp(libs.hilt.android.compiler)
-    implementation(libs.hilt.navigation.compose)
-    implementation(libs.hilt.navigation)
-    ksp(libs.hilt.compiler)
-    //region test
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+
+    // DataStore
+    implementation(libs.androidx.datastore)
+
+    // Tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
-    //androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
-    // endregion
-    implementation("androidx.compose.material3:material3:1.2.1")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
-    implementation("androidx.compose.material3:material3")
-    // region Room
-    implementation(libs.room)
-    implementation(libs.room.kotlin)
-    ksp(libs.room.compiler)
-    //implementation(libs.room.compiler)
-    // endregion
-    implementation(libs.androidx.datastore )
 }

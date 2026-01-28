@@ -9,16 +9,16 @@ import com.example.inventariosapp.database.entity.PayEntity
 @Dao
 interface PayDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(payList: List<PayEntity>)
+    suspend fun insertAll(payList: List<PayEntity>): List<Long>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(pay: PayEntity)
+    suspend fun insert(pay: PayEntity): Long
 
     @Query("SELECT * FROM pay_table")
     suspend fun getAll(): List<PayEntity>
 
     @Query("DELETE FROM pay_table")
-    suspend fun deleteAll()
+    suspend fun deleteAll(): Int
 
     @Query("SELECT * FROM pay_table WHERE ventaId = :ventaId")
     suspend fun getPaymentsByVentaId(ventaId: Int): List<PayEntity>
