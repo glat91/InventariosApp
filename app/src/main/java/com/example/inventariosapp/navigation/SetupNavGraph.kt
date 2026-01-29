@@ -37,7 +37,7 @@ fun NavGraphBuilder.loginScreen(navController: NavHostController){
     composable(
         route = Destinations.LoginScreen.ruta
     ){
-        LoginScreen(navController)
+        LoginScreen()
     }
 }
 fun NavGraphBuilder.salesScreen(navController: NavHostController){

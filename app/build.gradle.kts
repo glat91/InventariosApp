@@ -67,4 +67,7 @@ dependencies {
 
     // DataStore
     implementation(libs.androidx.datastore)
+
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.constraintlayout.compose)
 }

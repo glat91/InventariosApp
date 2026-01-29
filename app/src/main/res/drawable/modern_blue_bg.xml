@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="360dp"
+    android:height="640dp"
+    android:viewportWidth="360"
+    android:viewportHeight="640">
+
+    <!-- Fondo principal en azul oscuro -->
+    <path
+        android:fillColor="#0D1B2A"
+        android:pathData="M0,0h360v640h-360z" />
+
+    <!-- Curva metálica estilizada (crecimiento) -->
+    <path
+        android:fillColor="#334E68"
+        android:pathData="M0,480 Q120,380 360,500 L360,640 L0,640 Z" />
+
+    <!-- Línea de tendencia clara -->
+    <path
+        android:fillColor="#5588A3"
+        android:pathData="M0,520 Q120,400 360,540 L360,560 L0,560 Z" />
+
+    <!-- Curva de contraste -->
+    <path
+        android:fillColor="#1B263B"
+        android:pathData="M0,560 Q140,460 360,600 L360,640 L0,640 Z" />
+
+    <!-- Detalles decorativos tipo gráfico de barras -->
+    <group>
+        <path android:fillColor="#669BBC" android:pathData="M40,580h12v60h-12z" />
+        <path android:fillColor="#A6C8E0" android:pathData="M70,550h12v90h-12z" />
+        <path android:fillColor="#83B5D1" android:pathData="M100,500h12v140h-12z" />
+        <path android:fillColor="#5588A3" android:pathData="M130,530h12v110h-12z" />
+    </group>
+</vector>

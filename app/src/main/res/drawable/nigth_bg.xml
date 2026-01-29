@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="360dp"
+    android:height="640dp"
+    android:viewportWidth="360"
+    android:viewportHeight="640">
+
+    <!-- Cielo nocturno -->
+    <path
+        android:fillColor="#0D1B2A"
+        android:pathData="M0,0h360v640h-360z" />
+
+    <path
+        android:fillColor="#1B263B"
+        android:pathData="M0,0h360v480h-360z" />
+
+    <path
+        android:fillColor="#415A77"
+        android:pathData="M0,0h360v320h-360z" />
+
+    <!-- Luna (blanca con un tono azulado suave) -->
+    <path
+        android:fillColor="#FFEEDD"
+        android:pathData="M230,100a30,30 0 1,0 60,0a30,30 0 1,0 -60,0" />
+
+    <!-- Estrellas pequeñas (círculos pequeños blancos) -->
+    <group>
+        <path android:fillColor="#FFFFFF" android:pathData="M40,40a2,2 0 1,0 4,0a2,2 0 1,0 -4,0" />
+        <path android:fillColor="#FFFFFF" android:pathData="M100,60a1.5,1.5 0 1,0 3,0a1.5,1.5 0 1,0 -3,0" />
+        <path android:fillColor="#FFFFFF" android:pathData="M200,30a2,2 0 1,0 4,0a2,2 0 1,0 -4,0" />
+        <path android:fillColor="#FFFFFF" android:pathData="M280,70a1.5,1.5 0 1,0 3,0a1.5,1.5 0 1,0 -3,0" />
+        <path android:fillColor="#FFFFFF" android:pathData="M160,100a1,1 0 1,0 2,0a1,1 0 1,0 -2,0" />
+        <path android:fillColor="#FFFFFF" android:pathData="M320,120a2,2 0 1,0 4,0a2,2 0 1,0 -4,0" />
+    </group>
+
+    <!-- Montañas (las mismas del amanecer, pero más oscuras) -->
+    <path
+        android:fillColor="#2E2E38"
+        android:pathData="M0,520 L80,420 L160,500 L240,440 L360,520 L360,640 L0,640 Z" />
+
+    <path
+        android:fillColor="#3C3C4E"
+        android:pathData="M0,580 L100,480 L200,560 L300,500 L360,560 L360,640 L0,640 Z" />
+</vector>

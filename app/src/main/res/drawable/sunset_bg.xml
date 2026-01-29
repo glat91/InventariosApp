@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="360dp"
+    android:height="640dp"
+    android:viewportWidth="360"
+    android:viewportHeight="640">
+
+    <!-- Fondo base blanco -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M0,0h360v640h-360z" />
+
+    <!-- Banda decorativa superior en gris muy claro -->
+    <path
+        android:fillColor="#FFF5F5F5"
+        android:pathData="M0,0 L360,0 L360,120 L0,200 Z" />
+
+    <!-- Curva inferior suave en gris claro -->
+    <path
+        android:fillColor="#FFEFEFEF"
+        android:pathData="M0,500 Q180,580 360,500 L360,640 L0,640 Z" />
+
+    <!-- Línea acento azul corporativo -->
+    <path
+        android:fillColor="#FF1E88E5"
+        android:pathData="M0,200 L360,120 L360,130 L0,210 Z" />
+
+    <!-- Bloques sutiles de menú (fondos) -->
+
+</vector>

@@ -1,9 +1,11 @@
 package com.example.inventariosapp
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -49,6 +51,7 @@ class MainActivity : ComponentActivity() {
         // endregion
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -57,6 +60,7 @@ class MainActivity : ComponentActivity() {
             InventariosAppTheme() {
                 val navController = rememberNavController()
                 scope = rememberCoroutineScope()
+                SetupNavGraph(navController)
                 /*
                 if (mainDialog.value){
                     BasicDialogCmp(
@@ -95,11 +99,13 @@ class MainActivity : ComponentActivity() {
                     )
                 }
                  */
+                /*
                 LateralMenuCmp(
                     navController = navController,
                     drawerState = drawerState,
                     screenContent = { SetupNavGraph(navController) }
                 )
+                 */
             }
         }
     }
