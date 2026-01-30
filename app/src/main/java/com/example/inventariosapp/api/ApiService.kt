@@ -1,5 +1,6 @@
 package com.example.inventariosapp.api
 
+import com.example.appgeneric.model.payment.NewPayModel
 import com.example.inventariosapp.model.client.ClientResponseModel
 import com.example.inventariosapp.model.login.LoginResponseModel
 import com.example.inventariosapp.model.payment.PayModel
@@ -73,13 +74,7 @@ interface ApiService {
 
     @POST("InventariosApi.QA/Api/VentaPago")
     suspend fun setPayment(
-        @Query("VentaID") ventaID: String,
-        @Query("montoPago") montoPago: String,
-        @Query("fecha") fecha: String,
-        @Query("observaciones") observaciones: String,
-        @Query("origenId") origenId: Int,
-        @Query("tipoConexionId") tipoConexionId: Int,
-        @Query("usuarioSesionId") usuarioSesionId: Int
+        @Body payments: List<NewPayModel>
     ): Response<Unit>
 
     @DELETE("InventariosApi.QA/Api/VentaPago/{pagoId}")
@@ -101,10 +96,7 @@ interface ApiService {
     ): Response<GetSalesByIdResponse>
 
     @PUT("InventariosApi.QA/Api/Venta/{ventaId}")
-    suspend fun editSale(
-        @Path("ventaId") ventaId: String,
-        @Body venta: GetSalesByIdResponse
-    ): Response<Unit>
+    suspend fun editSale(@Body venta: GetSalesByIdResponse, @Path("ventaId") ventaId: String) : Response<Unit>
 
     @GET("InventariosApi.QA/Api/Venta")
     suspend fun getSalesInProcess(
