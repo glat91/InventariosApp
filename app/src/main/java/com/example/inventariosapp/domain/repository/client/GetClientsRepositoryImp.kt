@@ -1,6 +1,5 @@
-package com.example.inventariosapp.domain.client
+package com.example.inventariosapp.domain.repository.client
 
-import android.content.Context
 import android.util.Log
 import com.example.inventariosapp.MainActivity
 import com.example.inventariosapp.api.ApiService
@@ -14,7 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class GetClientsUseCase @Inject constructor(
+class GetClientsRepositoryImp @Inject constructor(
     private val apiService: ApiService,
     private val clientDao: ClientDao,
 ) {

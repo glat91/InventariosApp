@@ -1,11 +1,10 @@
-package com.example.inventariosapp.domain.sales
+package com.example.inventariosapp.domain.repository.sales
 
 import com.example.inventariosapp.MainActivity
 import com.example.inventariosapp.api.ApiService
 import com.example.inventariosapp.database.dao.SalesDao
 import com.example.inventariosapp.database.entity.toDb
 import com.example.inventariosapp.model.error.ErrorModel
-import com.example.inventariosapp.model.sales.GetSalesByIdResponse
 import com.example.inventariosapp.model.sales.SalesModel
 import com.example.inventariosapp.model.sales.toDB
 import com.google.gson.Gson
@@ -13,7 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class GetSalesInProcessUseCase @Inject constructor(
+class GetSalesInProcessRepositoryImp @Inject constructor(
     private val apiService: ApiService,
     private val salesDao: SalesDao,
 ) {

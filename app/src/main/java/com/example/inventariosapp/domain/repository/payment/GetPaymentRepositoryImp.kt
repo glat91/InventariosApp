@@ -1,4 +1,4 @@
-package com.example.inventariosapp.domain.payment
+package com.example.inventariosapp.domain.repository.payment
 
 import android.content.Context
 import android.util.Log
@@ -15,7 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class GetPaymentUseCase @Inject constructor(
+class GetPaymentRepositoryImp @Inject constructor(
     private val payDao: PayDao,
     private val apiService: ApiService,
     @ApplicationContext val cnx: Context

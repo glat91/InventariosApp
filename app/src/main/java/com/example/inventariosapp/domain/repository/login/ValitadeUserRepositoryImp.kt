@@ -1,4 +1,4 @@
-package com.example.inventariosapp.domain.login
+package com.example.inventariosapp.domain.repository.login
 
 import com.example.inventariosapp.api.ApiService
 import com.example.inventariosapp.model.login.LoginResponseModel
@@ -6,7 +6,7 @@ import com.google.gson.Gson
 import java.io.IOException
 import javax.inject.Inject
 
-class ValitdaeUserUseCase @Inject constructor(
+class ValitdaeUserRepositoryImp @Inject constructor(
     private val apiService: ApiService,
 ) {
     suspend operator fun invoke(user: String, password: String): Pair<LoginResponseModel?, String?> {

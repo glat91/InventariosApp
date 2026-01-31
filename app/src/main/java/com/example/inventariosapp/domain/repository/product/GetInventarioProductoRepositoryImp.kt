@@ -1,4 +1,4 @@
-package com.example.inventariosapp.domain.product
+package com.example.inventariosapp.domain.repository.product
 
 import android.content.Context
 import com.example.inventariosapp.api.ApiService
@@ -8,7 +8,7 @@ import com.google.gson.Gson
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
-class GetInventarioProductoUseCase @Inject constructor(
+class GetInventarioProductoRepositoryImp @Inject constructor(
     private val apiService: ApiService,
     @ApplicationContext var cnx: Context,
 ) {

@@ -1,28 +1,40 @@
 package com.example.inventariosapp.ui.view.login
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.example.appgeneric.ui.component.TextCmp
-import com.example.inventariosapp.ui.theme.InventariosAppTheme
-
+import com.example.inventariosapp.navigation.Destinations
+import com.example.inventariosapp.ui.component.Loader
 @Composable
-fun LoginScreen() {
-    Box(modifier = Modifier.background(Color.Red).fillMaxSize()){
-        TextCmp("Algo")
+fun LoginScreen(navController: NavHostController) {
+    val viewModel: LoginViewModel = hiltViewModel()
+    val navegar = viewModel.serverValidateUser.collectAsState()
+    val context = LocalContext.current
+    LaunchedEffect(navegar.value){
+        if (navegar.value){
+            navController.navigate(route = Destinations.SalesScreen.ruta){
+                launchSingleTop = true
+                popUpTo(Destinations.LoginScreen.ruta){ inclusive = true }
+            }
+        }
     }
-}
 
-@Composable
-@Preview(showBackground = true)
-fun LoginScreenPreview(){
-    LoginScreen()
+    LoginView(
+        user = viewModel.user,
+        password = viewModel.password,
+        rememberUser = viewModel.rememberUser,
+        onClickEnter = {
+            if (!viewModel.rememberUser.value) viewModel.clearUser(context)
+            else viewModel.saveUserLogin(context)
+            viewModel.validateUserLogin()
+        },
+        onClickRememberPassword = {
+            viewModel.rememberUser.value = !viewModel.rememberUser.value
+        }
+    )
+
+    Loader(viewModel.baseViewModel.getLoader())
 }

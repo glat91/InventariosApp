@@ -1,11 +1,11 @@
-package com.example.inventariosapp.domain.payment
+package com.example.inventariosapp.domain.repository.payment
 
 import com.example.appgeneric.model.payment.NewPayModel
 import com.example.inventariosapp.api.ApiService
 import com.example.inventariosapp.database.dao.PayDao
 import javax.inject.Inject
 
-class PostPaymentUseCase @Inject constructor(
+class PostPaymentRepositoryImp @Inject constructor(
     private val payDao: PayDao,
     private val apiService: ApiService,
 ) {

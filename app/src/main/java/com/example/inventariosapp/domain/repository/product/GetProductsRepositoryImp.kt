@@ -1,6 +1,5 @@
-package com.example.inventariosapp.domain.product
+package com.example.inventariosapp.domain.repository.product
 
-import android.content.Context
 import android.util.Log
 import com.example.inventariosapp.MainActivity
 import com.example.inventariosapp.api.ApiService
@@ -10,10 +9,9 @@ import com.example.inventariosapp.model.error.ErrorModel
 import com.example.inventariosapp.model.product.ProductsResponseModel
 import com.example.inventariosapp.model.product.toDb
 import com.google.gson.Gson
-import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
-class GetProductsUseCase @Inject constructor(
+class GetProductsRepositoryImp @Inject constructor(
     private val apiService: ApiService,
     private val productDao: ProductDao,
 ) {

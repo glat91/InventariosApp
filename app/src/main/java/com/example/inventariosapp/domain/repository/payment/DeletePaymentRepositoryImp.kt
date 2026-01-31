@@ -1,4 +1,4 @@
-package com.example.inventariosapp.domain.payment
+package com.example.inventariosapp.domain.repository.payment
 
 import android.content.Context
 import com.example.inventariosapp.api.ApiService
@@ -6,7 +6,7 @@ import com.example.inventariosapp.database.dao.PayDao
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
-class DeletePaymentUseCase@Inject constructor(
+class DeletePaymentRepositoryImp @Inject constructor(
     private val payDao: PayDao,
     private val apiService: ApiService,
     @ApplicationContext val cnx: Context

@@ -1,4 +1,4 @@
-package com.example.inventariosapp.domain.payment
+package com.example.inventariosapp.domain.repository.payment
 
 import android.content.Context
 import com.example.inventariosapp.api.ApiService
@@ -9,7 +9,7 @@ import com.google.gson.Gson
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
-class GetPaymentMethodUseCase @Inject constructor(
+class GetPaymentMethodRepositoryImp @Inject constructor(
     private val apiService: ApiService,
     @ApplicationContext val cnx: Context
 ) {

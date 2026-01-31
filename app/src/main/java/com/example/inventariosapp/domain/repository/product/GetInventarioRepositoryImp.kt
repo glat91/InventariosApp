@@ -1,4 +1,4 @@
-package com.example.inventariosapp.domain.product
+package com.example.inventariosapp.domain.repository.product
 
 import android.content.Context
 import android.util.Log
@@ -15,7 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class GetInventarioUseCase @Inject constructor(
+class GetInventarioRepositoryImp @Inject constructor(
     private val apiService: ApiService,
     private val inventoryDao: InventoryDao,
     @ApplicationContext var cnx: Context,

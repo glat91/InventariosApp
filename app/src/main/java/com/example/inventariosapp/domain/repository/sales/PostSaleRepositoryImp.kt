@@ -1,4 +1,4 @@
-package com.example.inventariosapp.domain.sales
+package com.example.inventariosapp.domain.repository.sales
 
 import android.content.Context
 import android.util.Log
@@ -13,7 +13,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.IOException
 import javax.inject.Inject
 
-class PostSaleUseCase @Inject constructor(
+class PostSaleRepositoryImp @Inject constructor(
     private val apiService: ApiService,
     private val newSales: PostSalesDao,
     @ApplicationContext val cnx: Context

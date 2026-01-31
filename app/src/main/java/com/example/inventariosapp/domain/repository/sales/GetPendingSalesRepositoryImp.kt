@@ -13,7 +13,7 @@ import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 
-class GetPendingSalesUseCase @Inject constructor(
+class GetPendingSalesRepositoryImp @Inject constructor(
     private val apiService: ApiService,
     private val salesDao: SalesDao,
 ) {

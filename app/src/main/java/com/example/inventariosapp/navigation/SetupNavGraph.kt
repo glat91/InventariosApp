@@ -34,10 +34,7 @@ fun SetupNavGraph(navController: NavHostController) {
 
 // region Screen
 fun NavGraphBuilder.loginScreen(navController: NavHostController){
-    composable(
-        route = Destinations.LoginScreen.ruta
-    ){
-        LoginScreen()
+    composable(route = Destinations.LoginScreen.ruta){ LoginScreen(navController)
     }
 }
 fun NavGraphBuilder.salesScreen(navController: NavHostController){
