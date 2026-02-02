@@ -82,6 +82,7 @@ class NewSaleViewModel @Inject constructor(
     }
     val editStatus = MutableStateFlow(false)
     fun editSale(){
+        canModifyClient.value = false
         baseViewModel.showLoader()
         viewModelScope.launch {
             saleData.value.ventaProductos = java.util.ArrayList(products)
@@ -175,18 +176,19 @@ class NewSaleViewModel @Inject constructor(
     val inventory: MutableState<ArrayList<ProductsResponseModel>?> = mutableStateOf(arrayListOf())
     val filterInventory: MutableState<ArrayList<ProductsResponseModel>> = mutableStateOf(arrayListOf())
     fun getFilter(): MutableState<ArrayList<ProductsResponseModel>> {
-        if (inventory.value != null){
-            filterInventory.value = if (search.value.text.isBlank()) {
+        val data = inventory.value ?: arrayListOf()
+        val query = search.value.text.trim()
+        filterInventory.value =
+            if (query.length < 3) {
                 expandenSearchBarD.value = false
-                inventory.value!!
+                ArrayList(data)
             }
             else {
                 expandenSearchBarD.value = true
-                inventory.value!!.filter {
-                    it.descripcion!!.contains(search.value.text, ignoreCase = true)
-                } as ArrayList<ProductsResponseModel>
+                ArrayList(data.filter {
+                    it.descripcion?.contains(query, ignoreCase = true) == true
+                })
             }
-        }
         return filterInventory
     }
     fun getProducts(){
@@ -276,7 +278,7 @@ class NewSaleViewModel @Inject constructor(
                 usuarioSesionId = 1,
                 ventaProductos = newProducts.value,
             ))
-            val r = postSaleUseCase(newSale.value, false)
+            val r = postSaleUseCase(newSale.value, true)
             if (r.first != null){
                 MainActivity.mainDialogMsg.value = "Venta guardada"
                 serverPostSale.value = true

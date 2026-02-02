@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -153,6 +155,7 @@ fun AddProductDialogCmp(
                             modifier = Modifier
                                 .padding(top = PADDING_8)
                                 .fillMaxWidth(.7f)
+                                //.windowInsetsPadding(WindowInsets.ime),
                                 .heightIn(max = maxHeight),
                             properties = PopupProperties(focusable = false)
                         ) {
@@ -175,28 +178,6 @@ fun AddProductDialogCmp(
                                 }
                             }
                         }
-
-                        /*
-                        DropdownMenu(
-                            expanded = expanded.value && !opcions.isNullOrEmpty(),
-                            onDismissRequest = { expanded.value = false },
-                            modifier = Modifier.fillMaxWidth(.7f).padding(),
-                            properties = PopupProperties(focusable = false)
-                    ) {
-                        opcions.take(6).forEach { option ->
-                            CardProductCmp(
-                                modifier = Modifier.clickable {
-                                    state.value = TextFieldValue(option.descripcion!!)
-                                    onClickOpcion(option)
-                                    expanded.value = false
-                                },
-                                product = option.descripcion.toString(),
-                                measureUnit = option.nombreUnidadMedida.toString(),
-                                backgroundColor = Color.White
-                            )
-                        } }
-                         */
-
                     }
                 )
 

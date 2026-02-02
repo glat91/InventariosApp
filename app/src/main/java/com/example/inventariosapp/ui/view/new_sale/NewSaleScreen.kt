@@ -37,13 +37,14 @@ fun NewSaleScreen(navController: NavHostController) {
 
     // region Previous Data
     LaunchedEffect(true){
+        Log.i("Modify___", viewModel.canModifyClient.toString())
         try{
             viewModel.sale.value = navController.previousBackStackEntry?.savedStateHandle?.get<SalesModel>("sale")!!
-
             viewModel.getSale()
         }
         catch (e: Exception){ }
         viewModel.client.value = TextFieldValue(viewModel.sale.value.nombreCliente ?: "")
+        Log.i("Modify___", viewModel.canModifyClient.toString())
     }
     // endregion
     LaunchedEffect(editStatus.value){
@@ -70,7 +71,8 @@ fun NewSaleScreen(navController: NavHostController) {
         opcions = viewModel.filterClients(),
         canModify = viewModel.canModifyClient,
         onClickOpcion = {
-            if (viewModel.sale.value.ventaId != null) {
+            Log.i("Modify___", viewModel.canModifyClient.toString())
+            if (viewModel.canModifyClient.value) {
                 viewModel.newClient.value = it
                 viewModel.client.value = TextFieldValue(it.nombreCliente.toString())
                 viewModel.sale.value.nombreCliente = it.nombreCliente.toString()

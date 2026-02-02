@@ -36,7 +36,8 @@ class GetProductsRepositoryImp @Inject constructor(
                     Pair(null, error)
                 }
             }
-            catch (e: Exception) { Pair(null, ErrorModel(error("Error, favor de revisar su conexion a internet"))) }
+            catch (e: Exception) {
+                Pair(null, ErrorModel(error("Error, favor de revisar su conexion a internet"))) }
             return response
         }
         else{
@@ -50,7 +51,7 @@ class GetProductsRepositoryImp @Inject constructor(
                 MainActivity.mainDialogMsg.value = e.toString()
                 return Pair(
                     null,
-                    ErrorModel(error("Error en Base de Datos, favor de contactar a Administracion"))
+                    ErrorModel(error(e.message ?: "Error desconocido"))
                 )
             }
         }

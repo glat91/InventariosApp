@@ -65,13 +65,19 @@ class SalesViewModel @Inject constructor(
                 if (endDate.value.isBlank()) { endDate.value = Helpers.getTomrrow() }
             }
 
-            val r = getPendingSalesUseCase(startDate.value, endDate.value, false)
-            if (r.first != null){ sales.value = r.first!! }
-            else{
-                if (r.second != null){
-                    MainActivity.mainDialogMsg.value = r.second!!.MsgError!!.errors!!.first().errorMessage!!
+            try {
+                val r = getPendingSalesUseCase(startDate.value, endDate.value, false)
+                if (r.first != null){ sales.value = r.first!! }
+                else{
+                    if (r.second != null){
+                        MainActivity.mainDialogMsg.value = r.second!!.MsgError!!.errors!!.first().errorMessage!!
 
-                } else{ MainActivity.mainDialogMsg.value = "Error 1001100" }
+                    } else{ MainActivity.mainDialogMsg.value = "Error 1001100" }
+                    MainActivity.mainDialog.value = true
+                }
+            }
+            catch (e: Exception){
+                MainActivity.mainDialogMsg.value = e.toString()
                 MainActivity.mainDialog.value = true
             }
             baseViewModel.hideLoader()

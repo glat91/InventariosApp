@@ -1,6 +1,7 @@
 package com.example.inventariosapp.domain.repository.payment
 
 import com.example.appgeneric.model.payment.NewPayModel
+import com.example.inventariosapp.MainActivity
 import com.example.inventariosapp.api.ApiService
 import com.example.inventariosapp.database.dao.PayDao
 import javax.inject.Inject
@@ -23,6 +24,8 @@ class PostPaymentRepositoryImp @Inject constructor(
                 )
             }
         } catch (e: Exception) {
+            MainActivity.mainDialogMsg.value = e.message ?: "Error desconocido"
+            MainActivity.mainDialog.value = true
             Result.failure(e)
         }
     }

@@ -99,13 +99,12 @@ class MainActivity : ComponentActivity() {
                     )
                 }
                  */
-                /*
+
                 LateralMenuCmp(
                     navController = navController,
                     drawerState = drawerState,
                     screenContent = { SetupNavGraph(navController) }
                 )
-                 */
             }
         }
     }
