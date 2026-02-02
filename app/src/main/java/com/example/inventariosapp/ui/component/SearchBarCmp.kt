@@ -36,6 +36,7 @@ fun SearchBarCmp(
     modifier: Modifier = Modifier,
     state: MutableState<TextFieldValue>,
     labelText: String = "",
+    canModify: Boolean = true,
     opcionContent: @Composable () -> Unit,
     enableState: Boolean = true,
     shape: Shape = RoundedCornerShape(4.dp),
@@ -48,8 +49,8 @@ fun SearchBarCmp(
             .height(55.dp)
             .fillMaxWidth(),
             value = state.value,
-            enabled = enableState,
-            onValueChange = { onChangeText(it) },
+            enabled = canModify,
+            onValueChange = { if (canModify) onChangeText(it) },
             textStyle = TextStyle(color = Color.Black.copy(0.60f), fontSize = 16.sp),
             placeholder = {
                 TextCmp(
@@ -62,7 +63,9 @@ fun SearchBarCmp(
             },
             trailingIcon = {
                 if (state.value.text != "") {
-                    IconButton(onClick = { onChangeText(TextFieldValue("")) }) {
+                    IconButton(
+                        onClick = { if (canModify) onChangeText(TextFieldValue("")) }
+                    ){
                         Icon(
                             Icons.Default.Close,
                             contentDescription = "",

@@ -354,9 +354,10 @@ fun PaymentsScreen(navController: NavHostController) {
                                         modifier = Modifier,
                                         text = "Agregar",
                                         onClick = {
+                                            val monto = viewModel.payTotalPayment.value.toDoubleOrNull() ?: 0.0
                                             viewModel.setPayment(
                                                 ventaId = viewModel.select.value!!.ventaId!!,
-                                                montoPago = viewModel.payTotalPayment.value.toDouble(),
+                                                montoPago = monto,
                                                 observaciones = viewModel.payObservation.value,
                                                 cnx = cnx
                                             )

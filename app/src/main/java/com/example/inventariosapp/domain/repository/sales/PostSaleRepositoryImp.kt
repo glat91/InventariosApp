@@ -53,6 +53,7 @@ class PostSaleRepositoryImp @Inject constructor(
                 Pair(Unit, null)
             }
             catch (e: Exception) {
+                MainActivity.mainDialogMsg.value = e.toString()
                 Pair(
                     null,
                     ErrorModel(error("Error en Base de Datos, contacte a Administración"))

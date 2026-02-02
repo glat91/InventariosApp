@@ -15,9 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
@@ -28,6 +26,7 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -46,7 +45,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.PopupProperties
-import androidx.xr.compose.testing.toDp
 import com.example.appgeneric.ui.component.TextCmp
 import com.example.inventariosapp.model.product.ProductIdResponseModel
 import com.example.inventariosapp.model.product.ProductsResponseModel
@@ -65,7 +63,7 @@ fun availableDropdownHeight(): Dp {
     val configuration = LocalConfiguration.current
 
     val screenHeight = configuration.screenHeightDp.dp
-    val imeHeight = WindowInsets.ime.getBottom(density).toDp()
+    val imeHeight = with(density) { WindowInsets.ime.getBottom(this).toDp() }
 
     return screenHeight - imeHeight - 120.dp
 }
@@ -73,11 +71,17 @@ fun availableDropdownHeight(): Dp {
 fun rememberAvailableHeight(): Dp {
     val density = LocalDensity.current
     val configuration = LocalConfiguration.current
+    val imeInsets = WindowInsets.ime
 
-    val screenHeight = configuration.screenHeightDp.dp
-    val imeHeight = WindowInsets.ime.getBottom(density).toDp()
-
-    return screenHeight - imeHeight - 120.dp // margen de seguridad
+    return remember(configuration, density, imeInsets) {
+        derivedStateOf {
+            val screenHeight = configuration.screenHeightDp.dp
+            val imeHeight = with(density) {
+                imeInsets.getBottom(this).toDp()
+            }
+            screenHeight - imeHeight - 300.dp
+        }
+    }.value
 }
 
 
@@ -152,7 +156,6 @@ fun AddProductDialogCmp(
                                 .heightIn(max = maxHeight),
                             properties = PopupProperties(focusable = false)
                         ) {
-
                             Column(
                                 modifier = Modifier
                             ) {

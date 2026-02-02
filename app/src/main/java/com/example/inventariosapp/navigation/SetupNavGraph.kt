@@ -25,7 +25,7 @@ fun SetupNavGraph(navController: NavHostController) {
         loginScreen(navController = navController)
         salesScreen(navController = navController)
         paymentScreen(navController = navController)
-        inventoryScreen(navController = navController)
+        productsScreen(navController = navController)
         newSaleScreen(navController = navController)
         penndingSaleScreen(navController = navController)
         bluetoothPrinterScreen(navController = navController)
@@ -52,9 +52,9 @@ fun NavGraphBuilder.paymentScreen(navController: NavHostController){
         PaymentsScreen(navController)
     }
 }
-fun NavGraphBuilder.inventoryScreen(navController: NavHostController){
+fun NavGraphBuilder.productsScreen(navController: NavHostController){
     composable(
-        route = Destinations.Inventory.ruta
+        route = Destinations.Products.ruta
     ){
         ProductsScreen(navController)
     }

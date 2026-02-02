@@ -1,9 +1,69 @@
 package com.example.inventariosapp.ui.view.sales
 
+import android.util.Log
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.appgeneric.ui.component.TextCmp
+import com.example.inventariosapp.model.sales.SalesModel
+import com.example.inventariosapp.navigation.Destinations
+import com.example.inventariosapp.ui.component.Loader
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SalesScreen(navController: NavHostController) {}
+fun SalesScreen(navController: NavHostController) {
+    val viewModel: SalesViewModel = hiltViewModel()
+    @OptIn(ExperimentalMaterial3Api::class)
+    var datePickerState = rememberDatePickerState()
+
+    SalesView(
+        search = viewModel.searchSale,
+        dateEnd = viewModel.endDate.value,
+        dateStart = viewModel.startDate.value,
+        dialogChoice = viewModel.dialogChoice,
+        onSearchChangue = { viewModel.searchSale.value = it },
+        onClickBack = { navController.popBackStack() },
+        onClickMenu = { viewModel.baseViewModel.openMenu() },
+        onClickDate = { viewModel.showDatePicker.value = true },
+        onclickRow = {
+            navController.currentBackStackEntry?.savedStateHandle?.set("sale", it)
+            navController.navigate(route = Destinations.NewSale.ruta){
+                launchSingleTop = true
+            }
+        },
+        onClickAdd = {
+            navController.currentBackStackEntry?.savedStateHandle?.remove<SalesModel>("sale")
+            navController.navigate(route = Destinations.NewSale.ruta){
+                launchSingleTop = true
+            }
+        },
+        data = viewModel.getFilterSales()
+    )
+    // region Dialog Date
+    if (viewModel.showDatePicker.value) {
+        DatePickerDialog(
+            onDismissRequest = { viewModel.showDatePicker.value = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.updateDateInput(datePickerState)
+                        viewModel.showDatePicker.value = false
+                    }) {
+                    TextCmp("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { viewModel.showDatePicker.value = false }) {
+                    TextCmp("Cancelar")
+                }
+            }
+        ) { DatePicker(state = datePickerState) }
+    }
+    // endregion
+    Loader(viewModel.baseViewModel.getLoader())
+}

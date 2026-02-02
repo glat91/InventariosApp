@@ -13,7 +13,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.xr.compose.testing.toDp
 import com.example.inventariosapp.model.sales.SalesModel
 import com.example.inventariosapp.navigation.Destinations
 import com.example.inventariosapp.ui.component.Loader
@@ -25,7 +24,7 @@ fun availableDropdownHeight(): Dp {
     val configuration = LocalConfiguration.current
 
     val screenHeight = configuration.screenHeightDp.dp
-    val imeHeight = WindowInsets.ime.getBottom(density).toDp()
+    val imeHeight = with(density) { WindowInsets.ime.getBottom(this).toDp() }
 
     return screenHeight - imeHeight - 120.dp
 }
@@ -40,6 +39,7 @@ fun NewSaleScreen(navController: NavHostController) {
     LaunchedEffect(true){
         try{
             viewModel.sale.value = navController.previousBackStackEntry?.savedStateHandle?.get<SalesModel>("sale")!!
+
             viewModel.getSale()
         }
         catch (e: Exception){ }
@@ -68,24 +68,25 @@ fun NewSaleScreen(navController: NavHostController) {
         salesData = viewModel.products,
         expandedSearchBar = viewModel.expandenSearchBarS,
         opcions = viewModel.filterClients(),
+        canModify = viewModel.canModifyClient,
         onClickOpcion = {
-            viewModel.newClient.value = it
-            viewModel.client.value = TextFieldValue(it.nombreCliente.toString())
-            viewModel.sale.value.nombreCliente = it.nombreCliente.toString()
-            viewModel.expandenSearchBarS.value = false
+            if (viewModel.sale.value.ventaId != null) {
+                viewModel.newClient.value = it
+                viewModel.client.value = TextFieldValue(it.nombreCliente.toString())
+                viewModel.sale.value.nombreCliente = it.nombreCliente.toString()
+                viewModel.expandenSearchBarS.value = false
+            }
         },
         onClickDelete = { viewModel.deleteRow(it) },
         onClickProduct = { viewModel.dialogProduct.value = true },
         onClickSave = {
             if (viewModel.sale.value.ventaId == null) {
-                if (viewModel.products.value.size > 0 && viewModel.newClient.value != null) {
+                if (viewModel.products.isNotEmpty() && viewModel.newClient.value != null) {
                     viewModel.createSale()
                 }
             }
             else {
-                if (viewModel.products.value.size > 0){
-                    viewModel.editSale()
-                }
+                if (viewModel.products.isNotEmpty()){ viewModel.editSale() }
             }
         },
         onClickBack = {
@@ -103,29 +104,41 @@ fun NewSaleScreen(navController: NavHostController) {
             expanded = viewModel.expandenSearchBarD,
             product = viewModel.selectedProduct,
             quantity = viewModel.quantity,
-            onDismiss = { viewModel.dialogProduct.value = false },
+            onDismiss = {
+                viewModel.dialogProduct.value = false
+                viewModel.opcions.value.clear()
+                viewModel.product.value = null
+                //viewModel.inventory.value = null
+                viewModel.selectedProduct.value = null
+            },
             onChangeText = { viewModel.search.value = it },
             onClickOpcion = {
                 Log.i("Opcion___", it.toString())
                 viewModel.selectedProduct.value = it
+                viewModel.expandenSearchBarD.value = false
                 viewModel.getProductInventario(it.productoId!!)
-
             },
             onClickPrice = { viewModel.price.value = it },
             inventario = viewModel.totalInventory.value,
             onClickCancel = {
+                viewModel.dialogProduct.value = false
                 viewModel.search.value = TextFieldValue("")
                 viewModel.opcions.value.clear()
                 viewModel.product.value = null
-                viewModel.dialogProduct.value = false
-
+                viewModel.expandenSearchBarD.value = false
+                //viewModel.inventory.value = null
+                viewModel.selectedProduct.value = null
             },
             onClickAccept = {
                 viewModel.addRow(it)
+                viewModel.dialogProduct.value = false
                 viewModel.search.value = TextFieldValue("")
                 viewModel.opcions.value.clear()
                 viewModel.product.value = null
-                viewModel.dialogProduct.value = false
+                viewModel.expandenSearchBarD.value = false
+                //viewModel.inventory.value = null
+                viewModel.selectedProduct.value = null
+
             }
         )
     }

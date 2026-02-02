@@ -2,6 +2,7 @@ package com.example.inventariosapp.ui.view.new_sale
 
 import android.util.Log
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
@@ -44,6 +45,7 @@ class NewSaleViewModel @Inject constructor(
 ) : ViewModel() {
     val baseViewModel = BaseViewModel()
     val sale: MutableState<SalesModel> = mutableStateOf(SalesModel())
+    val canModifyClient = mutableStateOf(true)
 
     val expandenSearchBarS = mutableStateOf(true)
     val client = mutableStateOf(TextFieldValue(""))
@@ -52,16 +54,21 @@ class NewSaleViewModel @Inject constructor(
 
     // region Sale Data
     var idSale = ""
-    val products: MutableState<ArrayList<SaleProductModel>> = mutableStateOf(arrayListOf())
+    val products = mutableStateListOf(SaleProductModel())
     val saleData: MutableState<GetSalesByIdResponse> = mutableStateOf(GetSalesByIdResponse())
     fun getSale(){
+        canModifyClient.value = false
         baseViewModel.showLoader()
         viewModelScope.launch {
             idSale = sale.value.folio.toString()
             val r = getSalesByIdUseCase(idSale)
             if (r.first != null){
                 saleData.value = r.first!!
-                products.value = ArrayList(saleData.value.ventaProductos)
+                for (p in saleData.value.ventaProductos){
+                    Log.i("Sales___", "${p}")
+                }
+                products.clear()
+                products.addAll(saleData.value.ventaProductos)
             }
             else{
                 if (r.second != null){
@@ -77,41 +84,36 @@ class NewSaleViewModel @Inject constructor(
     fun editSale(){
         baseViewModel.showLoader()
         viewModelScope.launch {
-            saleData.value.ventaProductos = products.value
+            saleData.value.ventaProductos = java.util.ArrayList(products)
             saleData.value.ventaIdInterno = null
-            Log.i("Sale___", products.value.toString())
+            Log.i("Sale___", products.toString())
             val r = editSaleUseCase(saleData.value, idSale)
-            if (r.first != null){
-                editStatus.value = true
-            }
+            if (r.first != null){ editStatus.value = true }
             else{
                 if (r.second != null){
                     MainActivity.mainDialogMsg.value = r.second!!.MsgError!!.errors!!.first().errorMessage!!
-
-                } else{ MainActivity.mainDialogMsg.value = "Error 1001100" }
+                }
                 MainActivity.mainDialog.value = true
             }
             baseViewModel.hideLoader()
         }
     }
     fun deleteRow(data: SaleProductModel){
-        products.value = ArrayList(products.value.filter { it != data })
-        var newTotal = BigDecimal(0.0)
-        for(p in products.value){
-            newTotal += (p.PrecioVenta!! * p.Cantidad!!.toDouble()).toBigDecimal()
-            Log.i("Total_Product___", "${p.PrecioVenta} * ${p.Cantidad} = ${newTotal}")
+        products.remove(data)
+        var newTotal = BigDecimal.ZERO
 
+        for (p in products) {
+            val precio = p.PrecioVenta ?: 0.0
+            val cantidad = p.Cantidad ?: 0
+            newTotal += (precio * cantidad.toDouble()).toBigDecimal()
+            Log.i("Total_Product___", "$precio * $cantidad = $newTotal")
         }
-        sale.value = sale.value.copy(
-            total = newTotal.toDouble()
-        )
-        saleData.value = saleData.value.copy(
-            total = newTotal.toDouble()
-        )
+        sale.value = sale.value.copy(total = newTotal.toDouble())
+        saleData.value = saleData.value.copy(total = newTotal.toDouble())
     }
     fun addRow(data: ProductsResponseModel){
         var newTotal = BigDecimal(0.0)
-        products.value.add(
+        products.add(
             SaleProductModel(
                 VentaProductoId = data.productoId,
                 VentaId = sale.value.ventaId,
@@ -122,12 +124,12 @@ class NewSaleViewModel @Inject constructor(
                 CantidadSolicitada = quantity.value.toInt(),
                 VentaIdInterno = null,
                 Venta = null,
+                nombreProducto = data.descripcion!!
             )
         )
-        for(p in products.value){
+        for(p in products){
             newTotal += (p.PrecioVenta!! * p.Cantidad!!.toDouble()).toBigDecimal()
             Log.i("Total_Product___", "${p.PrecioVenta} * ${p.Cantidad} = ${newTotal}")
-
         }
         sale.value = sale.value.copy(total = newTotal.toDouble())
         saleData.value = saleData.value.copy(total = newTotal.toDouble())
@@ -170,18 +172,20 @@ class NewSaleViewModel @Inject constructor(
     val dialogProduct = mutableStateOf(false)
     val expandenSearchBarD = mutableStateOf(false)
     var search = mutableStateOf(TextFieldValue(""))
-    val inventory: MutableState<ArrayList<ProductsResponseModel>> = mutableStateOf(arrayListOf())
+    val inventory: MutableState<ArrayList<ProductsResponseModel>?> = mutableStateOf(arrayListOf())
     val filterInventory: MutableState<ArrayList<ProductsResponseModel>> = mutableStateOf(arrayListOf())
     fun getFilter(): MutableState<ArrayList<ProductsResponseModel>> {
-        filterInventory.value = if (search.value.text.isBlank()) {
-            expandenSearchBarD.value = false
-            inventory.value
-        }
-        else {
-            expandenSearchBarD.value = true
-            inventory.value.filter {
-                it.descripcion!!.contains(search.value.text, ignoreCase = true)
-            } as ArrayList<ProductsResponseModel>
+        if (inventory.value != null){
+            filterInventory.value = if (search.value.text.isBlank()) {
+                expandenSearchBarD.value = false
+                inventory.value!!
+            }
+            else {
+                expandenSearchBarD.value = true
+                inventory.value!!.filter {
+                    it.descripcion!!.contains(search.value.text, ignoreCase = true)
+                } as ArrayList<ProductsResponseModel>
+            }
         }
         return filterInventory
     }
@@ -245,7 +249,7 @@ class NewSaleViewModel @Inject constructor(
         viewModelScope.launch {
             val uuid = UUID.randomUUID().toString()
             var totalSale = 0.0
-            for (p in products.value){
+            for (p in products){
                 totalSale += (p.PrecioVenta!! + p.Cantidad!!)
                 newProducts.value.add(
                     PostSaleProductModel(
@@ -290,7 +294,10 @@ class NewSaleViewModel @Inject constructor(
     // endregion
     init {
         //getInventory()
+        products.clear()
         getProducts()
         getClients()
+
     }
 }
+

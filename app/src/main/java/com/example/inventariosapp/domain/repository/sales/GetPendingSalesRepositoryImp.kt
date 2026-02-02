@@ -51,6 +51,7 @@ class GetPendingSalesRepositoryImp @Inject constructor(
                 return Pair(entity, null)
             }
             catch (e: Exception){
+                MainActivity.mainDialogMsg.value = e.toString()
                 return Pair(
                     null,
                     ErrorModel(error("Error en Base de Datos, favor de contactar a Administracion"))

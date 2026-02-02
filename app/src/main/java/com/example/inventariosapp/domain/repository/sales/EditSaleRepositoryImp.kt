@@ -1,5 +1,6 @@
 package com.example.inventariosapp.domain.repository.sales
 
+import com.example.inventariosapp.MainActivity
 import com.example.inventariosapp.api.ApiService
 import com.example.inventariosapp.model.error.ErrorModel
 import com.example.inventariosapp.model.sales.GetSalesByIdResponse
@@ -20,7 +21,10 @@ class EditSaleRepositoryImp @Inject constructor(
                 Pair(null, error)
             }
         }
-        catch (e: Exception){ Pair(null, null) }
+        catch (e: Exception){
+            MainActivity.mainDialogMsg.value = e.toString()
+            Pair(null, null)
+        }
         return response
     }
 }

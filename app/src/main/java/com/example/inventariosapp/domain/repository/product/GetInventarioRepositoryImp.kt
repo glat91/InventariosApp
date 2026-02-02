@@ -38,6 +38,7 @@ class GetInventarioRepositoryImp @Inject constructor(
                     Pair(null, error)
                 }
             } catch (e: Exception) {
+                MainActivity.mainDialogMsg.value = e.toString()
                 Pair(null, ErrorModel(error("Error, favor de revisar su conexion a internet")))
             }
             return response

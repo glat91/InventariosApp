@@ -1,5 +1,6 @@
 package com.example.inventariosapp.ui.view.new_sale
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,8 +24,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -58,9 +61,10 @@ import com.example.inventariosapp.ui.theme.UI_List_Row_2
 fun NewSaleView(
     clientName: MutableState<TextFieldValue>,
     sale: MutableState<SalesModel>,
-    salesData: MutableState<ArrayList<SaleProductModel>>,
+    salesData: SnapshotStateList<SaleProductModel>,
     opcions: MutableState<ArrayList<ClientResponseModel>>,
     expandedSearchBar: MutableState<Boolean>,
+    canModify: MutableState<Boolean>,
     onClickOpcion: (ClientResponseModel) -> Unit,
     onClickBack: () -> Unit,
     onClickMenu: () -> Unit,
@@ -92,36 +96,40 @@ fun NewSaleView(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ){
-                TextCmp(
-                    text = "Folio",
-                    modifier = Modifier
-                        .padding(PADDING_8)
-                        .fillMaxWidth(),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 24.sp,
-                    textAlign = TextAlign.Center
-                )
-                TextCmp(
-                    text = "${if(sale.value.folio == null)"" else sale.value.folio}",
-                    modifier = Modifier.fillMaxWidth(),
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 22.sp,
-                    textAlign = TextAlign.Center
-                )
-                HorizontalDivider(thickness = 15.dp, color = Color.Transparent)
+                Log.i("Folio___", sale.value.folio.toString())
+                if(!sale.value.folio.isNullOrEmpty()){
+                    TextCmp(
+                        text = "Folio",
+                        modifier = Modifier
+                            .padding(PADDING_8)
+                            .fillMaxWidth(),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 24.sp,
+                        textAlign = TextAlign.Center
+                    )
+                    TextCmp(
+                        text = "${if(sale.value.folio == null)"" else sale.value.folio}",
+                        modifier = Modifier.fillMaxWidth(),
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 22.sp,
+                        textAlign = TextAlign.Center
+                    )
+                    HorizontalDivider(thickness = 15.dp, color = Color.Transparent)
+                }
+
                 Card(
                     colors = CardDefaults.cardColors(
                         containerColor = Color.White
                     ),
-                    modifier = Modifier.padding(start = PADDING_16, end = PADDING_16),
+                    modifier = Modifier.padding(start = PADDING_16, end = PADDING_16, top = PADDING_8),
                     elevation = CardDefaults.cardElevation(4.dp)
                 ) {
                     SearchBarCmp(
                         state = clientName,
                         labelText = "Nombre de cliente",
+                        canModify = canModify.value,
                         onChangeText = { txt -> clientName.value = txt },
                         opcionContent = {
-
                             DropdownMenu(
                                 expanded = expandedSearchBar.value,
                                 onDismissRequest = { expandedSearchBar.value = false },
@@ -194,7 +202,7 @@ fun NewSaleView(
                         modifier = Modifier.fillMaxHeight().padding(bottom = it.calculateBottomPadding())
                     ) {
                         var switchColor = true
-                        items(salesData.value) { prod ->
+                        items(salesData) { prod ->
                             var colorRow = if (switchColor) UI_List_Row_1 else UI_List_Row_2
 
                             CardSellProductCmp(
@@ -281,8 +289,9 @@ fun NewSaleViewPreview(){
     NewSaleView(
         clientName = client,
         sale = remember {  mutableStateOf(SalesModel(folio = ""))},
-        salesData = remember { mutableStateOf(arrayListOf()) },
+        salesData = remember { mutableStateListOf() },
         expandedSearchBar = remember { mutableStateOf(true) },
+        canModify = remember { mutableStateOf(true) },
         opcions = remember { mutableStateOf(arrayListOf()) },
         onClickOpcion = {},
         onClickDelete = {},

@@ -38,7 +38,10 @@ class GetSalesInProcessRepositoryImp @Inject constructor(
                     Pair(null, error)
                 }
             }
-            catch (e: Exception){ Pair(null, null) }
+            catch (e: Exception){
+                MainActivity.mainDialogMsg.value = e.toString()
+                Pair(null, null)
+            }
             return response
         }
         else{

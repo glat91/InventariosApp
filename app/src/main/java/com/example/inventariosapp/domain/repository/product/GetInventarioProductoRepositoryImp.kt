@@ -1,6 +1,7 @@
 package com.example.inventariosapp.domain.repository.product
 
 import android.content.Context
+import com.example.inventariosapp.MainActivity
 import com.example.inventariosapp.api.ApiService
 import com.example.inventariosapp.model.error.ErrorModel
 import com.example.inventariosapp.model.product.ProductIdResponseModel
@@ -22,7 +23,10 @@ class GetInventarioProductoRepositoryImp @Inject constructor(
                 error = Gson().fromJson(errorMsj, ErrorModel::class.java)
                 Pair(null, error)
             }
-        } catch (e: Exception) { Pair(null, null) }
+        } catch (e: Exception) {
+            MainActivity.mainDialogMsg.value = e.toString()
+            Pair(null, null)
+        }
         return response
     }
 }

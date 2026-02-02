@@ -143,7 +143,7 @@ fun ProductListCmp(
                     )
                     TextCmp(
                         maxLine = 4,
-                        text = (it.Cantidad!!.toDouble() * it.PrecioVenta!!).toString(),
+                        text = ((it.Cantidad?.toDouble() ?: 0.0) * (it.PrecioVenta ?: 0.0)).toString(),
                         modifier = Modifier.width(60.dp),
                         textAlign = TextAlign.Center
                     )

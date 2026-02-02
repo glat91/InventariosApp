@@ -153,13 +153,14 @@ fun CardSellProductCmp(
                     color = Color.Black,
                     maxLine = 1
                 )
-                val total = String.format(
+                val totalValue = (sellPrice.toDoubleOrNull() ?: 0.0) * (quantity.toDoubleOrNull() ?: 0.0)
+                val totalFormatted = String.format(
                     Locale.US,
                     "%.2f",
-                    sellPrice.toDouble() * quantity.toDouble()
-                ).toDouble()
+                    totalValue
+                )
                 TextCmp(
-                    text = "${total}",
+                    text = "${totalFormatted}",
                     modifier = Modifier,
                     fontWeight = FontWeight.Normal,
                     fontSize = 12.sp,

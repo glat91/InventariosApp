@@ -45,8 +45,10 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.androidx.compose.testing)
+    
+    debugImplementation(platform(libs.androidx.compose.bom))
     debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
 
     // Retrofit
     implementation(libs.retrofit)
@@ -71,4 +73,11 @@ dependencies {
 
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.constraintlayout.compose)
+
+    // Testing
+    testImplementation(libs.junit)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso)
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
 }

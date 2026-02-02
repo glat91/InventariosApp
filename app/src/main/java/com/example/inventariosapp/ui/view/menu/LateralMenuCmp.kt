@@ -37,7 +37,6 @@ import com.example.inventariosapp.R
 import com.example.inventariosapp.navigation.Destinations
 import com.example.inventariosapp.ui.component.Loader
 import com.example.inventariosapp.util.Constants
-import com.example.inventariosapp.util.Helpers.Companion.savePersistData
 import kotlinx.coroutines.launch
 @Composable
 fun LateralMenuCmp(
@@ -130,7 +129,7 @@ fun LateralMenuCmp(
                             ) },
                         selected = false,
                         onClick = {
-                            navController.navigate(route = Destinations.Inventory.ruta){
+                            navController.navigate(route = Destinations.Products.ruta){
                                 launchSingleTop = true
                             }
                             corutine.launch { drawerState.close() }
