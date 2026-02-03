@@ -19,17 +19,6 @@ import com.example.inventariosapp.ui.component.Loader
 import com.example.inventariosapp.ui.dialog.AddProductDialogCmp
 
 @Composable
-fun availableDropdownHeight(): Dp {
-    val density = LocalDensity.current
-    val configuration = LocalConfiguration.current
-
-    val screenHeight = configuration.screenHeightDp.dp
-    val imeHeight = with(density) { WindowInsets.ime.getBottom(this).toDp() }
-
-    return screenHeight - imeHeight - 120.dp
-}
-
-@Composable
 fun NewSaleScreen(navController: NavHostController) {
     val viewModel: NewSaleViewModel = hiltViewModel()
     val editStatus = viewModel.editStatus.collectAsState()
@@ -37,14 +26,12 @@ fun NewSaleScreen(navController: NavHostController) {
 
     // region Previous Data
     LaunchedEffect(true){
-        Log.i("Modify___", viewModel.canModifyClient.toString())
         try{
             viewModel.sale.value = navController.previousBackStackEntry?.savedStateHandle?.get<SalesModel>("sale")!!
             viewModel.getSale()
         }
         catch (e: Exception){ }
         viewModel.client.value = TextFieldValue(viewModel.sale.value.nombreCliente ?: "")
-        Log.i("Modify___", viewModel.canModifyClient.toString())
     }
     // endregion
     LaunchedEffect(editStatus.value){
@@ -106,13 +93,7 @@ fun NewSaleScreen(navController: NavHostController) {
             expanded = viewModel.expandenSearchBarD,
             product = viewModel.selectedProduct,
             quantity = viewModel.quantity,
-            onDismiss = {
-                viewModel.dialogProduct.value = false
-                viewModel.opcions.value.clear()
-                viewModel.product.value = null
-                //viewModel.inventory.value = null
-                viewModel.selectedProduct.value = null
-            },
+            onDismiss = { viewModel.clearDialog() },
             onChangeText = { viewModel.search.value = it },
             onClickOpcion = {
                 Log.i("Opcion___", it.toString())
@@ -122,25 +103,10 @@ fun NewSaleScreen(navController: NavHostController) {
             },
             onClickPrice = { viewModel.price.value = it },
             inventario = viewModel.totalInventory.value,
-            onClickCancel = {
-                viewModel.dialogProduct.value = false
-                viewModel.search.value = TextFieldValue("")
-                viewModel.opcions.value.clear()
-                viewModel.product.value = null
-                viewModel.expandenSearchBarD.value = false
-                //viewModel.inventory.value = null
-                viewModel.selectedProduct.value = null
-            },
+            onClickCancel = { viewModel.clearDialog() },
             onClickAccept = {
                 viewModel.addRow(it)
-                viewModel.dialogProduct.value = false
-                viewModel.search.value = TextFieldValue("")
-                viewModel.opcions.value.clear()
-                viewModel.product.value = null
-                viewModel.expandenSearchBarD.value = false
-                //viewModel.inventory.value = null
-                viewModel.selectedProduct.value = null
-
+                viewModel.clearDialog()
             }
         )
     }

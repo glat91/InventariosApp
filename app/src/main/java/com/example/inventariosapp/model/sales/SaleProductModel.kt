@@ -4,7 +4,7 @@ import com.example.inventariosapp.model.product.PrecioListaModel
 import com.google.gson.annotations.SerializedName
 
 data class SaleProductModel(
-    @SerializedName("ventaProductoId") var VentaProductoId: Int? = null,
+    @SerializedName("ventaProductoId") var VentaProductoId: Int = 0,
     @SerializedName("ventaId") var VentaId: Int? = null,
     @SerializedName("productoId") var ProductoId: Int? = null,
     @SerializedName("precioVenta") var PrecioVenta: Double? = null,

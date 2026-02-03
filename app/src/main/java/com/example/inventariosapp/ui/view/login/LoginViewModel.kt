@@ -45,13 +45,13 @@ class LoginViewModel @Inject constructor(
                 val c = cnx.readPersistData(Constants.USUARIO_SESION_ID, "")
                 val d = cnx.readPersistData(Constants.MAIL, "")
                 val e = cnx.readPersistData(Constants.NOMBRE, "")
-                Log.i("PErsist___", "$a $b $c $d $e")
+                Log.i("Persist___", "$a $b $c $d $e")
                 serverValidateUser.value = true
 
             }
             else {
                 if (v.second != null) {
-                    MainActivity.mainDialogMsg.value = v!!.second!!
+                    MainActivity.mainDialogMsg.value = v.second!!
                 }
                 else{ MainActivity.mainDialogMsg.value = "Error 1001100" }
                 MainActivity.mainDialog.value = true

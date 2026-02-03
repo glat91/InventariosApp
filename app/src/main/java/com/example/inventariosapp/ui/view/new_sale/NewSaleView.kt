@@ -78,7 +78,7 @@ fun NewSaleView(
                 modifier = Modifier.padding(0.dp).background(UI_Backround_Top),
                 title = {
                     HeaderCmp(
-                        title = if (clientName.value.text.isBlank()) "Nueva venta" else "Editar Venta",
+                        title = if (sale.value.folio.isNullOrEmpty()) "Nueva venta" else "Editar Venta",
                         onClickBack = onClickBack,
                         onClickMenu = onClickMenu
                     )
@@ -148,7 +148,7 @@ fun NewSaleView(
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .clickable {
-                                                    expandedSearchBar.value = !expandedSearchBar.value
+                                                    expandedSearchBar.value = false
                                                     onClickOpcion(option)
                                                 },
                                             textAlign = TextAlign.Center,

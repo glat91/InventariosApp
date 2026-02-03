@@ -30,6 +30,7 @@ fun CardSaleCmp(
     montoPagar: String,
     saleDate: String,
     payLimitDate: String,
+    folio: String,
     backgroundColor: Color,
 ) {
     Card(
@@ -54,7 +55,7 @@ fun CardSaleCmp(
                 .background(backgroundColor)
             ,
         ){
-            val (nombre, fechaLimite, pagado, pagar, fechaVenta) = createRefs()
+            val (nombre, fechaLimite, pagado, pagar, fechaVenta, f) = createRefs()
 
             TextCmp(
                 text = "$nameClient",
@@ -65,11 +66,27 @@ fun CardSaleCmp(
                         start.linkTo(parent.start, PADDING_8)
                         end.linkTo(parent.end, PADDING_8)
                 },
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.ExtraBold,
                 fontSize = 14.sp,
                 textAlign = TextAlign.Center,
                 color = Color.Black,
                 maxLine = 2
+            )
+
+            TextCmp(
+                text = "$folio",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .constrainAs(f){
+                        top.linkTo(nombre.bottom, PADDING_4)
+                        start.linkTo(parent.start, PADDING_8)
+                        end.linkTo(parent.end, PADDING_8)
+                    },
+                fontWeight = FontWeight.Normal,
+                fontSize = 12.sp,
+                textAlign = TextAlign.Center,
+                color = Color.Black,
+                maxLine = 1
             )
 
             TextCmp(
@@ -147,6 +164,7 @@ fun CardSaleCmpPReview(){
         montoPagado = "999,999.00",
         montoPagar = "999,999.00",
         saleDate = "20-06-2025",
+        folio = "524568",
         backgroundColor = Color.White
     )
 }

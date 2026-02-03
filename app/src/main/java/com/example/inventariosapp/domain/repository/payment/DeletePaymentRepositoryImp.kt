@@ -1,6 +1,7 @@
 package com.example.inventariosapp.domain.repository.payment
 
 import android.content.Context
+import com.example.inventariosapp.MainActivity
 import com.example.inventariosapp.api.ApiService
 import com.example.inventariosapp.database.dao.PayDao
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -17,6 +18,10 @@ class DeletePaymentRepositoryImp @Inject constructor(
             if (r.isSuccessful){ Result.success(Unit) }
             else{ Result.failure(Exception("Error ${r.code()}: ${r.errorBody()?.string()}")) }
         }
-        catch (e: Exception) { Result.failure(e) }
+        catch (e: Exception) {
+            MainActivity.mainDialogMsg.value = e.message.toString()
+            MainActivity.mainDialog.value = true
+            Result.failure(e)
+        }
     }
 }

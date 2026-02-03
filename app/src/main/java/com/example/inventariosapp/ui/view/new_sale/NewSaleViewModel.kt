@@ -116,7 +116,7 @@ class NewSaleViewModel @Inject constructor(
         var newTotal = BigDecimal(0.0)
         products.add(
             SaleProductModel(
-                VentaProductoId = data.productoId,
+                VentaProductoId = data.productoId!!,
                 VentaId = sale.value.ventaId,
                 ProductoId = data.productoId,
                 Cantidad = quantity.value.toInt(),
@@ -249,7 +249,6 @@ class NewSaleViewModel @Inject constructor(
     fun createSale(){
         baseViewModel.showLoader()
         viewModelScope.launch {
-            val uuid = UUID.randomUUID().toString()
             var totalSale = 0.0
             for (p in products){
                 totalSale += (p.PrecioVenta!! + p.Cantidad!!)
@@ -294,12 +293,35 @@ class NewSaleViewModel @Inject constructor(
         baseViewModel.hideLoader()
     }
     // endregion
-    init {
-        //getInventory()
+    // region Clean
+    fun clearSales(){
+        sale.value = SalesModel()
+        newSale.value = arrayListOf()
+        newClient.value = null
+        newProducts.value = arrayListOf()
         products.clear()
+    }
+    fun clearDialog() {
+        dialogProduct.value = false
+        search.value = TextFieldValue("")
+        opcions.value.clear()
+        product.value = null
+        expandenSearchBarD.value = false
+        selectedProduct.value = null
+        quantity.value = ""
+        price.value = 0.0
+    }
+    fun clearClient(){
+        client.value = TextFieldValue("")
+        opcions.value.clear()
+    }
+    // endregion
+    init {
+        clearSales()
         getProducts()
         getClients()
-
+        Log.i("NewSaleViewModel___", "${sale.value}")
+        Log.i("NewSaleViewModel___", "${newSale.value}")
     }
 }
 

@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.appgeneric.ui.component.TextCmp
+import com.example.inventariosapp.MainActivity
 import com.example.inventariosapp.navigation.Destinations
 import com.example.inventariosapp.ui.component.ButtonCmp
 import com.example.inventariosapp.ui.component.ButtonWithImgCmp
@@ -218,9 +219,7 @@ fun PaymentsScreen(navController: NavHostController) {
                                 containerColor = UI_Backround_Btn_Green,
                                 contentColor = Color.White
                             )
-                        ){
-
-                        }
+                        ){}
                     }
                     HorizontalDivider(thickness = PADDING_16, color = Color.Transparent)
                     if (showDeposit.value){
@@ -237,12 +236,9 @@ fun PaymentsScreen(navController: NavHostController) {
                                     text = "Agregar pago",
                                     backGroundColor = UI_Backround_Btn_Yellow,
                                     icon = Icons.Filled.Add,
-                                    onClick = {
-                                        showDeposit.value = false
-                                    }
+                                    onClick = { showDeposit.value = false }
                                 )
                             }
-
                         }
                     }
                     HorizontalDivider(thickness = PADDING_16, color = Color.Transparent)
@@ -355,15 +351,22 @@ fun PaymentsScreen(navController: NavHostController) {
                                         text = "Agregar",
                                         onClick = {
                                             val monto = viewModel.payTotalPayment.value.toDoubleOrNull() ?: 0.0
-                                            viewModel.setPayment(
-                                                ventaId = viewModel.select.value!!.ventaId!!,
-                                                montoPago = monto,
-                                                observaciones = viewModel.payObservation.value,
-                                                cnx = cnx
-                                            )
+                                            if (monto > 1){
+                                                viewModel.setPayment(
+                                                    ventaId = viewModel.select.value!!.ventaId!!,
+                                                    montoPago = monto,
+                                                    observaciones = viewModel.payObservation.value,
+                                                    cnx = cnx
+                                                )
+                                                viewModel.cleanDialog()
+                                            }
+                                            else {
+                                                MainActivity.mainDialogMsg.value = "El monto debe ser mayor a 1"
+                                                MainActivity.mainDialog .value = true
+                                            }
                                         }
                                         ,
-                                        enable = true,
+                                        enable = !viewModel.payTotalPayment.value.isEmpty(),
                                         shape = RoundedCornerShape(10.dp),
                                         txtColor = Color.White,
                                         maxLines = 1,

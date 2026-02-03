@@ -161,6 +161,7 @@ fun PaymentsView(
                             CardSaleCmp(
                                 modifier = Modifier.clickable { onClickRow(client) },
                                 nameClient = client.nombreCliente.toString(),
+                                folio = client.folio.toString(),
                                 payLimitDate = client.fechaLimitePago.toString().take(10),
                                 montoPagado = client.montoPagado.toString(),
                                 montoPagar = client.montoPorPagar.toString(),

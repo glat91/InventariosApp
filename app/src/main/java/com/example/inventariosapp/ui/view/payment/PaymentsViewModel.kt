@@ -161,7 +161,7 @@ class PaymentsViewModel @Inject constructor(
                 MainActivity.mainDialogMsg.value = "Error 1001100"
                 MainActivity.mainDialog.value = true
             }
-            baseViewModel.hideLoader()
+            getPendingSales()
             dialogDeposit.value = true
         }
     }
@@ -179,9 +179,21 @@ class PaymentsViewModel @Inject constructor(
                 MainActivity.mainDialogMsg.value = "Error al borrar el pago"
                 MainActivity.mainDialog.value = true
             }
-            baseViewModel.hideLoader()
+            getPendingSales()
             dialogDeposit.value = true
         }
+    }
+    // endregion
+    // region clean
+    fun cleanPayment(){
+        payTotalPayment.value = ""
+        payObservation.value = ""
+    }
+    fun cleanDialog(){
+        dialogDeposit.value = false
+        payTotalPayment.value = ""
+        payObservation.value = ""
+        dialogChoice.value = false
     }
     // endregion
     init { getPendingSales() }

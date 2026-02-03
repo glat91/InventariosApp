@@ -188,6 +188,7 @@ fun SalesView(
                             CardSaleCmp(
                                 modifier = Modifier.clickable { onclickRow(client) },
                                 nameClient = client.nombreCliente.toString(),
+                                folio = client.folio!!,
                                 payLimitDate = client.fechaLimitePago.toString().take(10),
                                 montoPagado = client.montoPagado.toString(),
                                 montoPagar = client.montoPorPagar.toString(),
