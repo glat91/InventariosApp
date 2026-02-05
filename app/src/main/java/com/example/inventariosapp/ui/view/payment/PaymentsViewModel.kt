@@ -119,7 +119,10 @@ class PaymentsViewModel @Inject constructor(
         baseViewModel.showLoader()
         viewModelScope.launch {
             var r = getPaymentUseCase(ventaID, false)
-            if (r.first != null){ payments.value = r.first!! }
+            if (r.first != null){
+                dialogDeposit.value = true
+                payments.value = r.first!!
+            }
             else{
                 if (r.second != null){
                     val msg = r.second!!.MsgError!!.errors!!.first().errorMessage.toString()
@@ -129,7 +132,6 @@ class PaymentsViewModel @Inject constructor(
                 MainActivity.mainDialog.value = true
             }
             baseViewModel.hideLoader()
-            dialogDeposit.value = true
         }
     }
     fun setPayment(
@@ -153,16 +155,16 @@ class PaymentsViewModel @Inject constructor(
             )
             var r = postPaymentUseCase(newPay = listOf(p))
             if (r.isSuccess){
-                dialogDeposit.value = false
                 MainActivity.mainDialogMsg.value = "Pago realizado con exito"
                 MainActivity.mainDialog.value = true
+                cleanDialog()
             }
             else{
                 MainActivity.mainDialogMsg.value = "Error 1001100"
                 MainActivity.mainDialog.value = true
+                cleanDialog()
             }
             getPendingSales()
-            dialogDeposit.value = true
         }
     }
     fun deletePayment(pagoId: Int, deposit: PayModel){
@@ -180,7 +182,6 @@ class PaymentsViewModel @Inject constructor(
                 MainActivity.mainDialog.value = true
             }
             getPendingSales()
-            dialogDeposit.value = true
         }
     }
     // endregion
@@ -191,9 +192,11 @@ class PaymentsViewModel @Inject constructor(
     }
     fun cleanDialog(){
         dialogDeposit.value = false
-        payTotalPayment.value = ""
-        payObservation.value = ""
         dialogChoice.value = false
+        showDeposit.value = true
+        showDatePicker.value = false
+        selectedDate.value = LocalDate.now()
+        cleanPayment()
     }
     // endregion
     init { getPendingSales() }

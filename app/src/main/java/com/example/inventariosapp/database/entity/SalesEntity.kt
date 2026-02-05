@@ -15,7 +15,7 @@ data class SalesEntity(
     val descuento: Int?,
     val iva: Double?,
     val total: Double?,
-    val montoPagado: Int?,
+    val montoPagado: Double?,
     val montoPorPagar: Double?,
     val fechaVenta: String?,
     val fechaVentaFormato: String?,

@@ -9,7 +9,7 @@ data class PayEntity(
     @PrimaryKey
     val ventaPagoId: Int,
     val ventaId: Int?,
-    val montoPago: Int?,
+    val montoPago: Double?,
     val fecha: String?,
     val observaciones: String?,
     val origenId: Int?,

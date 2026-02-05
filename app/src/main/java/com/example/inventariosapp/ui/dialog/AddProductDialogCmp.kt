@@ -354,10 +354,8 @@ fun AddProductDialogCmp(
                             icon = Icons.Default.Add,
                             enable = enableBtn.value,
                             onClick = {
-                                if (precio1.value || precio2.value || precio3.value || precio4.value || quantity.value.isNotEmpty()){
+                                if ((precio1.value || precio2.value || precio3.value || precio4.value) && quantity.value.isNotEmpty()){
                                     if (quantity.value.toInt() > 0){
-                                        Log.i("Algo___", "${quantity.value.toInt() > 0}")
-
                                         onClickAccept(product.value!!)
                                         onDismiss()
                                         resetData()

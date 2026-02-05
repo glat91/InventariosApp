@@ -3,6 +3,7 @@ package com.example.inventariosapp.ui.view.payment
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -71,6 +72,8 @@ fun PaymentsScreen(navController: NavHostController) {
     @OptIn(ExperimentalMaterial3Api::class)
     var datePickerState = rememberDatePickerState()
 
+    val showDeposit = remember { mutableStateOf(true) }
+
     PaymentsView(
         data = viewModel.sales.value,
         dateStart = viewModel.startDate.value,
@@ -111,7 +114,6 @@ fun PaymentsScreen(navController: NavHostController) {
         BasicDialogCmp(
             color = UI_Backround_Top,
             content = {
-                val showDeposit = remember { mutableStateOf(true) }
                 Column(
                     modifier = Modifier
                         .padding(16.dp),
@@ -358,6 +360,7 @@ fun PaymentsScreen(navController: NavHostController) {
                                                     observaciones = viewModel.payObservation.value,
                                                     cnx = cnx
                                                 )
+                                                showDeposit.value = true
                                                 viewModel.cleanDialog()
                                             }
                                             else {
@@ -380,7 +383,7 @@ fun PaymentsScreen(navController: NavHostController) {
                     }
                 }
             },
-            onDismiss = { viewModel.dialogDeposit.value = false}
+            onDismiss = { viewModel.cleanDialog()}
         )
     }
     // endregion
