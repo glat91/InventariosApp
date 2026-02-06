@@ -139,7 +139,7 @@ fun AddProductDialogCmp(
     Dialog(onDismissRequest = onDismiss) {
         Box() {
             Column(
-                modifier = Modifier.fillMaxSize().background(Color.White).padding(PADDING_8)
+                modifier = Modifier.background(Color.White).padding(PADDING_8)
             ){
                 SearchBarCmp(
                     modifier = Modifier.padding(PADDING_8),
@@ -155,7 +155,6 @@ fun AddProductDialogCmp(
                             modifier = Modifier
                                 .padding(top = PADDING_8)
                                 .fillMaxWidth(.7f)
-                                //.windowInsetsPadding(WindowInsets.ime),
                                 .heightIn(max = maxHeight),
                             properties = PopupProperties(focusable = false)
                         ) {

@@ -1,4 +1,4 @@
-package com.example.inventariosapp.util
+package com.example.inventariosapp.ui.view.BluetoothPrinterScreen
 
 import android.content.Context
 import android.graphics.Bitmap

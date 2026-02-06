@@ -1,10 +1,15 @@
 package com.example.inventariosapp.ui.view.payment
 
+import android.bluetooth.BluetoothClass
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,13 +27,18 @@ import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
@@ -44,7 +54,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.appgeneric.ui.component.TextCmp
 import com.example.inventariosapp.MainActivity
-import com.example.inventariosapp.navigation.Destinations
 import com.example.inventariosapp.ui.component.ButtonCmp
 import com.example.inventariosapp.ui.component.ButtonWithImgCmp
 import com.example.inventariosapp.ui.component.cards.CardDepositCmp
@@ -54,6 +63,8 @@ import com.example.inventariosapp.ui.dialog.BasicDialogCmp
 import com.example.inventariosapp.ui.theme.PADDING_16
 import com.example.inventariosapp.ui.theme.PADDING_4
 import com.example.inventariosapp.ui.theme.PADDING_8
+import com.example.inventariosapp.ui.theme.UI_BACKGROUND_BT
+import com.example.inventariosapp.ui.theme.UI_BT
 import com.example.inventariosapp.ui.theme.UI_Backround_Btn_Accept
 import com.example.inventariosapp.ui.theme.UI_Backround_Btn_Cancel
 import com.example.inventariosapp.ui.theme.UI_Backround_Btn_Green
@@ -62,6 +73,7 @@ import com.example.inventariosapp.ui.theme.UI_Backround_Top
 import com.example.inventariosapp.ui.theme.UI_Divier
 import com.example.inventariosapp.ui.theme.UI_List_Row_1
 import com.example.inventariosapp.ui.theme.UI_List_Row_2
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -88,6 +100,101 @@ fun PaymentsScreen(navController: NavHostController) {
             viewModel.getPayment(it.folio.toString())
         }
     )
+    // region BT
+    LaunchedEffect(Unit) {
+        //viewModel.hasPermissions = viewModel.hasPermissions(cnx)
+    }
+    val scope = rememberCoroutineScope()
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { result ->
+        viewModel.hasPermissions = result.values.all { it }
+        if (viewModel.hasPermissions) {
+            viewModel.dialogBT = true
+        }
+    }
+    if (viewModel.dialogBT && viewModel.hasPermissions){
+        BasicDialogCmp(
+            color = UI_BT,
+            content = {
+                Column(modifier = Modifier) {
+                    if (!viewModel.hasPermissions) {
+                        Text("Se necesitan permisos Bluetooth", modifier = Modifier)
+                        return@Column
+                    }
+
+                    val isEnabled = viewModel.bluetoothAdapter?.isEnabled == true
+                    if (!isEnabled) {
+                        Text("Activa el Bluetooth e intenta de nuevo")
+                        return@Column
+                    }
+
+                    // Cargar dispositivos emparejados
+                    LaunchedEffect(Unit) {
+                        viewModel.bondedDevices.clear()
+                        viewModel.bluetoothAdapter.bondedDevices?.forEach { device ->
+
+                            val hasPrinterUUID = device.uuids?.any {
+                                it.uuid == viewModel.printerUUID
+                            } == true
+
+                            val isImagingDevice =
+                                device.bluetoothClass?.majorDeviceClass ==
+                                        BluetoothClass.Device.Major.IMAGING
+
+                            if (hasPrinterUUID || isImagingDevice) {
+                                viewModel.bondedDevices.add(device)
+                            }
+                        }
+                    }
+
+                    if (viewModel.bondedDevices.isEmpty()) {
+                        Text("No hay dispositivos emparejados")
+                    } else {
+                        Text(
+                            modifier = Modifier.padding(PADDING_16),
+                            text = "Selecciona el dispositivo Bluetooth"
+                        )
+                        LazyColumn(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            items(viewModel.bondedDevices) { device ->
+                                Log.i("Items___", device.toString())
+                                Row(
+                                    modifier = Modifier
+                                        .padding(PADDING_4)
+                                        .clip(RoundedCornerShape(10.dp))
+                                        .background(UI_BACKGROUND_BT)
+                                        .clickable{
+                                            scope.launch {
+                                                viewModel.connectAndPrint(
+                                                    context = cnx,
+                                                    device = device,
+                                                )
+                                            }
+                                        },
+                                    horizontalArrangement = Arrangement.Center,
+                                    verticalAlignment = Alignment.CenterVertically,
+
+                                ) {
+                                    VerticalDivider(color = Color.Gray, thickness = PADDING_4)
+                                    Text(
+                                        color = Color.White,
+                                        text = device.name ?: "No name"
+                                    )
+                                    VerticalDivider(color = Color.Gray, thickness = PADDING_4)
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            onDismiss = { viewModel.dialogBT = false}
+        )
+    }
+    // endregion
     // region Dialog Date
     if (viewModel.showDatePicker.value) {
         DatePickerDialog(
@@ -279,9 +386,7 @@ fun PaymentsScreen(navController: NavHostController) {
                                                 viewModel.deletePayment(deposit.ventaPagoId!!, deposit)
                                             },
                                             onClickPrint = {
-                                                navController.navigate(route = Destinations.PrintScreen.ruta){
-                                                    launchSingleTop = true
-                                                }
+                                                permissionLauncher.launch(viewModel.permissions)
                                             }
                                         )
                                         HorizontalDivider(thickness = PADDING_4, color = Color.Transparent, )

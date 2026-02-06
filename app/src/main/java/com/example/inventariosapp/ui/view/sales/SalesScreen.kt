@@ -1,13 +1,18 @@
 package com.example.inventariosapp.ui.view.sales
 
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavHostController
 import com.example.appgeneric.ui.component.TextCmp
 import com.example.inventariosapp.model.sales.SalesModel
@@ -20,6 +25,12 @@ fun SalesScreen(navController: NavHostController) {
     val viewModel: SalesViewModel = hiltViewModel()
     @OptIn(ExperimentalMaterial3Api::class)
     var datePickerState = rememberDatePickerState()
+    val lifecycleOwner = LocalLifecycleOwner.current
+    LaunchedEffect(lifecycleOwner) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewModel.getPendingSales()
+        }
+    }
 
     SalesView(
         search = viewModel.searchSale,
@@ -66,4 +77,5 @@ fun SalesScreen(navController: NavHostController) {
     }
     // endregion
     Loader(viewModel.baseViewModel.getLoader())
+    BackHandler(false) { }
 }

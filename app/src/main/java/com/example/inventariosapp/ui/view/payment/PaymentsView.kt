@@ -64,6 +64,7 @@ fun PaymentsView(
                 title = {
                     HeaderCmp(
                         title = "Pagos",
+                        backActivate = true,
                         onClickBack = onClickBack,
                         onClickMenu = onClickMenu
                     )

@@ -79,6 +79,7 @@ fun NewSaleView(
                 title = {
                     HeaderCmp(
                         title = if (sale.value.folio.isNullOrEmpty()) "Nueva venta" else "Editar Venta",
+                        backActivate = true,
                         onClickBack = onClickBack,
                         onClickMenu = onClickMenu
                     )

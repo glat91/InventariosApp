@@ -95,7 +95,4 @@ class SalesViewModel @Inject constructor(
     }
     // endregion
 
-    init {
-        getPendingSales()
-    }
 }

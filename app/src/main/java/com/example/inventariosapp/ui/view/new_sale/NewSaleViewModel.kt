@@ -114,9 +114,10 @@ class NewSaleViewModel @Inject constructor(
     }
     fun addRow(data: ProductsResponseModel){
         var newTotal = BigDecimal(0.0)
+        val p = if (canModifyClient.value) data.productoId ?: 0 else 0
         products.add(
             SaleProductModel(
-                VentaProductoId = if (canModifyClient.value) 0 else data.productoId!!,
+                VentaProductoId = 0,
                 VentaId = sale.value.ventaId,
                 ProductoId = data.productoId,
                 Cantidad = quantity.value.toInt(),
