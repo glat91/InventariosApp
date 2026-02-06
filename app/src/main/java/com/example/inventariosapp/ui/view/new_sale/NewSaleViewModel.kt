@@ -116,7 +116,7 @@ class NewSaleViewModel @Inject constructor(
         var newTotal = BigDecimal(0.0)
         products.add(
             SaleProductModel(
-                VentaProductoId = data.productoId!!,
+                VentaProductoId = if (canModifyClient.value) 0 else data.productoId!!,
                 VentaId = sale.value.ventaId,
                 ProductoId = data.productoId,
                 Cantidad = quantity.value.toInt(),

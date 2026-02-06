@@ -353,7 +353,7 @@ fun PaymentsScreen(navController: NavHostController) {
                                         text = "Agregar",
                                         onClick = {
                                             val monto = viewModel.payTotalPayment.value.toDoubleOrNull() ?: 0.0
-                                            if (monto > 1){
+                                            if (monto > 0.01 && monto <= viewModel.select.value?.montoPorPagar!!){
                                                 viewModel.setPayment(
                                                     ventaId = viewModel.select.value!!.ventaId!!,
                                                     montoPago = monto,
@@ -364,7 +364,13 @@ fun PaymentsScreen(navController: NavHostController) {
                                                 viewModel.cleanDialog()
                                             }
                                             else {
-                                                MainActivity.mainDialogMsg.value = "El monto debe ser mayor a 1"
+                                                if (monto > viewModel.select.value?.montoPorPagar!!){
+                                                    MainActivity.mainDialogMsg.value = "El monto debe ser menor al adeudo"
+                                                }
+                                                else{
+                                                    MainActivity.mainDialogMsg.value = "El monto debe ser mayor a .01 centavo"
+                                                }
+                                                viewModel.cleanPayment()
                                                 MainActivity.mainDialog .value = true
                                             }
                                         }
