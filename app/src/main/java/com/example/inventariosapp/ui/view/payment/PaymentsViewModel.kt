@@ -266,7 +266,7 @@ class PaymentsViewModel @Inject constructor(
                 val output = socket!!.outputStream
                 printBitmap(context, output, R.drawable.casajordan)
                 val recivo = ("--------------------------------\n" +
-                        "        Recibo de impresión\n" +
+                        "        Recibo de impresion\n" +
                         "Cliente: ${select.value!!.nombreCliente!!}\n" +
                         "Direccion: ${select.value!!.direccion!!}\n" +
                         "Folio: ${select.value!!.folio}  Total: $${select.value!!.total}\n" +
