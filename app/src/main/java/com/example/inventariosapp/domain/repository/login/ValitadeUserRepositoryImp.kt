@@ -6,7 +6,7 @@ import com.google.gson.Gson
 import java.io.IOException
 import javax.inject.Inject
 
-class ValitdaeUserRepositoryImp @Inject constructor(
+class ValitdateUserRepositoryImp @Inject constructor(
     private val apiService: ApiService,
 ) {
     suspend operator fun invoke(user: String, password: String): Pair<LoginResponseModel?, String?> {

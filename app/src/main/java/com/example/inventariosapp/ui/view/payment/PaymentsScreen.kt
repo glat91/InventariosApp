@@ -383,7 +383,7 @@ fun PaymentsScreen(navController: NavHostController) {
                                             observations = deposit.observaciones.toString(),
                                             backgroundColor = colorRow,
                                             onClickDelete = {
-                                                viewModel.deletePayment(deposit.ventaPagoId!!, deposit)
+                                                viewModel.deletePayment(deposit.ventaPagoId!!, deposit, cnx)
                                             },
                                             onClickPrint = {
                                                 permissionLauncher.launch(viewModel.permissions)

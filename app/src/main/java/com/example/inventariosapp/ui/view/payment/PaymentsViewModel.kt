@@ -10,30 +10,25 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.appgeneric.domain.sales.GetPendingSalesRepositoryImp
 import com.example.appgeneric.model.payment.NewPayModel
 import com.example.inventariosapp.BaseViewModel
 import com.example.inventariosapp.MainActivity
 import com.example.inventariosapp.R
-import com.example.inventariosapp.domain.repository.client.GetClientsRepositoryImp
-import com.example.inventariosapp.domain.repository.payment.DeletePaymentRepositoryImp
-import com.example.inventariosapp.domain.repository.payment.GetPaymentRepositoryImp
-import com.example.inventariosapp.domain.repository.payment.PostPaymentRepositoryImp
+import com.example.inventariosapp.domain.use_case.client.GetClientsUseCase
+import com.example.inventariosapp.domain.use_case.payment.DeletePaymentUseCase
+import com.example.inventariosapp.domain.use_case.payment.GetPaymentUseCase
+import com.example.inventariosapp.domain.use_case.payment.PostPaymentUseCase
+import com.example.inventariosapp.domain.use_case.sales.GetPendingSalesUseCase
 import com.example.inventariosapp.model.client.ClientResponseModel
 import com.example.inventariosapp.model.payment.PayModel
 import com.example.inventariosapp.model.sales.SalesModel
@@ -56,16 +51,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PaymentsViewModel @Inject constructor(
-    private val getClientsUseCase: GetClientsRepositoryImp,
-    private val getPendingSalesUseCase: GetPendingSalesRepositoryImp,
-    private val getPaymentUseCase: GetPaymentRepositoryImp,
-    private val postPaymentUseCase: PostPaymentRepositoryImp,
-    private val deletePaymentUseCase: DeletePaymentRepositoryImp,
-    @ApplicationContext private val context: Context
+    private val getClientsUseCase: GetClientsUseCase,
+    private val getPendingSalesUseCase: GetPendingSalesUseCase,
+    private val getPaymentUseCase: GetPaymentUseCase,
+    private val postPaymentUseCase: PostPaymentUseCase,
+    private val deletePaymentUseCase: DeletePaymentUseCase,
+    @ApplicationContext private val cnx: Context
 ) : ViewModel() {
     val baseViewModel = BaseViewModel()
+    val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
     // region Date
-    //val dateFormatter = remember { DateTimeFormatter.ofPattern("dd/MM/yyyy") }
     var selectedDate = mutableStateOf(LocalDate.now())
     var showDatePicker = mutableStateOf(false)
 
@@ -90,16 +85,8 @@ class PaymentsViewModel @Inject constructor(
     fun getClients(){
         baseViewModel.showLoader()
         viewModelScope.launch {
-            val r = getClientsUseCase(false)
+            val r = getClientsUseCase(internetUse.value)
             if (r.first != null){ clients.value = r.first!! }
-            else {
-                if (r.second != null){
-                    val msg = r.second!!.MsgError!!.errors!!.first().errorMessage.toString()
-                    MainActivity.mainDialogMsg.value = msg
-                }
-                else{ MainActivity.mainDialogMsg.value = "Error 1001100" }
-                MainActivity.mainDialog.value = true
-            }
             baseViewModel.hideLoader()
         }
     }
@@ -117,18 +104,10 @@ class PaymentsViewModel @Inject constructor(
             if (endDate.value.isBlank()) { endDate.value = Helpers.getTomrrow() }
         }
         viewModelScope.launch {
-            val r = getPendingSalesUseCase(startDate.value, endDate.value, false)
+            val r = getPendingSalesUseCase(startDate.value, endDate.value, internetUse.value)
             if (r.first != null) {
                 Log.i("Sales___", r.first!!.toString())
                 sales.value = r.first!!
-            }
-            else{
-                if (r.second != null){
-                    val msg = r.second!!.MsgError!!.errors!!.first().errorMessage.toString()
-                    MainActivity.mainDialogMsg.value = msg
-                }
-                else{ MainActivity.mainDialogMsg.value = "Error 1001100" }
-                MainActivity.mainDialog.value = true
             }
             baseViewModel.hideLoader()
         }
@@ -144,59 +123,43 @@ class PaymentsViewModel @Inject constructor(
     fun getPayment(ventaID: String){
         baseViewModel.showLoader()
         viewModelScope.launch {
-            var r = getPaymentUseCase(ventaID, false)
+            var r = getPaymentUseCase(ventaID, internetUse.value)
             if (r.first != null){
                 dialogDeposit.value = true
-                payments.value = r.first!!
-            }
-            else{
-                if (r.second != null){
-                    val msg = r.second!!.MsgError!!.errors!!.first().errorMessage.toString()
-                    MainActivity.mainDialogMsg.value = msg
-                }
-                else{ MainActivity.mainDialogMsg.value = "Error 1001100" }
-                MainActivity.mainDialog.value = true
+                payments.value = r.first!! as ArrayList<PayModel>
             }
             baseViewModel.hideLoader()
         }
     }
-    fun setPayment(
-        ventaId: Int,
-        montoPago: Double,
-        observaciones: String,
-        cnx: Context,
-    ){
+    fun setPayment(ventaId: Int, montoPago: Double, observaciones: String, cnx: Context){
         baseViewModel.showLoader()
         viewModelScope.launch {
             val userID = cnx.readPersistData(Constants.USUARIO_ID, 0)
+            val internetUse = Helpers.isInternetAvailable(cnx)
             Log.i("UserID___", userID.toString())
-            val p = NewPayModel(
+            val createPostSale = NewPayModel(
                 ventaId = ventaId,
                 montoPago = montoPago,
-                fecha = Helpers.getDateTime().replace(" ", "T").plus("Z"),
+                fecha = Helpers.getDateTime().replace(" ", "T"),
                 observaciones = observaciones,
-                origenId = 1,
-                tipoConexionId = 1,
+                origenId = 1, // TODO Cambiar con flujo Login
+                tipoConexionId = if (internetUse) 1 else 2,
                 usuarioSesionId = userID
             )
-            var r = postPaymentUseCase(newPay = listOf(p))
+            var r = postPaymentUseCase(internetUse = internetUse, newPay = listOf(createPostSale))
             if (r.isSuccess){
                 MainActivity.mainDialogMsg.value = "Pago realizado con exito"
                 MainActivity.mainDialog.value = true
-                cleanDialog()
             }
-            else{
-                MainActivity.mainDialogMsg.value = "Error 1001100"
-                MainActivity.mainDialog.value = true
-                cleanDialog()
-            }
+            cleanDialog()
             getPendingSales()
         }
     }
-    fun deletePayment(pagoId: Int, deposit: PayModel){
+    fun deletePayment(pagoId: Int, deposit: PayModel, cnx: Context){
         baseViewModel.showLoader()
         viewModelScope.launch {
-            var r = deletePaymentUseCase(pagoId)
+            val internetUse = Helpers.isInternetAvailable(cnx) || MainActivity.internetBtn.value
+            var r = deletePaymentUseCase(internetUse, pagoId)
             if (r.isSuccess){
                 dialogDeposit.value = false
                 MainActivity.mainDialogMsg.value = "Pago borrado exitosamente"
@@ -216,12 +179,12 @@ class PaymentsViewModel @Inject constructor(
     val printerUUID = UUID.fromString(Constants.PRINTER_UUID)
     val bluetoothAdapter =  BluetoothAdapter.getDefaultAdapter()
     val bondedDevices =  mutableStateListOf<BluetoothDevice>()
-    var hasPermissions by  mutableStateOf(
+    var hasPermissions by mutableStateOf(
         ContextCompat.checkSelfPermission(
-            context,
+            cnx,
             Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(
-                    context,
+                    cnx,
                     Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED
     )
 

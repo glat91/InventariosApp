@@ -1,6 +1,5 @@
 package com.example.inventariosapp.domain.repository.sales
 
-import android.content.Context
 import android.util.Log
 import com.example.inventariosapp.MainActivity
 import com.example.inventariosapp.api.ApiService
@@ -9,18 +8,15 @@ import com.example.inventariosapp.model.error.ErrorModel
 import com.example.inventariosapp.model.sales.PostSalesModel
 import com.example.inventariosapp.model.sales.toEntity
 import com.google.gson.Gson
-import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.IOException
 import javax.inject.Inject
 
 class PostSaleRepositoryImp @Inject constructor(
     private val apiService: ApiService,
     private val newSales: PostSalesDao,
-    @ApplicationContext val cnx: Context
 ){
-    suspend operator fun invoke(sales: List<PostSalesModel>?, updateSales: Boolean): Pair<Unit?, ErrorModel?> {
-        if (updateSales || MainActivity.internetBtn.value) {
-
+    suspend operator fun invoke(sales: List<PostSalesModel>?, internetUse: Boolean): Pair<Unit?, String?> {
+        if (internetUse) {
             val payload = ArrayList(sales ?: emptyList())
 
             return try {
@@ -34,30 +30,41 @@ class PostSaleRepositoryImp @Inject constructor(
                     val error = errorJson?.let {
                         Gson().fromJson(it, ErrorModel::class.java)
                     } ?: ErrorModel(error("Error desconocido del servidor"))
+                    MainActivity.mainDialogMsg.value = error.MsgError?.errors.toString()
+                    MainActivity.mainDialog.value = true
 
-                    Pair(null, error)
+                    Pair(null, error.MsgError?.errors.toString())
                 }
 
-            } catch (e: IOException) {
-                Pair(null, ErrorModel(error("Sin conexión a internet")))
+            }
 
-            } catch (e: Exception) {
-                Pair(null, ErrorModel(error(e.message ?: "Error inesperado")))
+            catch (e: Exception) {
+                MainActivity.mainDialogMsg.value = e.toString()
+                MainActivity.mainDialog.value = true
+                Pair(null, e.message ?: "Error inesperado")
             }
 
         } else {
-            // OFFLINE
             return try {
                 Log.i("PostSales___", "Guardando ventas en DB (offline)")
-                sales?.forEach { newSales.insertSale(it.toEntity()) }
+                sales?.forEach {
+                    val saleEntity = it.toEntity()
+
+                    val productsEntity = it.ventaProductos.map { product ->
+                        product.toEntity(parentId = saleEntity.id)
+                    }
+
+                    newSales.insertSaleWithProducts(
+                        sale = saleEntity,
+                        products = productsEntity
+                    )
+                }
                 Pair(Unit, null)
             }
             catch (e: Exception) {
                 MainActivity.mainDialogMsg.value = e.toString()
-                Pair(
-                    null,
-                    ErrorModel(error("Error en Base de Datos, contacte a Administración"))
-                )
+                MainActivity.mainDialog.value = true
+                Pair(null, e.message.toString())
             }
         }
     }

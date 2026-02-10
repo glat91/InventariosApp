@@ -1,4 +1,4 @@
-package com.example.appgeneric.domain.sales
+package com.example.inventariosapp.domain.repository.sales
 
 import android.util.Log
 import com.example.inventariosapp.MainActivity
@@ -17,9 +17,9 @@ class GetPendingSalesRepositoryImp @Inject constructor(
     private val apiService: ApiService,
     private val salesDao: SalesDao,
 ) {
-    suspend operator fun invoke(startDate: String, endDate: String, refresh: Boolean): Pair<ArrayList<SalesModel>?, ErrorModel?> {
+    suspend operator fun invoke(startDate: String, endDate: String, refresh: Boolean): Pair<ArrayList<SalesModel>?, String?> {
         return try {
-            if (refresh || MainActivity.internetBtn.value) {
+            if (refresh) {
                 val r = apiService.getPendingSales(fechaInicio = startDate, fechaFin = endDate)
                 if (r.isSuccessful) {
                     val body = r.body()
@@ -29,25 +29,28 @@ class GetPendingSalesRepositoryImp @Inject constructor(
                                 Log.i("Sales___", "update db Sales")
                                 val data = body.map { it.toDB() }
                                 salesDao.insertAllSales(data)
-                                if (refresh) MainActivity.mainDialog.value = true
                             }
-                        } catch (e: Exception) {
-                            Log.e("Sales___", "Error saving to DB: ${e.message}")
+                        }
+                        catch (e: Exception) {
+                            MainActivity.mainDialogMsg.value = "Error: ${e.message.toString()}"
+                            MainActivity.mainDialog.value = true
                         }
                         Pair(ArrayList(body), null)
-                    } else {
-                        Pair(arrayListOf<SalesModel>(), null)
                     }
-                } else {
+                    else { Pair(arrayListOf(), null) }
+                }
+                else {
                     val errorMsj = r.errorBody()?.string()
                     val error = try {
                         Gson().fromJson(errorMsj, ErrorModel::class.java)
-                    } catch (e: Exception) {
-                        null
                     }
-                    Pair(null, error)
+                    catch (e: Exception) {
+                        Pair(null, "Error ${e.message.toString()}")
+                    }
+                    Pair(null, "Error ${r.code()}: ${error}")
                 }
-            } else {
+            }
+            else {
                 Log.i("Sales___", "call db Sales")
                 val sales = salesDao.getSalesBetween(startDate, endDate)
                 val entity = ArrayList(sales.map { it.toDb() })
@@ -56,7 +59,8 @@ class GetPendingSalesRepositoryImp @Inject constructor(
         } catch (e: Exception) {
             Log.e("Sales___", "Error in invoke: ${e.message}")
             MainActivity.mainDialogMsg.value = "Error en Base de Datos, favor de contactar a Administracion"
-            Pair(null, null)
+            MainActivity.mainDialog.value = true
+            Pair(null, "Error en Base de Datos, favor de contactar a Administracion")
         }
     }
 }

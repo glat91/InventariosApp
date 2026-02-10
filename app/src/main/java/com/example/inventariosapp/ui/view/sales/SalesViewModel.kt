@@ -1,6 +1,7 @@
 package com.example.inventariosapp.ui.view.sales
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.MutableState
@@ -8,9 +9,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.appgeneric.domain.sales.GetPendingSalesRepositoryImp
 import com.example.inventariosapp.BaseViewModel
 import com.example.inventariosapp.MainActivity
+import com.example.inventariosapp.domain.use_case.sales.GetPendingSalesUseCase
 import com.example.inventariosapp.model.sales.SalesModel
 import com.example.inventariosapp.util.Helpers
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,16 +19,16 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDate
-import java.time.ZoneId
 import java.time.ZoneOffset
 import javax.inject.Inject
 
 @HiltViewModel
 class SalesViewModel @Inject constructor(
-    private val getPendingSalesUseCase: GetPendingSalesRepositoryImp,
+    private val getPendingSalesUseCase: GetPendingSalesUseCase,
     @ApplicationContext val cnx: Context,
 ): ViewModel() {
     val baseViewModel = BaseViewModel()
+    val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
     // region Date
     var selectedDate = mutableStateOf(LocalDate.now())
     val dialogChoice = mutableStateOf(false)
@@ -57,6 +58,7 @@ class SalesViewModel @Inject constructor(
     fun getPendingSales(){
         baseViewModel.showLoader()
         viewModelScope.launch{
+            Log.i("Sales___", "${internetUse.value}")
             if (startDate.value.isBlank() && endDate.value.isBlank()) {
                 startDate.value = Helpers.getYesterday()
                 endDate.value = Helpers.getTomrrow()
@@ -66,15 +68,8 @@ class SalesViewModel @Inject constructor(
             }
 
             try {
-                val r = getPendingSalesUseCase(startDate.value, endDate.value, false)
-                if (r.first != null){ sales.value = r.first!! }
-                else{
-                    if (r.second != null){
-                        MainActivity.mainDialogMsg.value = r.second!!.MsgError!!.errors!!.first().errorMessage!!
-
-                    } else{ MainActivity.mainDialogMsg.value = "Error 1001100" }
-                    MainActivity.mainDialog.value = true
-                }
+                val r = getPendingSalesUseCase(startDate.value, endDate.value, internetUse.value)
+                if (r.first != null){ sales.value = r.first!! as ArrayList<SalesModel> }
             }
             catch (e: Exception){
                 MainActivity.mainDialogMsg.value = e.toString()

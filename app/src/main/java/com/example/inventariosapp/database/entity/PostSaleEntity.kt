@@ -9,17 +9,16 @@ import java.util.UUID
 @Entity(tableName = "post_sales")
 data class PostSaleEntity(
     @PrimaryKey var id: String = UUID.randomUUID().toString(),
-
     var ventaId: Int = 0,
     var clienteId: Int? = null,
     var estatusVentaId: Int = 1,
     var esActivo: Boolean = true,
-    var nombreCliente: Int? = null,
+    var nombreCliente: String? = null,
     var folio: String = "",
     var subtotal: Double? = null,
     var descuento: Double? = null,
     var iva: Double? = null,
-    var retencion: Int? = null,
+    var retencion: Double? = null,
     var total: Double? = null,
     var fechaVenta: String? = null,
     var fechaVentaFormato: String? = null,
@@ -57,6 +56,7 @@ fun PostSaleEntity.toModel(productos: List<PostSaleProductModel>) = PostSalesMod
     total = total,
     fechaVenta = fechaVenta,
     fechaVentaFormato = fechaVentaFormato,
+    fechaIngreso = fechaIngreso,
     sucursalId = sucursalId,
     almacenId = almacenId,
     usuario = usuario,
@@ -67,7 +67,9 @@ fun PostSaleEntity.toModel(productos: List<PostSaleProductModel>) = PostSalesMod
     origenId = origenId,
     tipoConexionId = tipoConexionId,
     ventaIdInterno = ventaIdInterno,
-    version = version
+    version = version,
+    direccion = direccion,
+    ventaProductos = productos as ArrayList<PostSaleProductModel>
 )
 
 fun PostSaleProductEntity.toModel() = PostSaleProductModel(
@@ -84,8 +86,5 @@ fun PostSaleProductEntity.toModel() = PostSaleProductModel(
 
 fun PostSaleWithProducts.toModel(): PostSalesModel {
     val productosModel = productos.map { it.toModel() }
-
-    return sale.toModel(
-        productos = productosModel
-    )
+    return sale.toModel(productos = productosModel)
 }

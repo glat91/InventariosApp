@@ -25,7 +25,7 @@ data class PayEntity(
 fun PayEntity.toDB() = PayModel(
     ventaPagoId = ventaPagoId,
     ventaId = ventaId,
-    montoPago = montoPago,
+    montoPago = montoPago ?: 0.00,
     fecha = fecha,
     observaciones = observaciones,
     origenId = origenId,

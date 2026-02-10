@@ -1,6 +1,5 @@
 package com.example.inventariosapp.domain.repository.product
 
-import android.content.Context
 import android.util.Log
 import com.example.inventariosapp.MainActivity
 import com.example.inventariosapp.api.ApiService
@@ -10,7 +9,6 @@ import com.example.inventariosapp.model.error.ErrorModel
 import com.example.inventariosapp.model.product.InventarioRseponeModel
 import com.example.inventariosapp.model.product.toDb
 import com.google.gson.Gson
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -18,7 +16,6 @@ import javax.inject.Inject
 class GetInventarioRepositoryImp @Inject constructor(
     private val apiService: ApiService,
     private val inventoryDao: InventoryDao,
-    @ApplicationContext var cnx: Context,
 ) {
     suspend operator fun invoke(refresh: Boolean): Pair<List<InventarioRseponeModel>?, ErrorModel?> {
         if(refresh || MainActivity.internetBtn.value) {
@@ -46,7 +43,6 @@ class GetInventarioRepositoryImp @Inject constructor(
         else{
             Log.i("Inventory___", "call db Inventory")
             try {
-                MainActivity.mainDialog.value = true
                 val inventory = inventoryDao.getAll().map { it.toModel() }
                 return Pair(inventory, null)
             }

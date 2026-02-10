@@ -15,8 +15,8 @@ class GetProductsRepositoryImp @Inject constructor(
     private val apiService: ApiService,
     private val productDao: ProductDao,
 ) {
-    suspend operator fun invoke(refresh: Boolean): Pair<List<ProductsResponseModel>?, ErrorModel?> {
-        if (refresh || MainActivity.internetBtn.value) {
+    suspend operator fun invoke(internetUse: Boolean): Pair<List<ProductsResponseModel>?, String?> {
+        if (internetUse) {
             val service = apiService.getProducts()
             val response = try {
                 if (service.isSuccessful) {
@@ -24,20 +24,22 @@ class GetProductsRepositoryImp @Inject constructor(
                     productDao.deleteAllProducts()
                     val data = service.body()!!.map { it.toDb() }
                     productDao.insertAll(data)
-                    if (refresh){
-                        MainActivity.mainDialog.value = true
-                    }
                     Pair(service.body(), null)
                 }
                 else {
                     var error: ErrorModel
                     val errorMsj = service.errorBody()?.string()
                     error = Gson().fromJson(errorMsj, ErrorModel::class.java)
-                    Pair(null, error)
+                    MainActivity.mainDialogMsg.value = error.MsgError?.errors.toString()
+                    MainActivity.mainDialog.value = true
+                    Pair(null, error.MsgError?.errors.toString())
                 }
             }
             catch (e: Exception) {
-                Pair(null, ErrorModel(error("Error, favor de revisar su conexion a internet"))) }
+                MainActivity.mainDialogMsg.value = e.toString()
+                MainActivity.mainDialog.value = true
+                Pair(null, e.message.toString())
+            }
             return response
         }
         else{
@@ -49,10 +51,8 @@ class GetProductsRepositoryImp @Inject constructor(
             }
             catch (e: Exception){
                 MainActivity.mainDialogMsg.value = e.toString()
-                return Pair(
-                    null,
-                    ErrorModel(error(e.message ?: "Error desconocido"))
-                )
+                MainActivity.mainDialog.value = true
+                return Pair(null, e.message ?: "Error desconocido")
             }
         }
     }

@@ -13,21 +13,29 @@ class GetInventarioProductoRepositoryImp @Inject constructor(
     private val apiService: ApiService,
     @ApplicationContext var cnx: Context,
 ) {
-    suspend operator fun invoke(productId: Int): Pair<ProductIdResponseModel?, ErrorModel?> {
-        val r = apiService.getProductId(productId)
-        val response = try {
-            if (r.isSuccessful) { Pair(r.body(), null) }
-            else {
-                var error: ErrorModel
-                val errorMsj = r.errorBody()?.string()
-                error = Gson().fromJson(errorMsj, ErrorModel::class.java)
-                Pair(null, error)
+    suspend operator fun invoke(productId: Int, internetUse: Boolean): Pair<ProductIdResponseModel?, ErrorModel?> {
+        if (internetUse){
+            val r = apiService.getProductId(productId)
+            val response = try {
+                if (r.isSuccessful) { Pair(r.body(), null) }
+                else {
+                    var error: ErrorModel
+                    val errorMsj = r.errorBody()?.string()
+                    error = Gson().fromJson(errorMsj, ErrorModel::class.java)
+                    Pair(null, error)
+                }
+            } catch (e: Exception) {
+                MainActivity.mainDialogMsg.value = e.toString()
+                MainActivity.mainDialog.value = true
+                Pair(null, null)
             }
-        } catch (e: Exception) {
-            MainActivity.mainDialogMsg.value = e.toString()
-            Pair(null, null)
+            return response
         }
-        return response
+        else{
+            MainActivity.mainDialogMsg.value = "No hay conexión a internet"
+            MainActivity.mainDialog.value = true
+            return Pair(null, null)
+        }
     }
 }
 

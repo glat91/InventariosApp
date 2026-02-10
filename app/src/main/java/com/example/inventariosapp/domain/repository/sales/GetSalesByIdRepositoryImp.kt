@@ -11,24 +11,36 @@ import javax.inject.Inject
 class GetSalesByIdRepositoryImp @Inject constructor(
     private val apiService: ApiService,
 ){
-    suspend operator fun invoke(salesId: String): Pair<GetSalesByIdResponse?, ErrorModel?> {
-        return try {
-            val r = apiService.getSalesById(salesId)
-            if (r.isSuccessful) {
-                Pair(r.body(), null)
+    suspend operator fun invoke(salesId: String, internetUse: Boolean): Pair<GetSalesByIdResponse?, String?> {
+        if (internetUse){
+            return try {
+                val r = apiService.getSalesById(salesId)
+                if (r.isSuccessful) {
+                    Pair(r.body(), null)
+                }
+                else {
+                    val errorMsj = r.errorBody()?.string()
+                    val error = Gson().fromJson(errorMsj, ErrorModel::class.java)
+                    MainActivity.mainDialogMsg.value = error.MsgError?.errors.toString()
+                    MainActivity.mainDialog.value = true
+                    Pair(null, error.MsgError?.errors.toString())
+                }
             }
-            else {
-                val errorMsj = r.errorBody()?.string()
-                val error = Gson().fromJson(errorMsj, ErrorModel::class.java)
-                Pair(null, error)
+            catch (e: IOException) {
+                MainActivity.mainDialogMsg.value = e.message.toString()
+                MainActivity.mainDialog.value = true
+                Pair(null, e.message.toString())
+            }
+            catch (e: Exception){
+                MainActivity.mainDialogMsg.value = e.toString()
+                MainActivity.mainDialog.value = true
+                Pair(null, null)
             }
         }
-        catch (e: IOException) {
-             Pair(null, ErrorModel(null)) // Or a specific error for connectivity
-        }
-        catch (e: Exception){
-            MainActivity.mainDialogMsg.value = e.toString()
-            Pair(null, null)
+        else{
+            MainActivity.mainDialogMsg.value = "No hay conexión a internet"
+            MainActivity.mainDialog.value = true
+            return Pair(null, "No hay conexión a internet")
         }
     }
 }

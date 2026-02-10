@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName
 data class PayModel(
     @SerializedName("ventaPagoId") var ventaPagoId: Int? = null,
     @SerializedName("ventaId") var ventaId: Int? = null,
-    @SerializedName("montoPago") var montoPago: Double? = null,
+    @SerializedName("montoPago") var montoPago: Double = 0.00,
     @SerializedName("fecha") var fecha: String? = null,
     @SerializedName("observaciones") var observaciones: String? = null,
     @SerializedName("origenId") var origenId: Int? = null,

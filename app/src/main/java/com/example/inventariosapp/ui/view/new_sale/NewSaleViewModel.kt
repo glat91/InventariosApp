@@ -9,14 +9,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.inventariosapp.BaseViewModel
 import com.example.inventariosapp.MainActivity
-import com.example.inventariosapp.database.dao.ProductDao
 import com.example.inventariosapp.database.entity.ProductEntity
-import com.example.inventariosapp.domain.repository.client.GetClientsRepositoryImp
 import com.example.inventariosapp.domain.repository.product.GetInventarioProductoRepositoryImp
-import com.example.inventariosapp.domain.repository.product.GetProductsRepositoryImp
-import com.example.inventariosapp.domain.repository.sales.EditSaleRepositoryImp
-import com.example.inventariosapp.domain.repository.sales.GetSalesByIdRepositoryImp
-import com.example.inventariosapp.domain.repository.sales.PostSaleRepositoryImp
+import com.example.inventariosapp.domain.use_case.client.GetClientsUseCase
+import com.example.inventariosapp.domain.use_case.product.GetProductsUseCase
+import com.example.inventariosapp.domain.use_case.sales.EditSaleUseCase
+import com.example.inventariosapp.domain.use_case.sales.GetSalesByIdUseCase
+import com.example.inventariosapp.domain.use_case.sales.PostSaleUseCase
 import com.example.inventariosapp.model.client.ClientResponseModel
 import com.example.inventariosapp.model.product.ProductIdResponseModel
 import com.example.inventariosapp.model.product.ProductsResponseModel
@@ -25,26 +24,29 @@ import com.example.inventariosapp.model.sales.PostSaleProductModel
 import com.example.inventariosapp.model.sales.PostSalesModel
 import com.example.inventariosapp.model.sales.SaleProductModel
 import com.example.inventariosapp.model.sales.SalesModel
+import com.example.inventariosapp.util.Constants
 import com.example.inventariosapp.util.Helpers
+import com.example.inventariosapp.util.Helpers.Companion.readPersistData
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
-import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
 class NewSaleViewModel @Inject constructor(
-    private val getSalesByIdUseCase: GetSalesByIdRepositoryImp,
-    private val editSaleUseCase: EditSaleRepositoryImp,
-    private val postSaleUseCase: PostSaleRepositoryImp,
-    private val getProductsUseCase: GetProductsRepositoryImp,
-    private val getClientsUseCase: GetClientsRepositoryImp,
-    private val productDao: ProductDao,
+    private val getSalesByIdUseCase: GetSalesByIdUseCase,
+    private val editSaleUseCase: EditSaleUseCase,
+    private val postSaleUseCase: PostSaleUseCase,
+    private val getProductsUseCase: GetProductsUseCase,
+    private val getClientsUseCase: GetClientsUseCase,
     private val getInventarioProductoUseCase: GetInventarioProductoRepositoryImp,
+    @ApplicationContext private val cnx : android.content.Context
 ) : ViewModel() {
     val baseViewModel = BaseViewModel()
     val sale: MutableState<SalesModel> = mutableStateOf(SalesModel())
+    val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
     val canModifyClient = mutableStateOf(true)
 
     val expandenSearchBarS = mutableStateOf(true)
@@ -61,7 +63,7 @@ class NewSaleViewModel @Inject constructor(
         baseViewModel.showLoader()
         viewModelScope.launch {
             idSale = sale.value.folio.toString()
-            val r = getSalesByIdUseCase(idSale)
+            val r = getSalesByIdUseCase(idSale, internetUse.value)
             if (r.first != null){
                 saleData.value = r.first!!
                 for (p in saleData.value.ventaProductos){
@@ -69,13 +71,6 @@ class NewSaleViewModel @Inject constructor(
                 }
                 products.clear()
                 products.addAll(saleData.value.ventaProductos)
-            }
-            else{
-                if (r.second != null){
-                    MainActivity.mainDialogMsg.value = r.second!!.MsgError!!.errors!!.first().errorMessage!!
-
-                } else{ MainActivity.mainDialogMsg.value = "Error 1001100" }
-                MainActivity.mainDialog.value = true
             }
             baseViewModel.hideLoader()
         }
@@ -85,16 +80,18 @@ class NewSaleViewModel @Inject constructor(
         canModifyClient.value = false
         baseViewModel.showLoader()
         viewModelScope.launch {
+            val internetUse = Helpers.isInternetAvailable(cnx)
             saleData.value.ventaProductos = java.util.ArrayList(products)
             saleData.value.ventaIdInterno = null
             Log.i("Sale___", products.toString())
-            val r = editSaleUseCase(saleData.value, idSale)
+            val r = editSaleUseCase(saleData.value, idSale, internetUse)
             if (r.first != null){ editStatus.value = true }
             else{
                 if (r.second != null){
-                    MainActivity.mainDialogMsg.value = r.second!!.MsgError!!.errors!!.first().errorMessage!!
+                    MainActivity.mainDialogMsg.value = r.second!!
+                    MainActivity.mainDialog.value = true
                 }
-                MainActivity.mainDialog.value = true
+
             }
             baseViewModel.hideLoader()
         }
@@ -139,16 +136,9 @@ class NewSaleViewModel @Inject constructor(
     fun getClients(){
         viewModelScope.launch {
             baseViewModel.showLoader()
-            val r = getClientsUseCase(false)
+            val r = getClientsUseCase(internetUse.value)
             if (r.first != null){
                 clients.value = r.first!!
-            }
-            else{
-                if (r.second != null) {
-                    MainActivity.mainDialogMsg.value = r.second!!.MsgError!!.errors!!.first().errorMessage!!
-                }
-                else{ MainActivity.mainDialogMsg.value = "Error 1001100" }
-                MainActivity.mainDialog.value = true
             }
             baseViewModel.hideLoader()
 
@@ -195,16 +185,9 @@ class NewSaleViewModel @Inject constructor(
     fun getProducts(){
         baseViewModel.showLoader()
         viewModelScope.launch {
-            val r = getProductsUseCase(false)
+            val r = getProductsUseCase(internetUse.value)
             if (r.first != null){
                 inventory.value = (r.first as ArrayList<ProductsResponseModel>?)!!
-            }
-            else{
-                if (r.second != null) {
-                    MainActivity.mainDialogMsg.value = r.second!!.MsgError!!.errors!!.first().errorMessage!!
-                }
-                else{ MainActivity.mainDialogMsg.value = "Error 1001100" }
-                MainActivity.mainDialog.value = true
             }
             baseViewModel.hideLoader()
         }
@@ -215,26 +198,19 @@ class NewSaleViewModel @Inject constructor(
     val serchProductId = mutableStateOf(0)
     val product: MutableState<ProductEntity?> = mutableStateOf(null)
     val totalInventory: MutableState<ProductIdResponseModel> = mutableStateOf(ProductIdResponseModel())
-    fun searchProductId(){
-        viewModelScope.launch {
-            product.value = productDao.getProductById(serchProductId.value)
-            Log.i("ProductDao___", serchProductId.value.toString())
-        }
-    }
     val selectedProduct: MutableState<ProductsResponseModel?> = mutableStateOf(null)
     fun getProductInventario(productId: Int){
         viewModelScope.launch {
             baseViewModel.showLoader()
-            val r = getInventarioProductoUseCase(productId)
+            val r = getInventarioProductoUseCase(productId, internetUse.value)
             if (r.first != null){
                 totalInventory.value = r.first!!
             }
             else{
                 if (r.second != null) {
                     MainActivity.mainDialogMsg.value = r.second!!.MsgError!!.errors!!.first().errorMessage!!
+                    MainActivity.mainDialog.value = true
                 }
-                else{ MainActivity.mainDialogMsg.value = "Error 1001100" }
-                MainActivity.mainDialog.value = true
             }
             expandenSearchBarD.value = false
             serchProductId.value = productId
@@ -251,6 +227,8 @@ class NewSaleViewModel @Inject constructor(
         baseViewModel.showLoader()
         viewModelScope.launch {
             var totalSale = 0.0
+            val userId = cnx.readPersistData(Constants.USUARIO_ID, 0)
+            val fecha = Helpers.getDateTime().replace(" ", "T")
             for (p in products){
                 totalSale += (p.PrecioVenta!! + p.Cantidad!!)
                 newProducts.value.add(
@@ -267,28 +245,22 @@ class NewSaleViewModel @Inject constructor(
                 clienteId = newClient.value!!.clienteId,
                 ventaId = 0,
                 esActivo = true,
-                fechaIngreso = Helpers.getDateTime().replace(" ", "T").plus("Z"),
-                fechaVenta = Helpers.getDateTime().replace(" ", "T").plus("Z"),
+                fechaIngreso = fecha,
+                fechaVenta = fecha,
                 tipoPagoId = 1,
                 direccion = newClient.value!!.direccion ?: "null",
                 subtotal = 0.0,
                 iva = 0.0,
-                retencion = 0,
+                retencion = 0.0,
                 total = totalSale,
-                usuarioSesionId = 1,
+                usuarioSesionId = userId,
                 ventaProductos = newProducts.value,
+                tipoConexionId = if (internetUse.value) 1 else 2
             ))
-            val r = postSaleUseCase(newSale.value, true)
+            val r = postSaleUseCase(newSale.value, internetUse.value)
             if (r.first != null){
                 MainActivity.mainDialogMsg.value = "Venta guardada"
                 serverPostSale.value = true
-            }
-            else{
-                if (r.second != null){
-                    MainActivity.mainDialogMsg.value = r.second!!.MsgError!!.errors!!.first().errorMessage!!
-
-                } else{ MainActivity.mainDialogMsg.value = "Error 1001100" }
-                MainActivity.mainDialog.value = true
             }
         }
         baseViewModel.hideLoader()

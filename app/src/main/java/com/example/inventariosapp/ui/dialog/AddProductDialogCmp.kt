@@ -316,7 +316,8 @@ fun AddProductDialogCmp(
                                 // Validar contra inventario
                                 val value = sanitized.toIntOrNull() ?: return@InputWithTitleLabelCmp
 
-                                if (value <= (inventario.inventario ?: 0)) {
+
+                                if (value <= (inventario.inventario ?: 10000)) {
                                     quantity.value = sanitized
                                 }
                                 it

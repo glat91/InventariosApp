@@ -17,6 +17,9 @@ interface PayDao {
     @Query("SELECT * FROM pay_table")
     suspend fun getAll(): List<PayEntity>
 
+    @Query("DELETE FROM pay_table WHERE ventaPagoId = :ventaPagoId")
+    suspend fun deleteById(ventaPagoId: Int): Int
+
     @Query("DELETE FROM pay_table")
     suspend fun deleteAll(): Int
 

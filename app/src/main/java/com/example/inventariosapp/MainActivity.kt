@@ -31,6 +31,7 @@ import com.example.inventariosapp.ui.component.ButtonCmp
 import com.example.inventariosapp.ui.dialog.BasicDialogCmp
 import com.example.inventariosapp.ui.theme.InventariosAppTheme
 import com.example.inventariosapp.ui.theme.PADDING_16
+import com.example.inventariosapp.ui.theme.UI_Backround_Btn_Accept
 import com.example.inventariosapp.ui.view.menu.LateralMenuCmp
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -84,7 +85,9 @@ class MainActivity : ComponentActivity() {
                                 TextCmp(
                                     text = mainDialogMsg.value,
                                     textAlign = TextAlign.Center,
-                                    modifier = Modifier.padding(bottom = PADDING_16)
+                                    modifier = Modifier.padding(bottom = PADDING_16),
+                                    maxLine = 10,
+                                    color = Color.Black
                                 )
 
                                 ButtonCmp(
@@ -93,7 +96,7 @@ class MainActivity : ComponentActivity() {
                                         .fillMaxWidth()
                                         .height(48.dp),
                                     shape = RoundedCornerShape(50),
-                                    backGroundColor = Color.Green,
+                                    backGroundColor = UI_Backround_Btn_Accept,
                                     textSize = 14.sp,
                                     text = "Aceptar"
                                 )

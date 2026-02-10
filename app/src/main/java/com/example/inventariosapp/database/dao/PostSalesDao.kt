@@ -18,6 +18,12 @@ interface PostSalesDao {
     suspend fun insertSaleProducts(products: List<PostSaleProductEntity>): List<Long>
 
     @Transaction
+    suspend fun insertSaleWithProducts(sale: PostSaleEntity, products: List<PostSaleProductEntity>) {
+        insertSale(sale)
+        insertSaleProducts(products)
+    }
+
+    @Transaction
     @Query("SELECT * FROM post_sales")
     suspend fun getAllSales(): List<PostSaleWithProducts>
 

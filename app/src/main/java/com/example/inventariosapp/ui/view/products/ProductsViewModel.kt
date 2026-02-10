@@ -1,5 +1,6 @@
 package com.example.inventariosapp.ui.view.products
 
+import android.content.Context
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.text.input.TextFieldValue
@@ -7,35 +8,32 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.inventariosapp.BaseViewModel
 import com.example.inventariosapp.MainActivity
-import com.example.inventariosapp.domain.repository.product.GetProductsRepositoryImp
+import com.example.inventariosapp.domain.use_case.product.GetProductsUseCase
 import com.example.inventariosapp.model.product.ProductsResponseModel
+import com.example.inventariosapp.util.Helpers
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ProductsViewModel @Inject constructor(
-    private val getProductsUseCase: GetProductsRepositoryImp,
+    private val getProductsUseCase: GetProductsUseCase,
+    @ApplicationContext private val cnx: Context
 ) : ViewModel() {
     val baseViewModel = BaseViewModel()
+    val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
     // region Productos
     val serverProducts = MutableStateFlow(false)
     val products: MutableState<ArrayList<ProductsResponseModel>> = mutableStateOf(arrayListOf())
     fun getProducts(){
         baseViewModel.showLoader()
         viewModelScope.launch {
-            val v = getProductsUseCase(false)
+            val v = getProductsUseCase(internetUse.value)
             if (v.first != null){
                 products.value = v.first!! as ArrayList<ProductsResponseModel>
                 serverProducts.value = true
-            }
-            else{
-                if (v.second != null){
-                    MainActivity.mainDialogMsg.value = v.second!!.MsgError!!.errors!!.first().errorMessage!!
-                }
-                else{ MainActivity.mainDialogMsg.value = "Error 1001100" }
-                MainActivity.mainDialog.value = true
             }
             baseViewModel.hideLoader()
         }

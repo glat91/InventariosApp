@@ -45,4 +45,8 @@ object RoomModel {
     @Singleton
     @Provides
     fun provideInventoryDao(db: CompanyDatabase) = db.inventoryDao()
+
+    @Singleton
+    @Provides
+    fun provideNewPayDao(db: CompanyDatabase) = db.newPayDao()
 }

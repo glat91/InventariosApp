@@ -5,12 +5,14 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.inventariosapp.database.dao.ClientDao
 import com.example.inventariosapp.database.dao.InventoryDao
+import com.example.inventariosapp.database.dao.NewPayDao
 import com.example.inventariosapp.database.dao.PayDao
 import com.example.inventariosapp.database.dao.PostSalesDao
 import com.example.inventariosapp.database.dao.ProductDao
 import com.example.inventariosapp.database.dao.SalesDao
 import com.example.inventariosapp.database.entity.ClientEntity
 import com.example.inventariosapp.database.entity.InventoryEntity
+import com.example.inventariosapp.database.entity.NewPayEntity
 import com.example.inventariosapp.database.entity.PayEntity
 import com.example.inventariosapp.database.entity.PostSaleEntity
 import com.example.inventariosapp.database.entity.PostSaleProductEntity
@@ -25,9 +27,10 @@ import com.example.inventariosapp.database.entity.SalesEntity
     PostSaleEntity::class,
     PostSaleProductEntity::class,
     InventoryEntity::class,
+    NewPayEntity::class,
 ],
     version = 1,
-    exportSchema = false)
+    exportSchema = true)
 
 @TypeConverters(PriceListConverter::class)
 
@@ -38,4 +41,5 @@ abstract class CompanyDatabase: RoomDatabase() {
     abstract fun getPayDao(): PayDao
     abstract fun postSales(): PostSalesDao
     abstract fun inventoryDao(): InventoryDao
+    abstract fun newPayDao(): NewPayDao
 }

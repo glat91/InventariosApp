@@ -16,8 +16,8 @@ class GetSalesInProcessRepositoryImp @Inject constructor(
     private val apiService: ApiService,
     private val salesDao: SalesDao,
 ) {
-    suspend operator fun invoke(startDate: String, endDate: String, refresh: Boolean): Pair<List<SalesModel>?, ErrorModel?> {
-        if (refresh || MainActivity.internetBtn.value){
+    suspend operator fun invoke(startDate: String, endDate: String, internetUse: Boolean): Pair<List<SalesModel>?, String?> {
+        if (internetUse){
             val r = apiService.getPendingSales(fechaInicio = startDate, fechaFin = endDate)
 
             val response = try {
@@ -35,12 +35,15 @@ class GetSalesInProcessRepositoryImp @Inject constructor(
                     var error: ErrorModel
                     val errorMsj = r.errorBody()?.string()
                     error = Gson().fromJson(errorMsj, ErrorModel::class.java)
-                    Pair(null, error)
+                    MainActivity.mainDialogMsg.value = error.MsgError.toString()
+                    MainActivity.mainDialog.value = true
+                    Pair(null, error.MsgError.toString())
                 }
             }
             catch (e: Exception){
                 MainActivity.mainDialogMsg.value = e.toString()
-                Pair(null, null)
+                MainActivity.mainDialog.value = true
+                Pair(null, e.toString())
             }
             return response
         }
@@ -51,10 +54,9 @@ class GetSalesInProcessRepositoryImp @Inject constructor(
                 return Pair(entity, null)
             }
             catch (e: Exception){
-                return Pair(
-                    null,
-                    ErrorModel(error("Error en Base de Datos, favor de contactar a Administracion"))
-                )
+                MainActivity.mainDialogMsg.value = e.toString()
+                MainActivity.mainDialog.value = true
+                return Pair(null, e.toString())
             }
         }
     }
