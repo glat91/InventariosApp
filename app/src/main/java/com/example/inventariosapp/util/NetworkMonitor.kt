@@ -5,6 +5,9 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
+import androidx.compose.ui.graphics.Color
+import com.example.inventariosapp.MainActivity
+import com.example.inventariosapp.ui.theme.UI_Backround_Btn_Green
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,8 +24,18 @@ class NetworkMonitor @Inject constructor(
     val isConnected: StateFlow<Boolean> = _isConnected
 
     private val callback = object : ConnectivityManager.NetworkCallback() {
-        override fun onAvailable(network: Network) { _isConnected.value = true }
-        override fun onLost(network: Network) { _isConnected.value = false }
+        override fun onAvailable(network: Network) {
+            _isConnected.value = true
+            MainActivity.mainDialogColor.value = UI_Backround_Btn_Green
+            MainActivity.mainDialogMsg.value = "Conectado a internet"
+            MainActivity.mainDialog.value = true
+        }
+        override fun onLost(network: Network) {
+            _isConnected.value = false
+            MainActivity.mainDialogColor.value = Color.Red
+            MainActivity.mainDialogMsg.value = "Sin internet, modo offline"
+            MainActivity.mainDialog.value = true
+        }
     }
 
     fun start() {

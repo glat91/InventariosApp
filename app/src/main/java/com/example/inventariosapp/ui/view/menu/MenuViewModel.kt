@@ -30,6 +30,7 @@ class MenuViewModel @Inject constructor(
     @ApplicationContext val cnx: Context
 ) : ViewModel() {
     val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
+    val userName = mutableStateOf("")
     // region Servicios
     fun updateClientsDb(){
         baseViewModel.showLoader()
@@ -131,6 +132,7 @@ class MenuViewModel @Inject constructor(
             MainActivity.lastUpdatePayments.value = cnx.readPersistData(Constants.SINCRO_PAY, "")
             MainActivity.lastUpdateInventory.value = cnx.readPersistData(Constants.SINCRO_INVENTORY, "")
             MainActivity.internetBtn.value = cnx.readPersistData(Constants.INTERNET, true)
+            userName.value = cnx.readPersistData(Constants.NOMBRE, "")
         }
     }
 }

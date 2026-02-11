@@ -13,6 +13,7 @@ import com.example.inventariosapp.ui.view.new_sale.NewSaleScreen
 import com.example.inventariosapp.ui.view.products.ProductsScreen
 import com.example.inventariosapp.ui.view.payment.PaymentsScreen
 import com.example.inventariosapp.ui.view.sales.SalesScreen
+import com.example.inventariosapp.ui.view.user_payments.UserPaymentsScreen
 import com.example.inventariosapp.ui.view.user_sales.PenndingSalesScreen
 
 @RequiresApi(Build.VERSION_CODES.S)
@@ -28,6 +29,7 @@ fun SetupNavGraph(navController: NavHostController) {
         productsScreen(navController = navController)
         newSaleScreen(navController = navController)
         penndingSaleScreen(navController = navController)
+        penndingPaymentsScreen(navController = navController)
         bluetoothPrinterScreen(navController = navController)
     }
 }
@@ -54,23 +56,30 @@ fun NavGraphBuilder.paymentScreen(navController: NavHostController){
 }
 fun NavGraphBuilder.productsScreen(navController: NavHostController){
     composable(
-        route = Destinations.Products.ruta
+        route = Destinations.ProductsScreen.ruta
     ){
         ProductsScreen(navController)
     }
 }
 fun NavGraphBuilder.newSaleScreen(navController: NavHostController){
     composable(
-        route = Destinations.NewSale.ruta
+        route = Destinations.NewSaleScreen.ruta
     ){
         NewSaleScreen(navController)
     }
 }
 fun NavGraphBuilder.penndingSaleScreen(navController: NavHostController){
     composable(
-        route = Destinations.PenndingSale.ruta
+        route = Destinations.PenndingSaleScreen.ruta
     ){
         PenndingSalesScreen(navController)
+    }
+}
+fun NavGraphBuilder.penndingPaymentsScreen(navController: NavHostController){
+    composable(
+        route = Destinations.PenndingPaymentsScreen.ruta
+    ){
+        UserPaymentsScreen(navController)
     }
 }
 @RequiresApi(Build.VERSION_CODES.S)

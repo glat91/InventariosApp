@@ -71,13 +71,13 @@ fun SalesScreen(navController: NavHostController) {
         onClickDate = { viewModel.showDatePicker.value = true },
         onclickRow = {
             navController.currentBackStackEntry?.savedStateHandle?.set("sale", it)
-            navController.navigate(route = Destinations.NewSale.ruta){
+            navController.navigate(route = Destinations.NewSaleScreen.ruta){
                 launchSingleTop = true
             }
         },
         onClickAdd = {
             navController.currentBackStackEntry?.savedStateHandle?.remove<SalesModel>("sale")
-            navController.navigate(route = Destinations.NewSale.ruta){
+            navController.navigate(route = Destinations.NewSaleScreen.ruta){
                 launchSingleTop = true
             }
         },

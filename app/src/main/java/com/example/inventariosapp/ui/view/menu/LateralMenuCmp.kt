@@ -30,6 +30,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.appgeneric.ui.component.TextCmp
 import com.example.inventariosapp.MainActivity
@@ -60,6 +61,12 @@ fun LateralMenuCmp(
                     modifier = Modifier.padding(horizontal = 16.dp)
                         .verticalScroll(rememberScrollState())
                 ) {
+                    TextCmp(
+                        text = "Hola, ${menuViewModel.userName.value}",
+                        modifier = Modifier
+                            .padding(16.dp),
+                        fontSize = 20.sp
+                    )
                     Spacer(Modifier.height(12.dp))
                     // region Opciones Nav
                     TextCmp(
@@ -129,7 +136,7 @@ fun LateralMenuCmp(
                             ) },
                         selected = false,
                         onClick = {
-                            navController.navigate(route = Destinations.Products.ruta){
+                            navController.navigate(route = Destinations.ProductsScreen.ruta){
                                 launchSingleTop = true
                             }
                             corutine.launch { drawerState.close() }
@@ -151,7 +158,29 @@ fun LateralMenuCmp(
                             ) },
                         selected = false,
                         onClick = {
-                            navController.navigate(route = Destinations.PenndingSale.ruta){
+                            navController.navigate(route = Destinations.PenndingSaleScreen.ruta){
+                                launchSingleTop = true
+                            }
+                            corutine.launch { drawerState.close() }
+                        }
+                    )
+                    NavigationDrawerItem(
+                        icon = {
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_pennding_sale),
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.size(35.dp)
+                            )
+                        },
+                        label = {
+                            TextCmp(
+                                text = "Pagos pendientes",
+                                fontSize = 14.sp
+                            ) },
+                        selected = false,
+                        onClick = {
+                            navController.navigate(route = Destinations.PenndingPaymentsScreen.ruta){
                                 launchSingleTop = true
                             }
                             corutine.launch { drawerState.close() }
@@ -200,28 +229,6 @@ fun LateralMenuCmp(
                         },
                         onClick = { menuViewModel.updateProductsDb() },
                     )
-                    /* TODO Borrar Cambio implementacion Inventario es igual que Products
-                    NavigationDrawerItem(
-                        label = {
-                            TextCmp(
-                                text = "Inventario",
-                                fontSize = 14.sp,
-                                maxLine = 2
-                            )
-                        },
-                        selected = false,
-                        icon = { Icon(Icons.Outlined.Refresh, contentDescription = null) },
-                        badge = {
-                            val date = MainActivity.lastUpdateInventory.value
-                            TextCmp(
-                                text = if (date.isBlank()) "No update" else "Update ${date}",
-                                fontSize = 9.sp,
-                                color = Color.Black
-                            )
-                        },
-                        onClick = { menuViewModel.updateInventory() },
-                    )
-                     */
                     NavigationDrawerItem(
                         label = {
                             TextCmp(
@@ -243,27 +250,6 @@ fun LateralMenuCmp(
                         },
                         onClick = { menuViewModel.updatePendingSales() },
                     )
-                    NavigationDrawerItem(
-                        label = {
-                            TextCmp(
-                                text = "Pagos",
-                                fontSize = 14.sp,
-                                maxLine = 2
-                            )
-                        },
-                        selected = false,
-                        icon = { Icon(Icons.Outlined.Refresh, contentDescription = null) },
-                        badge = {
-                            val date = MainActivity.lastUpdatePayments.value
-                            TextCmp(
-                                text = if (date.isBlank()) "No update" else "Update ${date}",
-                                fontSize = 9.sp,
-                                color = Color.Black
-                            )
-                        },
-                        onClick = { menuViewModel.updatePayment() },
-                    )
-                    Spacer(Modifier.height(12.dp))
                     // endregion
                     // region Internet
                     TextCmp("Opciones")
@@ -325,7 +311,6 @@ fun LateralMenuCmp(
         drawerState = drawerState
     ) {
         screenContent()
-
     }
     Loader(menuViewModel.baseViewModel.getLoader())
 }

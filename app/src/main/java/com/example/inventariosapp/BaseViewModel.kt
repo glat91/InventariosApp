@@ -38,7 +38,7 @@ class BaseViewModel @Inject constructor(
     var internetUses: StateFlow<Boolean> =
         combine(
             networkMonitor.isConnected,
-            snapshotFlow { MainActivity.internetBtn.value }
+            internetBtn
         ) { hasInternet, btnEnabled ->
             hasInternet && btnEnabled
         }.stateIn(

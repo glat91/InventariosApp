@@ -1,16 +1,10 @@
 package com.example.inventariosapp.ui.view.new_sale
 
 import android.util.Log
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.ime
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.inventariosapp.model.sales.SalesModel
@@ -45,7 +39,7 @@ fun NewSaleScreen(navController: NavHostController) {
         if (postSale.value){
             navController.navigate(route = Destinations.SalesScreen.ruta){
                 launchSingleTop = true
-                popUpTo(Destinations.NewSale.ruta){ inclusive = true }
+                popUpTo(Destinations.NewSaleScreen.ruta){ inclusive = true }
             }
         }
     }

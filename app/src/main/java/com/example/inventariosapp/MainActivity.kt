@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
         val mainDialog = mutableStateOf(false)
         var mainDialogTitle = mutableStateOf("Aviso")
         var mainDialogMsg = mutableStateOf("")
-        var mainDialogColor = Color.Red
+        var mainDialogColor = mutableStateOf(Color.Red)
         // endregion
     }
 
@@ -71,7 +71,7 @@ class MainActivity : ComponentActivity() {
                 SetupNavGraph(navController)
                 if (mainDialog.value){
                     BasicDialogCmp(
-                        color = mainDialogColor,
+                        color = mainDialogColor.value,
                         content = {
                             Column(
                                 modifier = Modifier

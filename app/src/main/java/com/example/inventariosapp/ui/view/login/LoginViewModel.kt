@@ -78,6 +78,11 @@ class LoginViewModel @Inject constructor(
             cnx.deletePersistKey(Constants.REMEMBER_PASSWORD)
         }
     }
+    fun saveBoolean(key: String, data: Boolean){
+        viewModelScope.launch {
+            cnx.savePersistData(key = key, data = data)
+        }
+    }
 
     init {
         viewModelScope.launch {
