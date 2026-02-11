@@ -21,9 +21,9 @@ import javax.inject.Inject
 class PenndingSalesViewModel @Inject constructor(
     private val postSaleUseCase: PostSaleUseCase,
     private val postSalesDao: PostSalesDao,
+    val baseViewModel: BaseViewModel,
     @ApplicationContext val cnx: Context,
     ): ViewModel() {
-    val baseViewModel = BaseViewModel()
     val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
 
     var penndingSales: MutableState<ArrayList<PostSaleWithProducts>> = mutableStateOf(arrayListOf())

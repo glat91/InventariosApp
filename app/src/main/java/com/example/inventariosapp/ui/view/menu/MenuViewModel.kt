@@ -26,9 +26,9 @@ class MenuViewModel @Inject constructor(
     private val getClientsUseCase: GetClientsUseCase,
     private val getPendingSalesUseCase: GetPendingSalesUseCase,
     private val getPaymentUseCase: GetPaymentUseCase,
+    val baseViewModel: BaseViewModel,
     @ApplicationContext val cnx: Context
 ) : ViewModel() {
-    val baseViewModel = BaseViewModel()
     val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
     // region Servicios
     fun updateClientsDb(){

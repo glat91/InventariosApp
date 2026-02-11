@@ -35,6 +35,7 @@ import com.example.inventariosapp.ui.theme.UI_Backround_Btn_Accept
 import com.example.inventariosapp.ui.view.menu.LateralMenuCmp
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -48,6 +49,7 @@ class MainActivity : ComponentActivity() {
         var lastUpdatePayments: MutableState<String> = mutableStateOf("")
         var lastUpdateInventory: MutableState<String> = mutableStateOf("")
         val internetBtn: MutableState<Boolean> = mutableStateOf(true)
+        //var internetBtn = MutableStateFlow(true)
         // endregion
         // region Vars Main Dialog
         val mainDialog = mutableStateOf(false)

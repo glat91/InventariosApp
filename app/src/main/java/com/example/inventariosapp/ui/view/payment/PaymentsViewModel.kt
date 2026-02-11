@@ -56,9 +56,9 @@ class PaymentsViewModel @Inject constructor(
     private val getPaymentUseCase: GetPaymentUseCase,
     private val postPaymentUseCase: PostPaymentUseCase,
     private val deletePaymentUseCase: DeletePaymentUseCase,
+    val baseViewModel: BaseViewModel,
     @ApplicationContext private val cnx: Context
 ) : ViewModel() {
-    val baseViewModel = BaseViewModel()
     val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
     // region Date
     var selectedDate = mutableStateOf(LocalDate.now())

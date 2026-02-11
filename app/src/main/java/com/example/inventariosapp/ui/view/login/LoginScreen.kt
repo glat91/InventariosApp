@@ -3,6 +3,7 @@ package com.example.inventariosapp.ui.view.login
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -12,6 +13,8 @@ import com.example.inventariosapp.ui.component.Loader
 fun LoginScreen(navController: NavHostController) {
     val viewModel: LoginViewModel = hiltViewModel()
     val navegar = viewModel.serverValidateUser.collectAsState()
+    val internetUse by viewModel.baseViewModel.internetUses.collectAsState()
+
     val context = LocalContext.current
     LaunchedEffect(navegar.value){
         if (navegar.value){
@@ -22,6 +25,8 @@ fun LoginScreen(navController: NavHostController) {
         }
     }
 
+
+
     LoginView(
         user = viewModel.user,
         password = viewModel.password,
@@ -29,7 +34,7 @@ fun LoginScreen(navController: NavHostController) {
         onClickEnter = {
             if (!viewModel.rememberUser.value) viewModel.clearUser(context)
             else viewModel.saveUserLogin(context)
-            viewModel.validateUserLogin()
+            viewModel.validateUserLogin(internetUse)
         },
         onClickRememberPassword = {
             viewModel.rememberUser.value = !viewModel.rememberUser.value

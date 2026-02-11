@@ -20,9 +20,9 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductsViewModel @Inject constructor(
     private val getProductsUseCase: GetProductsUseCase,
+    val baseViewModel: BaseViewModel,
     @ApplicationContext private val cnx: Context
 ) : ViewModel() {
-    val baseViewModel = BaseViewModel()
     val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
     // region Productos
     val serverProducts = MutableStateFlow(false)

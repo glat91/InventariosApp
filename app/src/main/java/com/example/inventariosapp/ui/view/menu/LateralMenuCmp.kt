@@ -289,7 +289,14 @@ fun LateralMenuCmp(
                             )
                         },
                         icon = { Icon(Icons.Outlined.Info, contentDescription = null) },
-                        onClick = { menuViewModel.updateClientsDb() }
+                        onClick = {
+                            MainActivity.internetBtn.value = !MainActivity.internetBtn.value
+                            menuViewModel.saveBoolean(
+                                cnx,
+                                Constants.INTERNET,
+                                MainActivity.internetBtn.value
+                            )
+                        }
                     )
                     // endregion
                     // region Session

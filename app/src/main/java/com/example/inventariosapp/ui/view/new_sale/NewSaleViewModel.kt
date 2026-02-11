@@ -42,9 +42,9 @@ class NewSaleViewModel @Inject constructor(
     private val getProductsUseCase: GetProductsUseCase,
     private val getClientsUseCase: GetClientsUseCase,
     private val getInventarioProductoUseCase: GetInventarioProductoRepositoryImp,
+    val baseViewModel: BaseViewModel,
     @ApplicationContext private val cnx : android.content.Context
 ) : ViewModel() {
-    val baseViewModel = BaseViewModel()
     val sale: MutableState<SalesModel> = mutableStateOf(SalesModel())
     val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
     val canModifyClient = mutableStateOf(true)

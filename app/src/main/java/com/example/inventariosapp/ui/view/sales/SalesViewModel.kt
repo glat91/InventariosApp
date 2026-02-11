@@ -14,6 +14,8 @@ import com.example.inventariosapp.MainActivity
 import com.example.inventariosapp.domain.use_case.sales.GetPendingSalesUseCase
 import com.example.inventariosapp.model.sales.SalesModel
 import com.example.inventariosapp.util.Helpers
+import com.example.inventariosapp.util.Helpers.Companion.deletePersistKey
+import com.example.inventariosapp.util.Helpers.Companion.savePersistData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
@@ -25,9 +27,9 @@ import javax.inject.Inject
 @HiltViewModel
 class SalesViewModel @Inject constructor(
     private val getPendingSalesUseCase: GetPendingSalesUseCase,
+    val baseViewModel: BaseViewModel,
     @ApplicationContext val cnx: Context,
 ): ViewModel() {
-    val baseViewModel = BaseViewModel()
     val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
     // region Date
     var selectedDate = mutableStateOf(LocalDate.now())
@@ -87,6 +89,23 @@ class SalesViewModel @Inject constructor(
             }
         )
         return salesFilter
+    }
+    // endregion
+    // region Persist Data
+    fun saveSincroTime(cnx: Context, key: String, data: String){
+        viewModelScope.launch {
+            cnx.savePersistData(key = key, data = data)
+        }
+    }
+    fun clearSincroTime(cnx: Context, key: String){
+        viewModelScope.launch {
+            cnx.deletePersistKey(key)
+        }
+    }
+    fun saveBoolean(cnx: Context, key: String, data: Boolean){
+        viewModelScope.launch {
+            cnx.savePersistData(key = key, data = data)
+        }
     }
     // endregion
 

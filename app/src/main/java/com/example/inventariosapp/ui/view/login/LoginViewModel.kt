@@ -22,18 +22,17 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     val valitdaeUserUseCase: ValitdateUserUseCase,
+    val baseViewModel: BaseViewModel,
     @ApplicationContext val cnx: Context
 ) : ViewModel() {
-    val baseViewModel = BaseViewModel()
     // region User Login
     val user = mutableStateOf("")
     val password = mutableStateOf("")
     val rememberUser = mutableStateOf(false)
     val serverValidateUser = MutableStateFlow(false)
-    fun validateUserLogin(){
+    fun validateUserLogin(internetUse: Boolean){
         baseViewModel.showLoader()
         viewModelScope.launch {
-            val internetUse = Helpers.isInternetAvailable(cnx)
             if (internetUse){
                 val v = valitdaeUserUseCase(user.value, password.value)
                 if (v.first != null){
