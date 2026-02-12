@@ -42,14 +42,14 @@ class LoginViewModel @Inject constructor(
                     cnx.savePersistData(v.first!!.correo!!, Constants.MAIL)
                     cnx.savePersistData(v.first!!.nombre!!, Constants.NOMBRE)
 
-                    val a = cnx.readPersistData(Constants.PERFIL_ID, 0)
-                    val b = cnx.readPersistData(Constants.USUARIO_ID, 0)
-                    val c = cnx.readPersistData(Constants.USUARIO_SESION_ID, "")
-                    val d = cnx.readPersistData(Constants.MAIL, "")
-                    val e = cnx.readPersistData(Constants.NOMBRE, "")
-                    Log.i("PErsist___", "$a $b $c $d $e")
+                    baseViewModel.startSession(
+                        v.first!!.perfilId!!.toString(),
+                        v.first!!.usuarioId!!.toString(),
+                        v.first!!.usuarioSesionId!!.toString(),
+                        v.first!!.correo!!,
+                        v.first!!.nombre!!
+                    )
                     serverValidateUser.value = true
-
                 }
                 else {
                     if (v.second != null) {
@@ -86,13 +86,21 @@ class LoginViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val data = cnx.readPersistData(key = Constants.REMEMBER_PASSWORD, default = "")
-            if (!data.isBlank()){
-                val s = data.split("/")
-                user.value = s[0]
-                password.value = s[1]
-                rememberUser.value = true
+            baseViewModel.showLoader()
+            val session = baseViewModel.isSessionValid()
+            if (session){
+                serverValidateUser.value = true
             }
+            else{
+                val data = cnx.readPersistData(key = Constants.REMEMBER_PASSWORD, default = "")
+                if (!data.isBlank()){
+                    val s = data.split("/")
+                    user.value = s[0]
+                    password.value = s[1]
+                    rememberUser.value = true
+                }
+            }
+            baseViewModel.hideLoader()
         }
     }
 }

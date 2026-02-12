@@ -60,6 +60,7 @@ import com.example.inventariosapp.ui.component.cards.CardDepositCmp
 import com.example.inventariosapp.ui.component.InputWithTitleLabelCmp
 import com.example.inventariosapp.ui.component.Loader
 import com.example.inventariosapp.ui.dialog.BasicDialogCmp
+import com.example.inventariosapp.ui.dialog.LoginDialogCmp
 import com.example.inventariosapp.ui.theme.PADDING_16
 import com.example.inventariosapp.ui.theme.PADDING_4
 import com.example.inventariosapp.ui.theme.PADDING_8
@@ -73,12 +74,14 @@ import com.example.inventariosapp.ui.theme.UI_Backround_Top
 import com.example.inventariosapp.ui.theme.UI_Divier
 import com.example.inventariosapp.ui.theme.UI_List_Row_1
 import com.example.inventariosapp.ui.theme.UI_List_Row_2
+import com.example.inventariosapp.ui.view.login.LoginViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PaymentsScreen(navController: NavHostController) {
     val viewModel: PaymentsViewModel = hiltViewModel()
+    val lviewModel: LoginViewModel = hiltViewModel()
     val cnx = LocalContext.current
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -495,6 +498,23 @@ fun PaymentsScreen(navController: NavHostController) {
                 }
             },
             onDismiss = { viewModel.cleanDialog()}
+        )
+    }
+    // endregion
+    // region Dialog Login
+    if (viewModel.baseViewModel.dialogLogin.value){
+        LoginDialogCmp(
+            user = lviewModel.user,
+            password = lviewModel.password,
+            rememberUser = remember { mutableStateOf(false) },
+            onClickEnter = {
+                if (!lviewModel.rememberUser.value) lviewModel.clearUser(cnx)
+                else lviewModel.saveUserLogin(cnx)
+                lviewModel.validateUserLogin(MainActivity.internetBtn.value)
+            },
+            onClickRememberPassword = {
+                lviewModel.rememberUser.value = !lviewModel.rememberUser.value
+            }
         )
     }
     // endregion

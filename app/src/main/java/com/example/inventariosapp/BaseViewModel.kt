@@ -1,13 +1,16 @@
 package com.example.inventariosapp
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.inventariosapp.session.SessionManager
 import com.example.inventariosapp.util.NetworkMonitor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -19,6 +22,7 @@ import javax.inject.Singleton
 
 @Singleton
 class BaseViewModel @Inject constructor(
+    private val sessionManager: SessionManager,
     networkMonitor: NetworkMonitor
 ): ViewModel() {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
@@ -41,19 +45,87 @@ class BaseViewModel @Inject constructor(
             internetBtn
         ) { hasInternet, btnEnabled ->
             hasInternet && btnEnabled
-        }.stateIn(
+        }
+            .stateIn(
             scope = scope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = false
         )
     // endregion
+    // region Session
+    val dialogLogin = mutableStateOf(false)
+    var dialogAgain = mutableStateOf(true)
+    var remaining: MutableState<Long> = mutableStateOf(Long.MIN_VALUE)
+    fun observeRemainingTime() {
+        viewModelScope.launch {
+            while (true) {
+                remaining.value = sessionManager.getRemainingTime()
+                if (remaining.value <= 0) {
+                    if (dialogAgain.value) {
+                        logoutWithMsj()
+
+                    }
+                }
+                delay(1000)
+            }
+        }
+    }
+    suspend fun isSessionValid(): Boolean {
+        return sessionManager.isSessionValid()
+    }
+    fun startSession(
+        perfilId: String,
+        usuarioId: String,
+        usuarioSesionId: String,
+        correo: String,
+        nombre: String,
+    ){
+        viewModelScope.launch {
+            sessionManager.startSession(
+                perfilId,
+                usuarioId,
+                usuarioSesionId,
+                correo,
+                nombre,
+            )
+            MainActivity.mainDialogMsg.value = "Session Expired"
+            MainActivity.mainDialog.value = true
+            dialogAgain.value = true
+        }
+    }
+
+    fun logoutWithMsj(){
+        viewModelScope.launch {
+            sessionManager.logout()
+            MainActivity.mainDialogMsg.value = "Session Expired"
+            MainActivity.mainDialog.value = true
+            dialogAgain.value = false
+        }
+    }
+    fun logoutNoMsj(){
+        viewModelScope.launch {
+            sessionManager.logout()
+        }
+    }
+    suspend fun getPerfilId() = sessionManager.getPerfilId()
+    suspend fun getUsiarioId() = sessionManager.getUsiarioId()
+    suspend fun getUsuarioSessionId() = sessionManager.getUsuarioSessionId()
+    suspend fun getMail() = sessionManager.getMail()
+    suspend fun getGetName() = sessionManager.getGetName()
+
+    // endregion
     init {
         networkMonitor.start()
-
+        // region Session
+        observeRemainingTime()
+        // endregion
         viewModelScope.launch {
+            // region monitor internet
+            snapshotFlow { networkMonitor.isConnected.value }
             networkMonitor.isConnected.collect { isConnected ->
                 internetBtn.value = isConnected
             }
+            // endregion
         }
     }
 }

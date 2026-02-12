@@ -32,8 +32,6 @@ class GetInventarioProductoRepositoryImp @Inject constructor(
             return response
         }
         else{
-            MainActivity.mainDialogMsg.value = "No hay conexión a internet"
-            MainActivity.mainDialog.value = true
             return Pair(null, null)
         }
     }

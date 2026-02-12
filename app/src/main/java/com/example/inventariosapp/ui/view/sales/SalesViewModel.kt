@@ -30,7 +30,6 @@ class SalesViewModel @Inject constructor(
     val baseViewModel: BaseViewModel,
     @ApplicationContext val cnx: Context,
 ): ViewModel() {
-    val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
     // region Date
     var selectedDate = mutableStateOf(LocalDate.now())
     val dialogChoice = mutableStateOf(false)
@@ -60,7 +59,8 @@ class SalesViewModel @Inject constructor(
     fun getPendingSales(){
         baseViewModel.showLoader()
         viewModelScope.launch{
-            Log.i("Sales___", "${internetUse.value}")
+            val internetUse = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
+            MainActivity.internetBtn.value = internetUse
             if (startDate.value.isBlank() && endDate.value.isBlank()) {
                 startDate.value = Helpers.getYesterday()
                 endDate.value = Helpers.getTomrrow()
@@ -68,9 +68,8 @@ class SalesViewModel @Inject constructor(
                 if (startDate.value.isBlank()) { startDate.value = Helpers.getDate() }
                 if (endDate.value.isBlank()) { endDate.value = Helpers.getTomrrow() }
             }
-
             try {
-                val r = getPendingSalesUseCase(startDate.value, endDate.value, internetUse.value)
+                val r = getPendingSalesUseCase(startDate.value, endDate.value, internetUse)
                 if (r.first != null){ sales.value = r.first!! as ArrayList<SalesModel> }
             }
             catch (e: Exception){

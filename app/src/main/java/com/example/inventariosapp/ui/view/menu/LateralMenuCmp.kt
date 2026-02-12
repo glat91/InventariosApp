@@ -298,7 +298,10 @@ fun LateralMenuCmp(
                         icon = { Icon(Icons.Outlined.Close, contentDescription = null) },
                         onClick = {
                             menuViewModel.baseViewModel.closeMenu()
-                            navController.navigate(Destinations.LoginScreen.ruta){
+                            menuViewModel.baseViewModel.logoutNoMsj()
+                            MainActivity.mainDialogMsg.value = "Datos de session borrados"
+                            MainActivity.mainDialog.value = true
+                            navController.navigate(Destinations.SalesScreen.ruta){
                                 popUpTo(0) { inclusive = true }
                                 launchSingleTop = true
                             }

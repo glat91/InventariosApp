@@ -24,6 +24,7 @@ class NetworkMonitor @Inject constructor(
     val isConnected: StateFlow<Boolean> = _isConnected
 
     private val callback = object : ConnectivityManager.NetworkCallback() {
+        // TODO Agregar Validacion para que no ocurra en cada pantalla
         override fun onAvailable(network: Network) {
             _isConnected.value = true
             MainActivity.mainDialogColor.value = UI_Backround_Btn_Green

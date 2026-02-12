@@ -15,28 +15,11 @@ class PostPaymentRepositoryImp @Inject constructor(
     suspend operator fun invoke(internetUse: Boolean, newPay: List<NewPayModel>): Result<Unit>{
         return try {
             if (internetUse){
-                val array = ArrayList<NewPayModel>()
-                try {
-                    //newPayDao.deleteAll()
-                    val dbSales = newPayDao.getAll()
-                    array.addAll(dbSales.map {
-                        it.tipoConexionId = 2
-                        it.origenId = 1
-                        it.usuarioSesionId = 1
-                        it.toModel()
-                    })
-                }
-                catch (e: Exception){
-                    MainActivity.mainDialog.value = true
-                    MainActivity.mainDialogMsg.value = "Error ${e.message.toString()}"
-                }
-
-                array.addAll(newPay)
-                val response = apiService.setPayment(payments = array)
+                val response = apiService.setPayment(payments = newPay)
                 if (response.isSuccessful) { Result.success(Unit) }
                 else {
-                    MainActivity.mainDialog.value = true
                     MainActivity.mainDialogMsg.value = "Error ${response.code()}: ${response.errorBody()?.string()}"
+                    MainActivity.mainDialog.value = true
                     Result.failure(Exception("Error ${response.code()}: ${response.errorBody()?.string()}"))
                 }
             }

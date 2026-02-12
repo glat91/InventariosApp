@@ -39,26 +39,6 @@ fun SalesScreen(navController: NavHostController) {
             viewModel.getPendingSales()
         }
     }
-    LaunchedEffect(internetUse) {
-        if (!internetUse){
-            MainActivity.mainDialogMsg.value = "Sin internet, modo Offline"
-            MainActivity.internetBtn.value = false
-            viewModel.saveBoolean(
-                cnx,
-                Constants.INTERNET,
-                MainActivity.internetBtn.value
-            )
-            MainActivity.mainDialog.value = true
-        }
-        else{
-            MainActivity.internetBtn.value = true
-            viewModel.saveBoolean(
-                cnx,
-                Constants.INTERNET,
-                MainActivity.internetBtn.value
-            )
-        }
-    }
 
     SalesView(
         search = viewModel.searchSale,

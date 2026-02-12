@@ -28,6 +28,7 @@ import com.example.inventariosapp.ui.theme.UI_BT
 @Composable
 fun BasicDialogCmp(
     color: Color,
+    backGroundColor: Color = Color.White,
     content: @Composable () -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -42,7 +43,7 @@ fun BasicDialogCmp(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 40.dp), // espacio para que entre el icono
-                colors = CardDefaults.cardColors(containerColor = Color.White)
+                colors = CardDefaults.cardColors(containerColor = backGroundColor)
             ) {
                 content()
             }

@@ -134,43 +134,54 @@ class PaymentsViewModel @Inject constructor(
     fun setPayment(ventaId: Int, montoPago: Double, observaciones: String, cnx: Context){
         baseViewModel.showLoader()
         viewModelScope.launch {
-            val userID = cnx.readPersistData(Constants.USUARIO_ID, 0)
-            val internetUse = Helpers.isInternetAvailable(cnx)
-            Log.i("UserID___", userID.toString())
-            val createPostSale = NewPayModel(
-                ventaId = ventaId,
-                montoPago = montoPago,
-                fecha = Helpers.getDateTime().replace(" ", "T"),
-                observaciones = observaciones,
-                origenId = 1, // TODO Cambiar con flujo Login
-                tipoConexionId = if (internetUse) 1 else 2,
-                usuarioSesionId = userID
-            )
-            var r = postPaymentUseCase(internetUse = internetUse, newPay = listOf(createPostSale))
-            if (r.isSuccess){
-                MainActivity.mainDialogMsg.value = "Pago realizado con exito"
-                MainActivity.mainDialog.value = true
+            if (baseViewModel.isSessionValid()){
+                val userID = baseViewModel.getUsiarioId()
+                val internetUse = Helpers.isInternetAvailable(cnx)
+                Log.i("UserID___", userID.toString())
+                val createPostSale = NewPayModel(
+                    ventaId = ventaId,
+                    montoPago = montoPago,
+                    fecha = Helpers.getDateTime().replace(" ", "T"),
+                    observaciones = observaciones,
+                    origenId = userID,
+                    tipoConexionId = if (internetUse) 1 else 2,
+                    usuarioSesionId = userID
+                )
+                var r = postPaymentUseCase(internetUse = internetUse, newPay = listOf(createPostSale))
+                if (r.isSuccess){
+                    MainActivity.mainDialogMsg.value = "Pago realizado con exito"
+                    MainActivity.mainDialog.value = true
+                }
+                cleanDialog()
+                getPendingSales()
             }
-            cleanDialog()
-            getPendingSales()
+            else{
+                baseViewModel.dialogLogin.value = true
+            }
         }
     }
     fun deletePayment(pagoId: Int, deposit: PayModel, cnx: Context){
         baseViewModel.showLoader()
         viewModelScope.launch {
-            val internetUse = Helpers.isInternetAvailable(cnx) || MainActivity.internetBtn.value
-            var r = deletePaymentUseCase(internetUse, pagoId)
-            if (r.isSuccess){
-                dialogDeposit.value = false
-                MainActivity.mainDialogMsg.value = "Pago borrado exitosamente"
-                MainActivity.mainDialog.value = true
-                payments.value.remove(deposit)
+            if (baseViewModel.isSessionValid()){
+                val internetUse = Helpers.isInternetAvailable(cnx) || MainActivity.internetBtn.value
+                var r = deletePaymentUseCase(internetUse, pagoId)
+                if (r.isSuccess){
+                    dialogDeposit.value = false
+                    MainActivity.mainDialogMsg.value = "Pago borrado exitosamente"
+                    MainActivity.mainDialog.value = true
+                    payments.value.remove(deposit)
+                }
+                else{
+                    MainActivity.mainDialogMsg.value = "Error al borrar el pago"
+                    MainActivity.mainDialog.value = true
+                }
+                getPendingSales()
             }
             else{
-                MainActivity.mainDialogMsg.value = "Error al borrar el pago"
-                MainActivity.mainDialog.value = true
+                baseViewModel.dialogLogin.value = true
             }
-            getPendingSales()
+
         }
     }
     // endregion

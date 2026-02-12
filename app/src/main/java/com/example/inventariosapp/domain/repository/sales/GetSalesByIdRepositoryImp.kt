@@ -38,9 +38,7 @@ class GetSalesByIdRepositoryImp @Inject constructor(
             }
         }
         else{
-            MainActivity.mainDialogMsg.value = "No hay conexión a internet"
-            MainActivity.mainDialog.value = true
-            return Pair(null, "No hay conexión a internet")
+            return Pair(null, "Modo offline")
         }
     }
 }

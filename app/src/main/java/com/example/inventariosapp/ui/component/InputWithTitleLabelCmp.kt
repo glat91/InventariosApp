@@ -51,7 +51,7 @@ fun InputWithTitleLabelCmp(
     textFieldModifier: Modifier = Modifier,
     enabled: Boolean = true,
     readOnly: Boolean = false,
-    singleLine: Boolean = true,
+    singleLine: Boolean = false,
 ) {
     // region Vars
     val unfocusedLabelColor = if(textValue.length > 0){ labelColor }else{ fontColor }
@@ -86,7 +86,6 @@ fun InputWithTitleLabelCmp(
             textStyle = LocalTextStyle.current.copy(
                 fontSize = textValueSize,
                 textAlign = textAlign,
-                //fontFamily= MuseoSans500,
             ),
             keyboardOptions = KeyboardOptions(
                 autoCorrectEnabled = false,

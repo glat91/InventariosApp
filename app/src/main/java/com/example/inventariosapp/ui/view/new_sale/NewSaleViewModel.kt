@@ -62,15 +62,20 @@ class NewSaleViewModel @Inject constructor(
         canModifyClient.value = false
         baseViewModel.showLoader()
         viewModelScope.launch {
-            idSale = sale.value.folio.toString()
-            val r = getSalesByIdUseCase(idSale, internetUse.value)
-            if (r.first != null){
-                saleData.value = r.first!!
-                for (p in saleData.value.ventaProductos){
-                    Log.i("Sales___", "${p}")
+            if (baseViewModel.isSessionValid()){
+                idSale = sale.value.folio.toString()
+                val r = getSalesByIdUseCase(idSale, internetUse.value)
+                if (r.first != null){
+                    saleData.value = r.first!!
+                    for (p in saleData.value.ventaProductos){
+                        Log.i("Sales___", "${p}")
+                    }
+                    products.clear()
+                    products.addAll(saleData.value.ventaProductos)
                 }
-                products.clear()
-                products.addAll(saleData.value.ventaProductos)
+            }
+            else{
+                baseViewModel.dialogLogin.value = true
             }
             baseViewModel.hideLoader()
         }
@@ -80,19 +85,21 @@ class NewSaleViewModel @Inject constructor(
         canModifyClient.value = false
         baseViewModel.showLoader()
         viewModelScope.launch {
-            val internetUse = Helpers.isInternetAvailable(cnx)
-            saleData.value.ventaProductos = java.util.ArrayList(products)
-            saleData.value.ventaIdInterno = null
-            Log.i("Sale___", products.toString())
-            val r = editSaleUseCase(saleData.value, idSale, internetUse)
-            if (r.first != null){ editStatus.value = true }
-            else{
-                if (r.second != null){
-                    MainActivity.mainDialogMsg.value = r.second!!
-                    MainActivity.mainDialog.value = true
+            if (baseViewModel.isSessionValid()){
+                val internetUse = Helpers.isInternetAvailable(cnx)
+                saleData.value.ventaProductos = java.util.ArrayList(products)
+                saleData.value.ventaIdInterno = null
+                Log.i("Sale___", products.toString())
+                val r = editSaleUseCase(saleData.value, idSale, internetUse)
+                if (r.first != null){ editStatus.value = true }
+                else{
+                    if (r.second != null){
+                        MainActivity.mainDialogMsg.value = r.second!!
+                        MainActivity.mainDialog.value = true
+                    }
                 }
-
             }
+            else{ baseViewModel.dialogLogin.value = true }
             baseViewModel.hideLoader()
         }
     }
@@ -206,12 +213,6 @@ class NewSaleViewModel @Inject constructor(
             if (r.first != null){
                 totalInventory.value = r.first!!
             }
-            else{
-                if (r.second != null) {
-                    MainActivity.mainDialogMsg.value = r.second!!.MsgError!!.errors!!.first().errorMessage!!
-                    MainActivity.mainDialog.value = true
-                }
-            }
             expandenSearchBarD.value = false
             serchProductId.value = productId
             baseViewModel.hideLoader()
@@ -226,44 +227,49 @@ class NewSaleViewModel @Inject constructor(
     fun createSale(){
         baseViewModel.showLoader()
         viewModelScope.launch {
-            var totalSale = 0.0
-            val userId = cnx.readPersistData(Constants.USUARIO_ID, 0)
-            val fecha = Helpers.getDateTime().replace(" ", "T")
-            for (p in products){
-                totalSale += (p.PrecioVenta!! + p.Cantidad!!)
-                newProducts.value.add(
-                    PostSaleProductModel(
-                        cantidad = p.CantidadSolicitada,
-                        productoId = p.ProductoId,
-                        precioVenta = p.PrecioVenta,
-                        costo = p.Costo,
-                        ventaId = 0,
+            if (baseViewModel.isSessionValid()){
+                var totalSale = 0.0
+                val userId = cnx.readPersistData(Constants.USUARIO_ID, 0)
+                val fecha = Helpers.getDateTime().replace(" ", "T")
+                for (p in products){
+                    totalSale += (p.PrecioVenta!! + p.Cantidad!!)
+                    newProducts.value.add(
+                        PostSaleProductModel(
+                            cantidad = p.CantidadSolicitada,
+                            productoId = p.ProductoId,
+                            precioVenta = p.PrecioVenta,
+                            costo = p.Costo,
+                            ventaId = 0,
+                        )
                     )
-                )
+                }
+                newSale.value.add(PostSalesModel(
+                    clienteId = newClient.value!!.clienteId,
+                    ventaId = 0,
+                    esActivo = true,
+                    fechaIngreso = fecha,
+                    fechaVenta = fecha,
+                    tipoPagoId = 1,
+                    direccion = newClient.value!!.direccion ?: "null",
+                    subtotal = 0.0,
+                    iva = 0.0,
+                    retencion = 0.0,
+                    total = totalSale,
+                    usuarioSesionId = userId,
+                    ventaProductos = newProducts.value,
+                    tipoConexionId = if (internetUse.value) 1 else 2
+                ))
+                val r = postSaleUseCase(newSale.value, internetUse.value)
+                if (r.first != null){
+                    MainActivity.mainDialogMsg.value = "Venta guardada"
+                    serverPostSale.value = true
+                }
             }
-            newSale.value.add(PostSalesModel(
-                clienteId = newClient.value!!.clienteId,
-                ventaId = 0,
-                esActivo = true,
-                fechaIngreso = fecha,
-                fechaVenta = fecha,
-                tipoPagoId = 1,
-                direccion = newClient.value!!.direccion ?: "null",
-                subtotal = 0.0,
-                iva = 0.0,
-                retencion = 0.0,
-                total = totalSale,
-                usuarioSesionId = userId,
-                ventaProductos = newProducts.value,
-                tipoConexionId = if (internetUse.value) 1 else 2
-            ))
-            val r = postSaleUseCase(newSale.value, internetUse.value)
-            if (r.first != null){
-                MainActivity.mainDialogMsg.value = "Venta guardada"
-                serverPostSale.value = true
+            else{
+                baseViewModel.dialogLogin.value = true
             }
+            baseViewModel.hideLoader()
         }
-        baseViewModel.hideLoader()
     }
     // endregion
     // region Clean

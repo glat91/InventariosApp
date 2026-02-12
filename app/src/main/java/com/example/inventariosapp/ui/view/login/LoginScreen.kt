@@ -30,21 +30,7 @@ fun LoginScreen(navController: NavHostController) {
     }
 
     val internetUse by viewModel.baseViewModel.internetUses.collectAsState()
-    if (!internetUse){
-        MainActivity.internetBtn.value = false
-        viewModel.saveBoolean(
-            Constants.INTERNET,
-            MainActivity.internetBtn.value
-        )
-        MainActivity.mainDialog.value = true
-    }
-    else{
-        MainActivity.internetBtn.value = true
-        viewModel.saveBoolean(
-            Constants.INTERNET,
-            MainActivity.internetBtn.value
-        )
-    }
+
 
     LoginView(
         user = viewModel.user,
