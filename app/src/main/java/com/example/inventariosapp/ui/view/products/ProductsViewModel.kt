@@ -62,3 +62,11 @@ class ProductsViewModel @Inject constructor(
         getProducts()
     }
 }
+data class ProductsUiState(
+    val serverProducts: Boolean = false,
+    val products: ArrayList<ProductsResponseModel> = arrayListOf(),
+
+    val search: TextFieldValue = TextFieldValue(""),
+    val expandenSearchBar: Boolean = false,
+    val filterData: ArrayList<ProductsResponseModel> = arrayListOf()
+)

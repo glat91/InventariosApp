@@ -58,3 +58,7 @@ class PenndingSalesViewModel @Inject constructor(
 
     init { getPenndingSales() }
 }
+data class PenndingSalesUiState(
+    val internetUse: Boolean = false,
+    var penndingSales: ArrayList<PostSaleWithProducts> = arrayListOf()
+)

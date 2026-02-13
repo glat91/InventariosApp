@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -59,6 +60,7 @@ class PaymentsViewModel @Inject constructor(
     val baseViewModel: BaseViewModel,
     @ApplicationContext private val cnx: Context
 ) : ViewModel() {
+    var uiState by mutableStateOf(PaymentsUiState())
 
     // region Date
     var selectedDate = mutableStateOf(LocalDate.now())
@@ -204,6 +206,7 @@ class PaymentsViewModel @Inject constructor(
                     Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED
     )
 
+
     val permissions = buildList {
         add(Manifest.permission.BLUETOOTH_CONNECT)
         add(Manifest.permission.BLUETOOTH_SCAN)
@@ -300,5 +303,35 @@ class PaymentsViewModel @Inject constructor(
         cleanPayment()
     }
     // endregion
-    init { getPendingSales() }
+    init {
+        getPendingSales()
+    }
 }
+data class PaymentsUiState(
+    var selectedDate: LocalDate = LocalDate.now(),
+    var showDatePicker: Boolean = false,
+
+    var startDate: String = "",
+    var endDate: String = "",
+    var dialogChoice: Boolean = false,
+
+    var clients: List<ClientResponseModel> = listOf(),
+
+    var select: SalesModel? = null,
+    var sales: List<SalesModel> = arrayListOf(),
+
+    var payActualDate: String = Helpers.getDate(),
+    var payTotalPayment: String = "",
+    var payObservation: String = "",
+    var dialogDeposit: Boolean = false,
+    var showDeposit: Boolean = false,
+    var payments: ArrayList<PayModel> = arrayListOf(),
+
+    var dialogBT: Boolean = false,
+    val printerUUID: UUID = UUID.fromString(Constants.PRINTER_UUID),
+    val bluetoothAdapter: BluetoothAdapter =  BluetoothAdapter.getDefaultAdapter(),
+    var bondedDevices: SnapshotStateList<BluetoothDevice> =  mutableStateListOf<BluetoothDevice>(),
+    var hasPermissions: Boolean = false,
+
+    var permissions: List<String> = emptyList()
+)

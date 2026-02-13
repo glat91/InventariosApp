@@ -104,5 +104,13 @@ class SalesViewModel @Inject constructor(
         }
     }
     // endregion
-
 }
+data class SalesUiState(
+    var selectedDate: LocalDate = LocalDate.now(),
+    val dialogChoice: Boolean = false,
+    var showDatePicker: Boolean = false,
+
+    val searchSale: TextFieldValue = TextFieldValue(""),
+    val sales: ArrayList<SalesModel> = arrayListOf(),
+    val salesFilter: ArrayList<SalesModel> = arrayListOf(),
+)

@@ -303,4 +303,32 @@ class NewSaleViewModel @Inject constructor(
         Log.i("NewSaleViewModel___", "${newSale.value}")
     }
 }
+data class NewSaleUiState(
+    val sale: SalesModel = SalesModel(),
+    val canModifyClient: Boolean = true,
+
+    val expandenSearchBarS: Boolean = true,
+    val client: TextFieldValue = (TextFieldValue("")),
+    val clients: List<ClientResponseModel> = listOf(),
+    val opcions: ArrayList<ClientResponseModel> = arrayListOf(),
+    val editStatus: Boolean = false,
+
+    val dialogProduct: Boolean = (false),
+    val expandenSearchBarD: Boolean = (false),
+    var search: TextFieldValue = TextFieldValue(""),
+    val inventory: ArrayList<ProductsResponseModel>? = arrayListOf(),
+    val filterInventory: ArrayList<ProductsResponseModel> = arrayListOf(),
+
+    val price: Double = (0.00),
+    val quantity: String = (""),
+    val serchProductId: Int = (0),
+    val product: ProductEntity? = null,
+    val totalInventory: ProductIdResponseModel = (ProductIdResponseModel()),
+    val selectedProduct: ProductsResponseModel? = null,
+
+    val serverPostSale: Boolean = false,
+    val newSale: ArrayList<PostSalesModel> = (arrayListOf()),
+    val newClient: ClientResponseModel? = (null),
+    val newProducts: ArrayList<PostSaleProductModel> = (arrayListOf()),
+)
 

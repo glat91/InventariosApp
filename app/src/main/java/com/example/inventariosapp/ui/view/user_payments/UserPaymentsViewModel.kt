@@ -57,3 +57,7 @@ class UserPaymentsViewModel @Inject constructor(
         getPenndingPayments()
     }
 }
+data class UserPaymentsUiState(
+    val internetUse: Boolean = false,
+    var penndingPayments: List<NewPayModel> = arrayListOf()
+)
