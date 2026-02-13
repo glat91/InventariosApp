@@ -38,8 +38,8 @@ fun SearchBarCmp(
     labelText: String = "",
     canModify: Boolean = true,
     opcionContent: @Composable () -> Unit,
-    enableState: Boolean = true,
     shape: Shape = RoundedCornerShape(4.dp),
+    onClickClear: () -> Unit = {},
     onChangeText: (TextFieldValue) -> Unit = { },
 ) {
     Column(
@@ -64,7 +64,12 @@ fun SearchBarCmp(
             trailingIcon = {
                 if (state.value.text != "") {
                     IconButton(
-                        onClick = { if (canModify) onChangeText(TextFieldValue("")) }
+                        onClick = {
+                            if (canModify) {
+                                onClickClear()
+                                onChangeText(TextFieldValue(""))
+                            }
+                        }
                     ){
                         Icon(
                             Icons.Default.Close,

@@ -30,7 +30,6 @@ import androidx.compose.ui.unit.sp
 import com.example.appgeneric.model.payment.NewPayModel
 import com.example.appgeneric.ui.component.TextCmp
 import com.example.inventariosapp.R
-import com.example.inventariosapp.model.payment.PayModel
 import com.example.inventariosapp.ui.theme.PADDING_4
 import com.example.inventariosapp.ui.theme.PADDING_8
 import com.example.inventariosapp.util.CustomEnums
@@ -40,8 +39,7 @@ fun CardPenndingPayCmp(
     modifier: Modifier,
     data: NewPayModel,
     status: CustomEnums.StatusType,
-    onClick: () -> Unit,
-    onClickPrint: () -> Unit,
+    onClick: (NewPayModel) -> Unit,
 ) {
     val colorBackground = when(status){
         CustomEnums.StatusType.ERROR -> { Color.Red }
@@ -53,7 +51,7 @@ fun CardPenndingPayCmp(
             .fillMaxWidth()
             .background(colorBackground)
             .padding(PADDING_4)
-            .clickable { onClick() }
+            .clickable { onClick(data) }
         ,
         colors = CardColors(
             containerColor = colorBackground,
@@ -103,24 +101,6 @@ fun CardPenndingPayCmp(
                     maxLine = 2
                 )
             }
-            Card(
-                modifier = Modifier
-                    .padding(PADDING_4)
-                    .width(45.dp)
-                    .height(45.dp)
-                    .clickable { onClickPrint() },
-                elevation = CardDefaults.elevatedCardElevation(8.dp)
-            ) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_printer),
-                        contentDescription = "Imprimir",
-                    )
-                }
-            }
         }
 
     }
@@ -138,6 +118,5 @@ fun CardPenndingPayCmpPreview(){
         ),
         status = CustomEnums.StatusType.ERROR,
         onClick = {},
-        onClickPrint = {}
     )
 }

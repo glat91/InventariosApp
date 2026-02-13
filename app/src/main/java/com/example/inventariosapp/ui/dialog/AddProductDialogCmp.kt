@@ -145,6 +145,7 @@ fun AddProductDialogCmp(
                     modifier = Modifier.padding(PADDING_8),
                     state = state,
                     labelText = "Ingrese el producto",
+                    onClickClear = { expanded.value = false },
                     onChangeText = { onChangeText(it) },
                     opcionContent = {
                         val maxHeight = rememberAvailableHeight()

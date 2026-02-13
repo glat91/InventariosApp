@@ -466,7 +466,9 @@ fun PaymentsScreen(navController: NavHostController) {
                                                     ventaId = viewModel.select.value!!.ventaId!!,
                                                     montoPago = monto,
                                                     observaciones = viewModel.payObservation.value,
-                                                    cnx = cnx
+                                                    onSuccess = {
+                                                        permissionLauncher.launch(viewModel.permissions)
+                                                    }
                                                 )
                                                 showDeposit.value = true
                                             }

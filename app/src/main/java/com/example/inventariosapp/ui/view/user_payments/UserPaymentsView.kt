@@ -85,7 +85,6 @@ fun UserPaymentsView(
                                 data = pay,
                                 status = CustomEnums.StatusType.PENDING,
                                 onClick = {},
-                                onClickPrint = {}
                             )
                             HorizontalDivider(thickness = PADDING_4, color = Color.Transparent, )
                             HorizontalDivider(thickness = 1.dp, color = UI_Divier, )

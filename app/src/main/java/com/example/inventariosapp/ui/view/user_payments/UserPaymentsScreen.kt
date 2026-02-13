@@ -1,5 +1,7 @@
 package com.example.inventariosapp.ui.view.user_payments
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -14,7 +16,6 @@ import com.example.inventariosapp.ui.view.login.LoginViewModel
 fun UserPaymentsScreen(navController: NavHostController) {
     val viewModel: UserPaymentsViewModel = hiltViewModel()
     val lviewModel: LoginViewModel = hiltViewModel()
-    val cnx = LocalContext.current
 
     // region Screen
     UserPaymentsView(

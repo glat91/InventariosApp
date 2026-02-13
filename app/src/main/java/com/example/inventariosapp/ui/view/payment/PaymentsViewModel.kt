@@ -134,13 +134,12 @@ class PaymentsViewModel @Inject constructor(
             baseViewModel.hideLoader()
         }
     }
-    fun setPayment(ventaId: Int, montoPago: Double, observaciones: String, cnx: Context){
+    fun setPayment(ventaId: Int, montoPago: Double, observaciones: String, onSuccess: () -> Unit){
         baseViewModel.showLoader()
         viewModelScope.launch {
-            val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
             if (baseViewModel.isSessionValid()){
                 val userID = baseViewModel.getUsiarioId()
-                val internetUse = Helpers.isInternetAvailable(cnx)
+                val internetUse = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
                 Log.i("UserID___", userID.toString())
                 val createPostSale = NewPayModel(
                     ventaId = ventaId,
@@ -151,10 +150,12 @@ class PaymentsViewModel @Inject constructor(
                     tipoConexionId = if (internetUse) 1 else 2,
                     usuarioSesionId = userID
                 )
+                onSuccess()
                 var r = postPaymentUseCase(internetUse = internetUse, newPay = listOf(createPostSale))
                 if (r.isSuccess){
                     MainActivity.mainDialogMsg.value = "Pago realizado con exito"
                     MainActivity.mainDialog.value = true
+
                 }
                 cleanDialog()
                 getPendingSales()
