@@ -18,10 +18,9 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavHostController
 import com.example.appgeneric.ui.component.TextCmp
 import com.example.inventariosapp.MainActivity
-import com.example.inventariosapp.model.sales.SalesModel
+import com.example.inventariosapp.domain.model.sales.SalesModel
 import com.example.inventariosapp.navigation.Destinations
 import com.example.inventariosapp.ui.component.Loader
-import com.example.inventariosapp.util.Constants
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

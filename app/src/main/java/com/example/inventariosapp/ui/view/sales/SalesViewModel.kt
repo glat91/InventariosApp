@@ -1,7 +1,6 @@
 package com.example.inventariosapp.ui.view.sales
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.MutableState
@@ -12,7 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.inventariosapp.BaseViewModel
 import com.example.inventariosapp.MainActivity
 import com.example.inventariosapp.domain.use_case.sales.GetPendingSalesUseCase
-import com.example.inventariosapp.model.sales.SalesModel
+import com.example.inventariosapp.domain.model.sales.SalesModel
 import com.example.inventariosapp.util.Helpers
 import com.example.inventariosapp.util.Helpers.Companion.deletePersistKey
 import com.example.inventariosapp.util.Helpers.Companion.savePersistData

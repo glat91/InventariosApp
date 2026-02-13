@@ -2,7 +2,7 @@ package com.example.inventariosapp.database.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.inventariosapp.model.payment.PayModel
+import com.example.inventariosapp.domain.model.payment.PayModel
 
 @Entity(tableName = "pay_table")
 data class PayEntity(

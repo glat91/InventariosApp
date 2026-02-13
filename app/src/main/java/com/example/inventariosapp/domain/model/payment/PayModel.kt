@@ -1,4 +1,4 @@
-package com.example.inventariosapp.model.payment
+package com.example.inventariosapp.domain.model.payment
 
 import com.example.inventariosapp.database.entity.PayEntity
 import com.google.gson.annotations.SerializedName

@@ -10,13 +10,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -48,8 +45,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.PopupProperties
 import com.example.appgeneric.ui.component.TextCmp
-import com.example.inventariosapp.model.product.ProductIdResponseModel
-import com.example.inventariosapp.model.product.ProductsResponseModel
+import com.example.inventariosapp.domain.model.product.ProductIdResponseModel
+import com.example.inventariosapp.domain.model.product.ProductsResponseModel
 import com.example.inventariosapp.ui.component.ButtonWithImgCmp
 import com.example.inventariosapp.ui.component.cards.CardProductCmp
 import com.example.inventariosapp.ui.component.InputWithTitleLabelCmp

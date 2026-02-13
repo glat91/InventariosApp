@@ -5,9 +5,9 @@ import com.example.inventariosapp.MainActivity
 import com.example.inventariosapp.api.ApiService
 import com.example.inventariosapp.database.dao.SalesDao
 import com.example.inventariosapp.database.entity.toDb
-import com.example.inventariosapp.model.error.ErrorModel
-import com.example.inventariosapp.model.sales.SalesModel
-import com.example.inventariosapp.model.sales.toDB
+import com.example.inventariosapp.domain.model.error.ErrorModel
+import com.example.inventariosapp.domain.model.sales.SalesModel
+import com.example.inventariosapp.domain.model.sales.toDB
 import kotlinx.coroutines.withContext
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers

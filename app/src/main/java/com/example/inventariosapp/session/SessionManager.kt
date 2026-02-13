@@ -77,7 +77,7 @@ class SessionManager @Inject constructor(
     suspend fun getPerfilId() = cnx.readPersistData(Constants.PERFIL_ID, 0)
     suspend fun getUsiarioId(): Int {
         val userId = cnx.readPersistData(Constants.USUARIO_ID, 0)
-        Log.i("USer_ID___", userId.toString())
+        Log.i("User_ID___", userId.toString())
         return userId
     }
     suspend fun getUsuarioSessionId() = cnx.readPersistData(Constants.USUARIO_SESION_ID, 0)

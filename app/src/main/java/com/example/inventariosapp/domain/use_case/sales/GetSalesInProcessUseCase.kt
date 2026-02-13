@@ -1,7 +1,7 @@
 package com.example.inventariosapp.domain.use_case.sales
 
 import com.example.inventariosapp.domain.repository.sales.GetSalesInProcessRepositoryImp
-import com.example.inventariosapp.model.sales.SalesModel
+import com.example.inventariosapp.domain.model.sales.SalesModel
 import javax.inject.Inject
 
 class GetSalesInProcessUseCase @Inject constructor(

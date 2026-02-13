@@ -10,7 +10,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.inventariosapp.MainActivity
-import com.example.inventariosapp.model.sales.SalesModel
+import com.example.inventariosapp.domain.model.sales.SalesModel
 import com.example.inventariosapp.navigation.Destinations
 import com.example.inventariosapp.ui.component.Loader
 import com.example.inventariosapp.ui.dialog.AddProductDialogCmp

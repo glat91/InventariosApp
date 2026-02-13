@@ -31,7 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.inventariosapp.model.sales.SalesModel
+import com.example.inventariosapp.domain.model.sales.SalesModel
 import com.example.inventariosapp.ui.component.cards.CardSaleCmp
 import com.example.inventariosapp.ui.component.HeaderCmp
 import com.example.inventariosapp.ui.component.InputWithTitleLabelCmp

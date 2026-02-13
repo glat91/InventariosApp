@@ -29,9 +29,9 @@ import com.example.inventariosapp.domain.use_case.payment.DeletePaymentUseCase
 import com.example.inventariosapp.domain.use_case.payment.GetPaymentUseCase
 import com.example.inventariosapp.domain.use_case.payment.PostPaymentUseCase
 import com.example.inventariosapp.domain.use_case.sales.GetPendingSalesUseCase
-import com.example.inventariosapp.model.client.ClientResponseModel
-import com.example.inventariosapp.model.payment.PayModel
-import com.example.inventariosapp.model.sales.SalesModel
+import com.example.inventariosapp.domain.model.client.ClientResponseModel
+import com.example.inventariosapp.domain.model.payment.PayModel
+import com.example.inventariosapp.domain.model.sales.SalesModel
 import com.example.inventariosapp.ui.view.BluetoothPrinterScreen.printBitmap
 import com.example.inventariosapp.util.Constants
 import com.example.inventariosapp.util.Helpers

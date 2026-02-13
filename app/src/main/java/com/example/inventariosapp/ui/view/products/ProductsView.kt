@@ -29,7 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.inventariosapp.model.product.ProductsResponseModel
+import com.example.inventariosapp.domain.model.product.ProductsResponseModel
 import com.example.inventariosapp.ui.component.cards.CardInventoryCmp
 import com.example.inventariosapp.ui.component.HeaderCmp
 import com.example.inventariosapp.ui.component.SearchBarCmp

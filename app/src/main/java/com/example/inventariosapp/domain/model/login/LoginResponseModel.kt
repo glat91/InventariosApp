@@ -1,4 +1,4 @@
-package com.example.inventariosapp.model.login
+package com.example.inventariosapp.domain.model.login
 
 import com.google.gson.annotations.SerializedName
 

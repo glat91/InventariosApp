@@ -1,16 +1,16 @@
 package com.example.inventariosapp.api
 
 import com.example.appgeneric.model.payment.NewPayModel
-import com.example.inventariosapp.model.client.ClientResponseModel
-import com.example.inventariosapp.model.login.LoginResponseModel
-import com.example.inventariosapp.model.payment.PayModel
-import com.example.inventariosapp.model.product.InventarioRseponeModel
-import com.example.inventariosapp.model.product.ProductIdResponseModel
-import com.example.inventariosapp.model.product.ProductsResponseModel
-import com.example.inventariosapp.model.sales.GetPaymentResponseModel
-import com.example.inventariosapp.model.sales.GetSalesByIdResponse
-import com.example.inventariosapp.model.sales.PostSalesModel
-import com.example.inventariosapp.model.sales.SalesModel
+import com.example.inventariosapp.domain.model.client.ClientResponseModel
+import com.example.inventariosapp.domain.model.login.LoginResponseModel
+import com.example.inventariosapp.domain.model.payment.PayModel
+import com.example.inventariosapp.domain.model.product.InventarioRseponeModel
+import com.example.inventariosapp.domain.model.product.ProductIdResponseModel
+import com.example.inventariosapp.domain.model.product.ProductsResponseModel
+import com.example.inventariosapp.domain.model.sales.GetPaymentResponseModel
+import com.example.inventariosapp.domain.model.sales.GetSalesByIdResponse
+import com.example.inventariosapp.domain.model.sales.PostSalesModel
+import com.example.inventariosapp.domain.model.sales.SalesModel
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE

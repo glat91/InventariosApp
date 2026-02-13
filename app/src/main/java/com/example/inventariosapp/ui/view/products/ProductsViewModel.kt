@@ -9,7 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.inventariosapp.BaseViewModel
 import com.example.inventariosapp.MainActivity
 import com.example.inventariosapp.domain.use_case.product.GetProductsUseCase
-import com.example.inventariosapp.model.product.ProductsResponseModel
+import com.example.inventariosapp.domain.model.product.ProductsResponseModel
 import com.example.inventariosapp.util.Helpers
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext

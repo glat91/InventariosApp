@@ -1,7 +1,7 @@
 package com.example.inventariosapp.domain.use_case.client
 
 import com.example.inventariosapp.domain.repository.client.GetClientsRepositoryImp
-import com.example.inventariosapp.model.client.ClientResponseModel
+import com.example.inventariosapp.domain.model.client.ClientResponseModel
 import javax.inject.Inject
 
 class GetClientsUseCase@Inject constructor(

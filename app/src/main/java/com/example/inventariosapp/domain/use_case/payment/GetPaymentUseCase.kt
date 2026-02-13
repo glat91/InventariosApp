@@ -1,7 +1,7 @@
 package com.example.inventariosapp.domain.use_case.payment
 
 import com.example.inventariosapp.domain.repository.payment.GetPaymentRepositoryImp
-import com.example.inventariosapp.model.payment.PayModel
+import com.example.inventariosapp.domain.model.payment.PayModel
 import javax.inject.Inject
 
 class GetPaymentUseCase @Inject constructor(

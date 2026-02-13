@@ -1,10 +1,7 @@
-package com.example.inventariosapp.model.sales
+package com.example.inventariosapp.domain.model.sales
 
-import com.example.inventariosapp.database.entity.PostSaleEntity
-import com.example.inventariosapp.database.entity.PostSaleProductEntity
-import com.example.inventariosapp.model.client.ClientResponseModel
+import com.example.inventariosapp.domain.model.client.ClientResponseModel
 import com.google.gson.annotations.SerializedName
-import java.util.UUID
 
 data class GetSalesByIdResponse(
     @SerializedName("ventaId") var ventaId: Int? = null,

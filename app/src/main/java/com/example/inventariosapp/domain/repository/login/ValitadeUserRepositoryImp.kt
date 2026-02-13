@@ -1,7 +1,7 @@
 package com.example.inventariosapp.domain.repository.login
 
 import com.example.inventariosapp.api.ApiService
-import com.example.inventariosapp.model.login.LoginResponseModel
+import com.example.inventariosapp.domain.model.login.LoginResponseModel
 import com.google.gson.Gson
 import java.io.IOException
 import javax.inject.Inject

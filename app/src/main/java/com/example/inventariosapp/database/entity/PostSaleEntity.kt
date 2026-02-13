@@ -2,8 +2,8 @@ package com.example.inventariosapp.database.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.inventariosapp.model.sales.PostSaleProductModel
-import com.example.inventariosapp.model.sales.PostSalesModel
+import com.example.inventariosapp.domain.model.sales.PostSaleProductModel
+import com.example.inventariosapp.domain.model.sales.PostSalesModel
 import java.util.UUID
 
 @Entity(tableName = "post_sales")

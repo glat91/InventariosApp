@@ -1,4 +1,4 @@
-package com.example.inventariosapp.model.error
+package com.example.inventariosapp.domain.model.error
 
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable

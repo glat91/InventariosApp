@@ -3,7 +3,7 @@ package com.example.inventariosapp.database.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.inventariosapp.model.product.ProductsResponseModel
+import com.example.inventariosapp.domain.model.product.ProductsResponseModel
 
 @Entity(tableName = "product_table")
 data class ProductEntity(

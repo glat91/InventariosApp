@@ -2,7 +2,7 @@ package com.example.inventariosapp.database.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.inventariosapp.model.product.InventarioRseponeModel
+import com.example.inventariosapp.domain.model.product.InventarioRseponeModel
 
 @Entity(tableName = "inventory")
 data class InventoryEntity(

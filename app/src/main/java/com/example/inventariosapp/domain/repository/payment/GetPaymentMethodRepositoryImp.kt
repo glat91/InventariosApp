@@ -2,8 +2,8 @@ package com.example.inventariosapp.domain.repository.payment
 
 import android.content.Context
 import com.example.inventariosapp.api.ApiService
-import com.example.inventariosapp.model.error.ErrorModel
-import com.example.inventariosapp.model.sales.GetPaymentResponseModel
+import com.example.inventariosapp.domain.model.error.ErrorModel
+import com.example.inventariosapp.domain.model.sales.GetPaymentResponseModel
 import com.example.inventariosapp.util.Helpers
 import com.google.gson.Gson
 import dagger.hilt.android.qualifiers.ApplicationContext

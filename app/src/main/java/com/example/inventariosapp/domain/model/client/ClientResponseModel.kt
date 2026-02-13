@@ -1,4 +1,4 @@
-package com.example.inventariosapp.model.client
+package com.example.inventariosapp.domain.model.client
 
 import com.example.inventariosapp.database.entity.ClientEntity
 import com.google.gson.annotations.SerializedName

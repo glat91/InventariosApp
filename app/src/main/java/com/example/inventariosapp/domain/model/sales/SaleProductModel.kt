@@ -1,6 +1,6 @@
-package com.example.inventariosapp.model.sales
+package com.example.inventariosapp.domain.model.sales
 
-import com.example.inventariosapp.model.product.PrecioListaModel
+import com.example.inventariosapp.domain.model.product.PrecioListaModel
 import com.google.gson.annotations.SerializedName
 
 data class SaleProductModel(

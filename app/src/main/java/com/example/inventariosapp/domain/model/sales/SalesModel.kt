@@ -1,4 +1,4 @@
-package com.example.inventariosapp.model.sales
+package com.example.inventariosapp.domain.model.sales
 
 import android.os.Parcel
 import android.os.Parcelable

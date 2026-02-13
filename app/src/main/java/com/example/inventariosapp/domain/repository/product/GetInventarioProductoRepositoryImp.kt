@@ -3,8 +3,8 @@ package com.example.inventariosapp.domain.repository.product
 import android.content.Context
 import com.example.inventariosapp.MainActivity
 import com.example.inventariosapp.api.ApiService
-import com.example.inventariosapp.model.error.ErrorModel
-import com.example.inventariosapp.model.product.ProductIdResponseModel
+import com.example.inventariosapp.domain.model.error.ErrorModel
+import com.example.inventariosapp.domain.model.product.ProductIdResponseModel
 import com.google.gson.Gson
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject

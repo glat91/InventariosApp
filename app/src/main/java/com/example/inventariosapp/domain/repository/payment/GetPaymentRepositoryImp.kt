@@ -3,9 +3,9 @@ package com.example.inventariosapp.domain.repository.payment
 import com.example.inventariosapp.api.ApiService
 import com.example.inventariosapp.database.dao.PayDao
 import com.example.inventariosapp.database.entity.toDB
-import com.example.inventariosapp.model.error.ErrorModel
-import com.example.inventariosapp.model.payment.PayModel
-import com.example.inventariosapp.model.payment.toDB
+import com.example.inventariosapp.domain.model.error.ErrorModel
+import com.example.inventariosapp.domain.model.payment.PayModel
+import com.example.inventariosapp.domain.model.payment.toDB
 import com.google.gson.Gson
 import javax.inject.Inject
 

@@ -1,7 +1,7 @@
 package com.example.inventariosapp.domain.use_case.login
 
 import com.example.inventariosapp.domain.repository.login.ValitdateUserRepositoryImp
-import com.example.inventariosapp.model.login.LoginResponseModel
+import com.example.inventariosapp.domain.model.login.LoginResponseModel
 import javax.inject.Inject
 
 class ValitdateUserUseCase @Inject constructor(

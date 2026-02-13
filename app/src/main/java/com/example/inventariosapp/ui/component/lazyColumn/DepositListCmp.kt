@@ -29,7 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.appgeneric.ui.component.TextCmp
-import com.example.inventariosapp.model.sales.SalesModel
+import com.example.inventariosapp.domain.model.sales.SalesModel
 import com.example.inventariosapp.ui.theme.PADDING_4
 import com.example.inventariosapp.ui.theme.TEXT_List_Title
 import com.example.inventariosapp.ui.theme.UI_Divier

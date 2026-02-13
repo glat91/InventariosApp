@@ -39,9 +39,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
 import com.example.appgeneric.ui.component.TextCmp
-import com.example.inventariosapp.model.client.ClientResponseModel
-import com.example.inventariosapp.model.sales.SaleProductModel
-import com.example.inventariosapp.model.sales.SalesModel
+import com.example.inventariosapp.domain.model.client.ClientResponseModel
+import com.example.inventariosapp.domain.model.sales.SaleProductModel
+import com.example.inventariosapp.domain.model.sales.SalesModel
 import com.example.inventariosapp.ui.component.ButtonWithImgCmp
 import com.example.inventariosapp.ui.component.cards.CardSellProductCmp
 import com.example.inventariosapp.ui.component.HeaderCmp

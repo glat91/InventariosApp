@@ -4,12 +4,11 @@ import android.util.Log
 import com.example.inventariosapp.MainActivity
 import com.example.inventariosapp.api.ApiService
 import com.example.inventariosapp.database.dao.PostSalesDao
-import com.example.inventariosapp.model.error.ErrorModel
-import com.example.inventariosapp.model.sales.PostSalesModel
-import com.example.inventariosapp.model.sales.toEntity
+import com.example.inventariosapp.domain.model.error.ErrorModel
+import com.example.inventariosapp.domain.model.sales.PostSalesModel
+import com.example.inventariosapp.domain.model.sales.toEntity
 import com.example.inventariosapp.session.SessionManager
 import com.google.gson.Gson
-import java.io.IOException
 import javax.inject.Inject
 
 class PostSaleRepositoryImp @Inject constructor(

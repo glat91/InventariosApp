@@ -1,7 +1,7 @@
 package com.example.inventariosapp.domain.use_case.sales
 
 import com.example.inventariosapp.domain.repository.sales.EditSaleRepositoryImp
-import com.example.inventariosapp.model.sales.GetSalesByIdResponse
+import com.example.inventariosapp.domain.model.sales.GetSalesByIdResponse
 import javax.inject.Inject
 
 class EditSaleUseCase @Inject constructor(

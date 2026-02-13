@@ -32,9 +32,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.appgeneric.ui.component.TextCmp
-import com.example.inventariosapp.model.client.ClientResponseModel
-import com.example.inventariosapp.model.sales.GetSalesByIdResponse
-import com.example.inventariosapp.model.sales.SaleProductModel
+import com.example.inventariosapp.domain.model.client.ClientResponseModel
+import com.example.inventariosapp.domain.model.sales.GetSalesByIdResponse
+import com.example.inventariosapp.domain.model.sales.SaleProductModel
 import com.example.inventariosapp.ui.theme.PADDING_4
 import com.example.inventariosapp.ui.theme.TEXT_List_Title
 import com.example.inventariosapp.ui.theme.UI_Divier

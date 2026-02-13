@@ -1,7 +1,7 @@
 package com.example.inventariosapp.domain.use_case.sales
 
 import com.example.inventariosapp.domain.repository.sales.PostSaleRepositoryImp
-import com.example.inventariosapp.model.sales.PostSalesModel
+import com.example.inventariosapp.domain.model.sales.PostSalesModel
 import javax.inject.Inject
 
 class PostSaleUseCase @Inject constructor(
