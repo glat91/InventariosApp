@@ -145,7 +145,7 @@ fun AddProductDialogCmp(
                     modifier = Modifier.padding(PADDING_8),
                     state = state,
                     labelText = "Ingrese el producto",
-                    onChangeText = { onChangeText(it)},
+                    onChangeText = { onChangeText(it) },
                     opcionContent = {
                         val maxHeight = rememberAvailableHeight()
 
@@ -166,12 +166,12 @@ fun AddProductDialogCmp(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .clickable {
+                                                expanded.value = false
                                                 state.value = TextFieldValue(option.descripcion.orEmpty())
                                                 onClickOpcion(option)
-                                                expanded.value = false
                                             },
                                         product = option.descripcion.orEmpty(),
-                                        measureUnit = option.nombreUnidadMedida.orEmpty(),
+                                        measureUnit = option.nombreUnidadMedida,
                                         backgroundColor = Color.White
                                     )
                                 }
@@ -179,7 +179,6 @@ fun AddProductDialogCmp(
                         }
                     }
                 )
-
 
                 if (product.value?.precioVenta1 != null || product.value?.precioVenta2 != null){
                     Column(

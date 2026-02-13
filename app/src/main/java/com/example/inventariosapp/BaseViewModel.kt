@@ -74,9 +74,9 @@ class BaseViewModel @Inject constructor(
         return sessionManager.isSessionValid()
     }
     fun startSession(
-        perfilId: String,
-        usuarioId: String,
-        usuarioSesionId: String,
+        perfilId: Int,
+        usuarioId: Int,
+        usuarioSesionId: Int,
         correo: String,
         nombre: String,
     ){
@@ -88,8 +88,6 @@ class BaseViewModel @Inject constructor(
                 correo,
                 nombre,
             )
-            MainActivity.mainDialogMsg.value = "Session Expired"
-            MainActivity.mainDialog.value = true
             dialogAgain.value = true
         }
     }

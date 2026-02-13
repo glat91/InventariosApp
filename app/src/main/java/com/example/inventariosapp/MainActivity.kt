@@ -57,6 +57,10 @@ class MainActivity : ComponentActivity() {
         var mainDialogMsg = mutableStateOf("")
         var mainDialogColor = mutableStateOf(Color.Red)
         // endregion
+        // region Always Same Date
+        val startDate = mutableStateOf("")
+        val endDate = mutableStateOf("")
+        // endregion
     }
 
     @RequiresApi(Build.VERSION_CODES.S)

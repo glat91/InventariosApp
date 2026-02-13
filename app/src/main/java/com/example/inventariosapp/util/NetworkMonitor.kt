@@ -27,9 +27,9 @@ class NetworkMonitor @Inject constructor(
         // TODO Agregar Validacion para que no ocurra en cada pantalla
         override fun onAvailable(network: Network) {
             _isConnected.value = true
-            MainActivity.mainDialogColor.value = UI_Backround_Btn_Green
-            MainActivity.mainDialogMsg.value = "Conectado a internet"
-            MainActivity.mainDialog.value = true
+            //MainActivity.mainDialogColor.value = UI_Backround_Btn_Green
+            //MainActivity.mainDialogMsg.value = "Conectado a internet"
+            //MainActivity.mainDialog.value = true
         }
         override fun onLost(network: Network) {
             _isConnected.value = false

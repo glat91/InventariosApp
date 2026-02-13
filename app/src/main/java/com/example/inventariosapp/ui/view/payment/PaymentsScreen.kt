@@ -469,7 +469,6 @@ fun PaymentsScreen(navController: NavHostController) {
                                                     cnx = cnx
                                                 )
                                                 showDeposit.value = true
-                                                viewModel.cleanDialog()
                                             }
                                             else {
                                                 if (monto > viewModel.select.value?.montoPorPagar!!){
@@ -481,8 +480,7 @@ fun PaymentsScreen(navController: NavHostController) {
                                                 viewModel.cleanPayment()
                                                 MainActivity.mainDialog .value = true
                                             }
-                                        }
-                                        ,
+                                        },
                                         enable = !viewModel.payTotalPayment.value.isEmpty(),
                                         shape = RoundedCornerShape(10.dp),
                                         txtColor = Color.White,
@@ -497,7 +495,7 @@ fun PaymentsScreen(navController: NavHostController) {
                     }
                 }
             },
-            onDismiss = { viewModel.cleanDialog()}
+            onDismiss = { if (!viewModel.baseViewModel.dialogLogin.value) viewModel.cleanDialog() }
         )
     }
     // endregion
@@ -508,8 +506,8 @@ fun PaymentsScreen(navController: NavHostController) {
             password = lviewModel.password,
             rememberUser = remember { mutableStateOf(false) },
             onClickEnter = {
-                if (!lviewModel.rememberUser.value) lviewModel.clearUser(cnx)
-                else lviewModel.saveUserLogin(cnx)
+                if (!lviewModel.rememberUser.value) lviewModel.clearUser()
+                else lviewModel.saveUserLogin()
                 lviewModel.validateUserLogin(MainActivity.internetBtn.value)
             },
             onClickRememberPassword = {

@@ -6,21 +6,29 @@ import com.example.inventariosapp.MainActivity
 import com.example.inventariosapp.api.ApiService
 import com.example.inventariosapp.database.dao.NewPayDao
 import com.example.inventariosapp.database.entity.toModel
+import com.example.inventariosapp.session.SessionManager
 import javax.inject.Inject
 
 class PostPaymentRepositoryImp @Inject constructor(
     private val newPayDao: NewPayDao,
     private val apiService: ApiService,
+    private val sessionManager: SessionManager,
 ) {
     suspend operator fun invoke(internetUse: Boolean, newPay: List<NewPayModel>): Result<Unit>{
         return try {
             if (internetUse){
-                val response = apiService.setPayment(payments = newPay)
-                if (response.isSuccessful) { Result.success(Unit) }
-                else {
-                    MainActivity.mainDialogMsg.value = "Error ${response.code()}: ${response.errorBody()?.string()}"
-                    MainActivity.mainDialog.value = true
-                    Result.failure(Exception("Error ${response.code()}: ${response.errorBody()?.string()}"))
+                if (sessionManager.isSessionValid()){
+                    val response = apiService.setPayment(payments = newPay)
+                    if (response.isSuccessful) { Result.success(Unit) }
+                    else {
+                        MainActivity.mainDialogMsg.value = "Error ${response.code()}: ${response.errorBody()?.string()}"
+                        MainActivity.mainDialog.value = true
+                        Result.failure(Exception("Error ${response.code()}: ${response.errorBody()?.string()}"))
+                    }
+                }
+                else{
+                    sessionManager.dialogLogin.value = true
+                    Result.failure(Exception("Error sin session activa"))
                 }
             }
             else{

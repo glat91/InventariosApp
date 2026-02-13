@@ -59,7 +59,7 @@ class PaymentsViewModel @Inject constructor(
     val baseViewModel: BaseViewModel,
     @ApplicationContext private val cnx: Context
 ) : ViewModel() {
-    val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
+
     // region Date
     var selectedDate = mutableStateOf(LocalDate.now())
     var showDatePicker = mutableStateOf(false)
@@ -85,6 +85,7 @@ class PaymentsViewModel @Inject constructor(
     fun getClients(){
         baseViewModel.showLoader()
         viewModelScope.launch {
+            val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
             val r = getClientsUseCase(internetUse.value)
             if (r.first != null){ clients.value = r.first!! }
             baseViewModel.hideLoader()
@@ -104,6 +105,7 @@ class PaymentsViewModel @Inject constructor(
             if (endDate.value.isBlank()) { endDate.value = Helpers.getTomrrow() }
         }
         viewModelScope.launch {
+            val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
             val r = getPendingSalesUseCase(startDate.value, endDate.value, internetUse.value)
             if (r.first != null) {
                 Log.i("Sales___", r.first!!.toString())
@@ -123,6 +125,7 @@ class PaymentsViewModel @Inject constructor(
     fun getPayment(ventaID: String){
         baseViewModel.showLoader()
         viewModelScope.launch {
+            val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
             var r = getPaymentUseCase(ventaID, internetUse.value)
             if (r.first != null){
                 dialogDeposit.value = true
@@ -134,6 +137,7 @@ class PaymentsViewModel @Inject constructor(
     fun setPayment(ventaId: Int, montoPago: Double, observaciones: String, cnx: Context){
         baseViewModel.showLoader()
         viewModelScope.launch {
+            val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
             if (baseViewModel.isSessionValid()){
                 val userID = baseViewModel.getUsiarioId()
                 val internetUse = Helpers.isInternetAvailable(cnx)

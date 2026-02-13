@@ -15,6 +15,7 @@ import com.example.inventariosapp.util.Helpers.Companion.readPersistData
 import com.example.inventariosapp.util.Helpers.Companion.savePersistData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -36,44 +37,56 @@ class LoginViewModel @Inject constructor(
             if (internetUse){
                 val v = valitdaeUserUseCase(user.value, password.value)
                 if (v.first != null){
-                    cnx.savePersistData(v.first!!.perfilId!!, Constants.PERFIL_ID)
-                    cnx.savePersistData(v.first!!.usuarioId!!, Constants.USUARIO_ID)
-                    cnx.savePersistData(v.first!!.usuarioSesionId!!, Constants.USUARIO_SESION_ID)
-                    cnx.savePersistData(v.first!!.correo!!, Constants.MAIL)
-                    cnx.savePersistData(v.first!!.nombre!!, Constants.NOMBRE)
+                    val perfilID = v.first!!.perfilId!!
+                    val usuarioID = v.first!!.usuarioId!!
+                    val usuarioSesionID = v.first!!.usuarioSesionId!!
+                    val correo = v.first!!.correo.toString()
+                    val nombre = v.first!!.nombre.toString()
+
+                    cnx.savePersistData(perfilID, Constants.PERFIL_ID)
+                    cnx.savePersistData(usuarioID, Constants.USUARIO_ID)
+                    cnx.savePersistData(usuarioSesionID, Constants.USUARIO_SESION_ID)
+                    cnx.savePersistData(correo, Constants.MAIL)
+                    cnx.savePersistData(nombre, Constants.NOMBRE)
+
+                    val a = cnx.readPersistData(Constants.PERFIL_ID, 0)
+                    val b = cnx.readPersistData(Constants.USUARIO_ID, 0)
+                    val c = cnx.readPersistData(Constants.USUARIO_SESION_ID, "")
+                    val d = cnx.readPersistData(Constants.MAIL, "")
+                    val e = cnx.readPersistData(Constants.NOMBRE, "")
+                    Log.i("PErsist___", "$a $b $c $d $e")
 
                     baseViewModel.startSession(
-                        v.first!!.perfilId!!.toString(),
-                        v.first!!.usuarioId!!.toString(),
-                        v.first!!.usuarioSesionId!!.toString(),
-                        v.first!!.correo!!,
-                        v.first!!.nombre!!
+                        perfilID,
+                        usuarioID,
+                        usuarioSesionID,
+                        correo,
+                        nombre
                     )
+                    delay(4000)
                     serverValidateUser.value = true
+                    baseViewModel.dialogLogin.value = false
                 }
                 else {
                     if (v.second != null) {
-                        MainActivity.mainDialogMsg.value = v!!.second!!
+                        MainActivity.mainDialogMsg.value = v.second!!
+                        MainActivity.mainDialog.value = true
                     }
-                    else{ MainActivity.mainDialogMsg.value = "Error 1001100" }
-                    MainActivity.mainDialog.value = true
                 }
             }
             else{
-                MainActivity.mainDialogMsg.value = "Favor de iniciar session antes de Editar o Subir Pagos y Ventas"
-                MainActivity.mainDialog.value = true
                 serverValidateUser.value = true
             }
             baseViewModel.hideLoader()
         }
     }
     // endregion
-    fun saveUserLogin(cnx: Context){
+    fun saveUserLogin(){
         viewModelScope.launch {
             cnx.savePersistData(key = Constants.REMEMBER_PASSWORD, data = "${user.value}/${password.value}")
         }
     }
-    fun clearUser(cnx: Context){
+    fun clearUser(){
         viewModelScope.launch {
             cnx.deletePersistKey(Constants.REMEMBER_PASSWORD)
         }

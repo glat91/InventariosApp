@@ -43,6 +43,7 @@ class PenndingSalesViewModel @Inject constructor(
                 }
                 val r = postSaleUseCase(m, internetUse.value)
                 if (r.first != null){
+                    postSalesDao.deleteAll()
                     MainActivity.mainDialogMsg.value = "Venta guardada"
                     MainActivity.mainDialog.value = true
                 }

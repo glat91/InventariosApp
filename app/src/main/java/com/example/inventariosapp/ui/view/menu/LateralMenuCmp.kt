@@ -20,6 +20,7 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.RadioButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
@@ -38,6 +39,7 @@ import com.example.inventariosapp.R
 import com.example.inventariosapp.navigation.Destinations
 import com.example.inventariosapp.ui.component.Loader
 import com.example.inventariosapp.util.Constants
+import com.example.inventariosapp.util.Helpers.Companion.readPersistData
 import kotlinx.coroutines.launch
 @Composable
 fun LateralMenuCmp(
@@ -48,6 +50,12 @@ fun LateralMenuCmp(
     val corutine = rememberCoroutineScope()
     val menuViewModel: MenuViewModel = hiltViewModel()
     val cnx = LocalContext.current
+
+    LaunchedEffect(true) {
+        if (menuViewModel.userName.value.isBlank()) {
+            menuViewModel.userName.value = menuViewModel.baseViewModel.getGetName()
+        }
+    }
 
     ModalNavigationDrawer(
         drawerContent = {

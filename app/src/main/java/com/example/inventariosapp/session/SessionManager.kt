@@ -2,6 +2,8 @@ package com.example.inventariosapp.session
 
 import android.content.Context
 import android.os.SystemClock
+import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import com.example.inventariosapp.util.Constants
 import com.example.inventariosapp.util.Helpers.Companion.readPersistData
 import com.example.inventariosapp.util.Helpers.Companion.savePersistData
@@ -16,14 +18,16 @@ class SessionManager @Inject constructor(
     companion object {
         private const val KEY_USER_ID = "key_user_id"
         private const val KEY_LOGIN_ELAPSED = "key_login_elapsed"
+        private const val KEY_LOGIN_WALL = "key_login_wall"
         private const val KEY_SESSION_ACTIVE = "key_session_active"
         private const val SESSION_DURATION = 8 * 60 * 60 * 1000L
     }
+    val dialogLogin = mutableStateOf(false)
 
     suspend fun startSession(
-        perfilId: String,
-        usuarioId: String,
-        usuarioSesionId: String,
+        perfilId: Int,
+        usuarioId: Int,
+        usuarioSesionId: Int,
         correo: String,
         nombre: String,
     ) {
@@ -32,6 +36,7 @@ class SessionManager @Inject constructor(
         // session mannager
         cnx.savePersistData(usuarioId, KEY_USER_ID)
         cnx.savePersistData(elapsedTime, KEY_LOGIN_ELAPSED)
+        cnx.savePersistData(wallTime, KEY_LOGIN_WALL)
         cnx.savePersistData(true, KEY_SESSION_ACTIVE)
         // user backend data
         cnx.savePersistData(perfilId, Constants.PERFIL_ID)
@@ -39,6 +44,13 @@ class SessionManager @Inject constructor(
         cnx.savePersistData(usuarioSesionId, Constants.USUARIO_SESION_ID)
         cnx.savePersistData(correo, Constants.MAIL)
         cnx.savePersistData(nombre, Constants.NOMBRE)
+
+        val a = cnx.readPersistData(Constants.PERFIL_ID, 0)
+        val b = cnx.readPersistData(Constants.USUARIO_ID, 0)
+        val c = cnx.readPersistData(Constants.USUARIO_SESION_ID, 0)
+        val d = cnx.readPersistData(Constants.MAIL, "")
+        val e = cnx.readPersistData(Constants.NOMBRE, "")
+        Log.i("Session___", "$a $b $c $d $e")
     }
 
     suspend fun isSessionValid(): Boolean {
@@ -49,7 +61,8 @@ class SessionManager @Inject constructor(
         val currentElapsed = SystemClock.elapsedRealtime()
 
         val diff = currentElapsed - loginElapsed
-
+        val isSessionActive = diff <= SESSION_DURATION
+        Log.i("SessionActive___","${isSessionActive}")
         return diff <= SESSION_DURATION
     }
 
@@ -62,14 +75,19 @@ class SessionManager @Inject constructor(
     }
 
     suspend fun getPerfilId() = cnx.readPersistData(Constants.PERFIL_ID, 0)
-    suspend fun getUsiarioId() =cnx.readPersistData(Constants.USUARIO_ID, 0)
-    suspend fun getUsuarioSessionId() = cnx.readPersistData(Constants.USUARIO_SESION_ID, "")
+    suspend fun getUsiarioId(): Int {
+        val userId = cnx.readPersistData(Constants.USUARIO_ID, 0)
+        Log.i("USer_ID___", userId.toString())
+        return userId
+    }
+    suspend fun getUsuarioSessionId() = cnx.readPersistData(Constants.USUARIO_SESION_ID, 0)
     suspend fun getMail() = cnx.readPersistData(Constants.MAIL, "")
     suspend fun getGetName() = cnx.readPersistData(Constants.NOMBRE, "")
     suspend fun logout() {
         cnx.savePersistData(false, KEY_SESSION_ACTIVE)
         cnx.savePersistData("", KEY_USER_ID)
         cnx.savePersistData(0L, KEY_LOGIN_ELAPSED)
+        cnx.savePersistData(0L, KEY_LOGIN_WALL)
 
         cnx.savePersistData(0, Constants.PERFIL_ID)
         cnx.savePersistData(0, Constants.USUARIO_ID)

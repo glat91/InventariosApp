@@ -37,8 +37,8 @@ fun LoginScreen(navController: NavHostController) {
         password = viewModel.password,
         rememberUser = viewModel.rememberUser,
         onClickEnter = {
-            if (!viewModel.rememberUser.value) viewModel.clearUser(context)
-            else viewModel.saveUserLogin(context)
+            if (!viewModel.rememberUser.value) viewModel.clearUser()
+            else viewModel.saveUserLogin()
             viewModel.validateUserLogin(internetUse)
         },
         onClickRememberPassword = {

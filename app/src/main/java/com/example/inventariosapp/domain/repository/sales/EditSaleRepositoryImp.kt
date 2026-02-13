@@ -5,31 +5,39 @@ import com.example.inventariosapp.api.ApiService
 import com.example.inventariosapp.database.dao.PostSalesDao
 import com.example.inventariosapp.model.error.ErrorModel
 import com.example.inventariosapp.model.sales.GetSalesByIdResponse
+import com.example.inventariosapp.session.SessionManager
 import com.google.gson.Gson
 import javax.inject.Inject
 
 class EditSaleRepositoryImp @Inject constructor(
-    private val postSalesDao: PostSalesDao,
+    private val sessionManager: SessionManager,
     private val apiService: ApiService
 ) {
     suspend operator fun invoke(sale: GetSalesByIdResponse, saleId: String, internetUse: Boolean): Pair<Boolean?, String?> {
         if (internetUse){
-            val r = apiService.editSale(sale, saleId)
-            val response = try {
-                if (r.isSuccessful){ Pair(true, null) }
-                else {
-                    var error: ErrorModel
-                    val errorMsj = r.errorBody()?.string()
-                    error = Gson().fromJson(errorMsj, ErrorModel::class.java)
-                    Pair(null, error.MsgError?.errors.toString())
+            if (sessionManager.isSessionValid()) {
+                val r = apiService.editSale(sale, saleId)
+                val response = try {
+                    if (r.isSuccessful){ Pair(true, null) }
+                    else {
+                        var error: ErrorModel
+                        val errorMsj = r.errorBody()?.string()
+                        error = Gson().fromJson(errorMsj, ErrorModel::class.java)
+                        Pair(null, error.MsgError?.errors.toString())
+                    }
                 }
+                catch (e: Exception){
+                    MainActivity.mainDialogMsg.value = e.toString()
+                    MainActivity.mainDialog.value = true
+                    Pair(null, null)
+                }
+                return response
             }
-            catch (e: Exception){
-                MainActivity.mainDialogMsg.value = e.toString()
+            else{
+                MainActivity.mainDialogMsg.value ="Sesión expirada, favor de iniciar sesión"
                 MainActivity.mainDialog.value = true
-                Pair(null, null)
+                return Pair(null, "Sesión expirada, favor de iniciar sesión")
             }
-            return response
         }
         else{
             MainActivity.mainDialogMsg.value = "No hay conexión a internet"

@@ -32,8 +32,8 @@ fun PenndingSalesScreen(navController: NavHostController) {
             password = lviewModel.password,
             rememberUser = remember { mutableStateOf(false) },
             onClickEnter = {
-                if (!lviewModel.rememberUser.value) lviewModel.clearUser(cnx)
-                else lviewModel.saveUserLogin(cnx)
+                if (!lviewModel.rememberUser.value) lviewModel.clearUser()
+                else lviewModel.saveUserLogin()
                 lviewModel.validateUserLogin(MainActivity.internetBtn.value)
             },
             onClickRememberPassword = {

@@ -28,10 +28,14 @@ class GetPendingSalesRepositoryImp @Inject constructor(
                             withContext(Dispatchers.IO) {
                                 Log.i("Sales___", "update db Sales")
                                 val data = body.map { it.toDB() }
-                                salesDao.deleteAllSales()
-                                salesDao.insertAllSales(data)
-                                val total = salesDao.getAllSales()
-                                Log.i("Sales___", "Total: ${total.size}")
+                                val totalSales = salesDao.getAllSales()
+                                Log.i("Sales___", "Save: ${totalSales.size < data.size}")
+                                if (totalSales.size < data.size){
+                                    salesDao.deleteAllSales()
+                                    salesDao.insertAllSales(data)
+                                    val total = salesDao.getAllSales()
+                                    Log.i("Sales___", "Total: ${total.size}")
+                                }
                             }
                         }
                         catch (e: Exception) {

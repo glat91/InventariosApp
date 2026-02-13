@@ -42,8 +42,8 @@ fun SalesScreen(navController: NavHostController) {
 
     SalesView(
         search = viewModel.searchSale,
-        dateEnd = viewModel.endDate.value,
-        dateStart = viewModel.startDate.value,
+        dateEnd = MainActivity.endDate.value,
+        dateStart = MainActivity.startDate.value,
         dialogChoice = viewModel.dialogChoice,
         onSearchChangue = { viewModel.searchSale.value = it },
         onClickBack = { navController.popBackStack() },

@@ -113,6 +113,7 @@ class NewSaleViewModel @Inject constructor(
             newTotal += (precio * cantidad.toDouble()).toBigDecimal()
             Log.i("Total_Product___", "$precio * $cantidad = $newTotal")
         }
+
         sale.value = sale.value.copy(total = newTotal.toDouble())
         saleData.value = saleData.value.copy(total = newTotal.toDouble())
     }
@@ -182,7 +183,8 @@ class NewSaleViewModel @Inject constructor(
                 ArrayList(data)
             }
             else {
-                expandenSearchBarD.value = true
+                if (query.length < 8) expandenSearchBarD.value = true
+                else expandenSearchBarD.value = false
                 ArrayList(data.filter {
                     it.descripcion?.contains(query, ignoreCase = true) == true
                 })
@@ -227,12 +229,12 @@ class NewSaleViewModel @Inject constructor(
     fun createSale(){
         baseViewModel.showLoader()
         viewModelScope.launch {
+            val userId = baseViewModel.getPerfilId()
             if (baseViewModel.isSessionValid()){
                 var totalSale = 0.0
-                val userId = cnx.readPersistData(Constants.USUARIO_ID, 0)
                 val fecha = Helpers.getDateTime().replace(" ", "T")
                 for (p in products){
-                    totalSale += (p.PrecioVenta!! + p.Cantidad!!)
+                    totalSale += (p.PrecioVenta!! * p.Cantidad!!)
                     newProducts.value.add(
                         PostSaleProductModel(
                             cantidad = p.CantidadSolicitada,

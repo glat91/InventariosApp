@@ -34,8 +34,6 @@ class SalesViewModel @Inject constructor(
     var selectedDate = mutableStateOf(LocalDate.now())
     val dialogChoice = mutableStateOf(false)
     var showDatePicker = mutableStateOf(false)
-    val startDate = mutableStateOf("")
-    val endDate = mutableStateOf("")
     @OptIn(ExperimentalMaterial3Api::class)
     fun updateDateInput(datePickerState: DatePickerState){
         val millis = datePickerState.selectedDateMillis
@@ -46,9 +44,9 @@ class SalesViewModel @Inject constructor(
                 .toLocalDate()
         }
         if (dialogChoice.value) {
-            endDate.value = selectedDate.value.toString()
+            MainActivity.endDate.value = selectedDate.value.toString()
         }
-        else startDate.value = selectedDate.value.toString()
+        else MainActivity.startDate.value = selectedDate.value.toString()
         getPendingSales()
     }
     // endregion
@@ -61,15 +59,15 @@ class SalesViewModel @Inject constructor(
         viewModelScope.launch{
             val internetUse = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
             MainActivity.internetBtn.value = internetUse
-            if (startDate.value.isBlank() && endDate.value.isBlank()) {
-                startDate.value = Helpers.getYesterday()
-                endDate.value = Helpers.getTomrrow()
+            if (MainActivity.startDate.value.isBlank() && MainActivity.endDate.value.isBlank()) {
+                MainActivity.startDate.value = Helpers.getYesterday()
+                MainActivity.endDate.value = Helpers.getTomrrow()
             } else {
-                if (startDate.value.isBlank()) { startDate.value = Helpers.getDate() }
-                if (endDate.value.isBlank()) { endDate.value = Helpers.getTomrrow() }
+                if (MainActivity.startDate.value.isBlank()) { MainActivity.startDate.value = Helpers.getDate() }
+                if (MainActivity.endDate.value.isBlank()) { MainActivity.endDate.value = Helpers.getTomrrow() }
             }
             try {
-                val r = getPendingSalesUseCase(startDate.value, endDate.value, internetUse)
+                val r = getPendingSalesUseCase(MainActivity.startDate.value, MainActivity.endDate.value, internetUse)
                 if (r.first != null){ sales.value = r.first!! as ArrayList<SalesModel> }
             }
             catch (e: Exception){

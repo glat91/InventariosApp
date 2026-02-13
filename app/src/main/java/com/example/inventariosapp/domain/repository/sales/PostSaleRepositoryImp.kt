@@ -18,13 +18,11 @@ class PostSaleRepositoryImp @Inject constructor(
     private val newSales: PostSalesDao,
 ){
     suspend operator fun invoke(sales: List<PostSalesModel>?, internetUse: Boolean): Pair<Unit?, String?> {
-        if (sessionManager.isSessionValid()){
-            if (internetUse) {
+        if (internetUse){
+            if (sessionManager.isSessionValid()) {
                 val payload = ArrayList(sales ?: emptyList())
-
                 return try {
                     val response = apiService.postSale(payload)
-
                     if (response.isSuccessful) {
                         Log.i("PostSales___", "Sales enviadas correctamente")
                         Pair(Unit, null)
@@ -38,44 +36,39 @@ class PostSaleRepositoryImp @Inject constructor(
 
                         Pair(null, error.MsgError?.errors.toString())
                     }
-
                 }
-
                 catch (e: Exception) {
                     MainActivity.mainDialogMsg.value = e.toString()
                     MainActivity.mainDialog.value = true
                     Pair(null, e.message ?: "Error inesperado")
                 }
-
             }
             else {
-                return try {
-                    Log.i("PostSales___", "Guardando ventas en DB (offline)")
-                    sales?.forEach {
-                        val saleEntity = it.toEntity()
-
-                        val productsEntity = it.ventaProductos.map { product ->
-                            product.toEntity(parentId = saleEntity.id)
-                        }
-
-                        newSales.insertSaleWithProducts(
-                            sale = saleEntity,
-                            products = productsEntity
-                        )
-                    }
-                    Pair(Unit, null)
-                }
-                catch (e: Exception) {
-                    MainActivity.mainDialogMsg.value = e.toString()
-                    MainActivity.mainDialog.value = true
-                    Pair(null, e.message.toString())
-                }
+                MainActivity.mainDialogMsg.value ="Sesión expirada, favor de iniciar sesión"
+                MainActivity.mainDialog.value = true
+                return Pair(null, "Sesión expirada, favor de iniciar sesión")
             }
         }
         else {
-            MainActivity.mainDialogMsg.value ="Sesión expirada, favor de iniciar sesión"
-            MainActivity.mainDialog.value = true
-            return Pair(null, "Sesión expirada, favor de iniciar sesión")
+            return try {
+                Log.i("PostSales___", "Guardando ventas en DB (offline)")
+                sales?.forEach {
+                    val saleEntity = it.toEntity()
+                    val productsEntity = it.ventaProductos.map { product ->
+                        product.toEntity(parentId = saleEntity.id)
+                    }
+                    newSales.insertSaleWithProducts(
+                        sale = saleEntity,
+                        products = productsEntity
+                    )
+                }
+                Pair(Unit, null)
+            }
+            catch (e: Exception) {
+                MainActivity.mainDialogMsg.value = e.toString()
+                MainActivity.mainDialog.value = true
+                Pair(null, e.message.toString())
+            }
         }
     }
 }

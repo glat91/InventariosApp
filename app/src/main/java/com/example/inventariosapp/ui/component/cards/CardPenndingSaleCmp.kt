@@ -87,7 +87,7 @@ fun CardPenndingSaleCmp(
                 maxLine = 2
             )
             TextCmp(
-                text = "Subtotal: ${data.sale.total}",
+                text = "Total: ${data.sale.total}",
                 modifier = Modifier.constrainAs(total){
                     top.linkTo(fecha.bottom, PADDING_8)
                     start.linkTo(parent.start, PADDING_8)
