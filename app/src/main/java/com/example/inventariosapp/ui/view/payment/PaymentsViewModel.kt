@@ -303,6 +303,34 @@ class PaymentsViewModel @Inject constructor(
         cleanPayment()
     }
     // endregion
+    // region changue uiState
+    fun setSelectDate(data: LocalDate){ uiState = uiState.copy(selectedDate = data) }
+    fun setShowDatePicker(data: Boolean){ uiState = uiState.copy(showDatePicker = data) }
+
+    fun setStartDate(data: String){ uiState = uiState.copy(startDate = data) }
+    fun setEndDate(data: String){ uiState = uiState.copy(endDate = data) }
+    fun setDialogChoice(data: Boolean){ uiState = uiState.copy(dialogChoice = data) }
+
+    fun setClients(data: List<ClientResponseModel>){ uiState = uiState.copy(clients = data) }
+
+    fun setSelect(data: SalesModel?){ uiState = uiState.copy(select = data) }
+    fun setSales(data: List<SalesModel>){ uiState = uiState.copy(sales = data) }
+
+    fun setPayActualDate(data: String){ uiState = uiState.copy(payActualDate = data) }
+    fun setPayTotalPayment(data: String){ uiState = uiState.copy(payTotalPayment = data) }
+    fun setPayObservation(data: String){ uiState = uiState.copy(payObservation = data) }
+    fun setDialogDeposit(data: Boolean){ uiState = uiState.copy(dialogDeposit = data) }
+    fun setShowDeposit(data: Boolean){ uiState = uiState.copy(showDeposit = data) }
+    fun setPayments(data: ArrayList<PayModel>){ uiState = uiState.copy(payments = data) }
+
+    fun setDialogBT(data: Boolean){ uiState = uiState.copy(dialogBT = data) }
+    fun setPrinterUUID(data: UUID){ uiState = uiState.copy(printerUUID = data) }
+    fun setBluetoothAdapter(data: BluetoothAdapter){ uiState = uiState.copy(bluetoothAdapter = data) }
+    fun setBondedDevices(data: SnapshotStateList<BluetoothDevice>){ uiState = uiState.copy(bondedDevices = data) }
+    fun setHasPermissions(data: Boolean){ uiState = uiState.copy(hasPermissions = data) }
+
+    fun setPermissions(data: List<String>){ uiState = uiState.copy(permissions = data) }
+    // endregion
     init {
         getPendingSales()
     }

@@ -4,7 +4,9 @@ import android.content.Context
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -29,6 +31,7 @@ class SalesViewModel @Inject constructor(
     val baseViewModel: BaseViewModel,
     @ApplicationContext val cnx: Context,
 ): ViewModel() {
+    var uiState by mutableStateOf(SalesUiState())
     // region Date
     var selectedDate = mutableStateOf(LocalDate.now())
     val dialogChoice = mutableStateOf(false)
@@ -103,6 +106,15 @@ class SalesViewModel @Inject constructor(
             cnx.savePersistData(key = key, data = data)
         }
     }
+    // endregion
+    // region changue uiState
+    fun setSelectedDate(data: LocalDate){ uiState = uiState.copy(selectedDate = data) }
+    fun setDialogChoice(data: Boolean){ uiState = uiState.copy(dialogChoice = data) }
+    fun setShowDatePicker(data: Boolean){ uiState = uiState.copy(showDatePicker = data) }
+
+    fun setSearchSale(data: TextFieldValue){ uiState = uiState.copy(searchSale = data) }
+    fun setSales(data: ArrayList<SalesModel>){ uiState = uiState.copy(sales = data) }
+    fun setSalesFilter(data: ArrayList<SalesModel>){ uiState = uiState.copy(salesFilter = data) }
     // endregion
 }
 data class SalesUiState(

@@ -2,7 +2,9 @@ package com.example.inventariosapp.ui.view.user_payments
 
 import android.content.Context
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.appgeneric.model.payment.NewPayModel
@@ -25,6 +27,7 @@ class UserPaymentsViewModel @Inject constructor(
     private val newPayDao: NewPayDao,
     @ApplicationContext val cnx: Context
 ): ViewModel(){
+    var uiState by mutableStateOf(UserPaymentsUiState())
     val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
     var penndingPayments: MutableState<List<NewPayModel>> = mutableStateOf(arrayListOf())
 
@@ -56,7 +59,13 @@ class UserPaymentsViewModel @Inject constructor(
     init {
         getPenndingPayments()
     }
+    // region changue uiState
+    fun setInternetUse(data: Boolean){ uiState = uiState.copy(internetUse = data) }
+    fun setPenndingPayments(data: List<NewPayModel>){ uiState = uiState.copy(penndingPayments = data) }
+    //endregion
 }
+
+
 data class UserPaymentsUiState(
     val internetUse: Boolean = false,
     var penndingPayments: List<NewPayModel> = arrayListOf()

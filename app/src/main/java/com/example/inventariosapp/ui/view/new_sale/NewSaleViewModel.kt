@@ -2,8 +2,10 @@ package com.example.inventariosapp.ui.view.new_sale
 
 import android.util.Log
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -43,6 +45,7 @@ class NewSaleViewModel @Inject constructor(
     val baseViewModel: BaseViewModel,
     @ApplicationContext private val cnx : android.content.Context
 ) : ViewModel() {
+    var uiState by mutableStateOf(NewSaleUiState())
     val sale: MutableState<SalesModel> = mutableStateOf(SalesModel())
     val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
     val canModifyClient = mutableStateOf(true)
@@ -295,6 +298,34 @@ class NewSaleViewModel @Inject constructor(
         opcions.value.clear()
     }
     // endregion
+    // region changue uiState
+    fun setSale(data: SalesModel){ uiState = uiState.copy(sale = data) }
+    fun setInternetUse(data: Boolean){ uiState = uiState.copy(internetUse = data) }
+    fun setCanModifyClient(data: Boolean){ uiState = uiState.copy(canModifyClient = data) }
+
+    fun setExpandSearchBar(data: Boolean){ uiState = uiState.copy(expandenSearchBarS = data) }
+    fun setClient(data: TextFieldValue){ uiState = uiState.copy(client = data) }
+    fun setClients(data: List<ClientResponseModel>){ uiState = uiState.copy(clients = data) }
+    fun setOpcions(data: ArrayList<ClientResponseModel>){ uiState = uiState.copy(opcions = data) }
+    fun setEditStatus(data: Boolean){ uiState = uiState.copy(editStatus = data) }
+    fun setDialogProduct(data: Boolean){ uiState = uiState.copy(dialogProduct = data) }
+    fun setExpandSearchBarD(data: Boolean){ uiState = uiState.copy(expandenSearchBarD = data) }
+    fun setSearch(data: TextFieldValue){ uiState = uiState.copy(search = data) }
+    fun setInventory(data: ArrayList<ProductsResponseModel>){ uiState = uiState.copy(inventory = data) }
+    fun setFilterInventory(data: ArrayList<ProductsResponseModel>){ uiState = uiState.copy(filterInventory = data) }
+
+    fun setPrice(data: Double){ uiState = uiState.copy(price = data) }
+    fun setQuantity(data: String){ uiState = uiState.copy(quantity = data) }
+    fun setSerchProductId(data: Int){ uiState = uiState.copy(serchProductId = data) }
+    fun setProduct(data: ProductEntity?){ uiState = uiState.copy(product = data) }
+    fun setTotalInventory(data: ProductIdResponseModel){ uiState = uiState.copy(totalInventory = data) }
+    fun setSelectedProduct(data: ProductsResponseModel?){ uiState = uiState.copy(selectedProduct = data) }
+
+    fun setServerPostSale(data: Boolean){ uiState = uiState.copy(serverPostSale = data) }
+    fun setNewSale(data: ArrayList<PostSalesModel>){ uiState = uiState.copy(newSale = data) }
+    fun setNewClient(data: ClientResponseModel?){ uiState = uiState.copy(newClient = data) }
+    fun setNewProducts(data: ArrayList<PostSaleProductModel>){ uiState = uiState.copy(newProducts = data) }
+    // endregion
     init {
         clearSales()
         getProducts()
@@ -305,6 +336,7 @@ class NewSaleViewModel @Inject constructor(
 }
 data class NewSaleUiState(
     val sale: SalesModel = SalesModel(),
+    val internetUse: Boolean = false,
     val canModifyClient: Boolean = true,
 
     val expandenSearchBarS: Boolean = true,

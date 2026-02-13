@@ -2,7 +2,9 @@ package com.example.inventariosapp.ui.view.products
 
 import android.content.Context
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -23,6 +25,7 @@ class ProductsViewModel @Inject constructor(
     val baseViewModel: BaseViewModel,
     @ApplicationContext private val cnx: Context
 ) : ViewModel() {
+    var uiState by mutableStateOf(ProductsUiState())
     val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
     // region Productos
     val serverProducts = MutableStateFlow(false)
@@ -61,6 +64,14 @@ class ProductsViewModel @Inject constructor(
     init {
         getProducts()
     }
+    // region changue uiState
+    fun setServerProducts(data: Boolean){ uiState = uiState.copy(serverProducts = data) }
+    fun setProducts(data: ArrayList<ProductsResponseModel>){ uiState = uiState.copy(products = data) }
+
+    fun setSearch(data: TextFieldValue){ uiState = uiState.copy(search = data) }
+    fun setExpandSearchBar(data: Boolean){ uiState = uiState.copy(expandenSearchBar = data) }
+    fun setFilterData(data: ArrayList<ProductsResponseModel>){ uiState = uiState.copy(filterData = data) }
+    // endregion
 }
 data class ProductsUiState(
     val serverProducts: Boolean = false,
