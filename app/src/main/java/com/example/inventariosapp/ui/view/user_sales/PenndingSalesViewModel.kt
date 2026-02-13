@@ -7,9 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.inventariosapp.BaseViewModel
 import com.example.inventariosapp.MainActivity
-import com.example.inventariosapp.database.dao.PostSalesDao
-import com.example.inventariosapp.database.entity.PostSaleWithProducts
-import com.example.inventariosapp.database.entity.toModel
+import com.example.inventariosapp.local.dao.PostSalesDao
+import com.example.inventariosapp.local.entity.PostSaleWithProducts
+import com.example.inventariosapp.local.entity.toModel
 import com.example.inventariosapp.domain.use_case.sales.PostSaleUseCase
 import com.example.inventariosapp.util.Helpers
 import dagger.hilt.android.lifecycle.HiltViewModel

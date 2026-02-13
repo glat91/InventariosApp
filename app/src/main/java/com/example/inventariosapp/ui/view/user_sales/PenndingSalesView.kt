@@ -30,7 +30,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.inventariosapp.R
-import com.example.inventariosapp.database.entity.PostSaleWithProducts
+import com.example.inventariosapp.local.entity.PostSaleWithProducts
 import com.example.inventariosapp.ui.component.HeaderCmp
 import com.example.inventariosapp.ui.component.cards.CardPenndingSaleCmp
 import com.example.inventariosapp.ui.theme.PADDING_8

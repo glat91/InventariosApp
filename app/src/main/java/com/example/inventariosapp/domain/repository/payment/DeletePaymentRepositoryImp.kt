@@ -2,7 +2,7 @@ package com.example.inventariosapp.domain.repository.payment
 
 import com.example.inventariosapp.MainActivity
 import com.example.inventariosapp.api.ApiService
-import com.example.inventariosapp.database.dao.PayDao
+import com.example.inventariosapp.local.dao.PayDao
 import com.example.inventariosapp.session.SessionManager
 import javax.inject.Inject
 

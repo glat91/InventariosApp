@@ -1,4 +1,4 @@
-package com.example.inventariosapp.database
+package com.example.inventariosapp.local
 
 import androidx.room.TypeConverter
 import com.google.gson.Gson

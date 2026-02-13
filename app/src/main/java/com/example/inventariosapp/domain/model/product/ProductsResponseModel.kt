@@ -1,6 +1,6 @@
 package com.example.inventariosapp.domain.model.product
 
-import com.example.inventariosapp.database.entity.ProductEntity
+import com.example.inventariosapp.local.entity.ProductEntity
 import com.google.gson.annotations.SerializedName
 
 data class ProductsResponseModel(

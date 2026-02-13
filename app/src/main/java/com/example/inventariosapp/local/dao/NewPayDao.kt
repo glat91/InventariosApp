@@ -1,10 +1,10 @@
-package com.example.inventariosapp.database.dao
+package com.example.inventariosapp.local.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.inventariosapp.database.entity.NewPayEntity
+import com.example.inventariosapp.local.entity.NewPayEntity
 
 @Dao
 interface NewPayDao {

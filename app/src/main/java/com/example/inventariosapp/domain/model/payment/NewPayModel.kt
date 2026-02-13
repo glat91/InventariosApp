@@ -1,6 +1,6 @@
 package com.example.appgeneric.model.payment
 
-import com.example.inventariosapp.database.entity.NewPayEntity
+import com.example.inventariosapp.local.entity.NewPayEntity
 import com.google.gson.annotations.SerializedName
 
 data class NewPayModel(

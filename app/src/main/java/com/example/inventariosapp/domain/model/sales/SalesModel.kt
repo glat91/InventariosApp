@@ -2,7 +2,7 @@ package com.example.inventariosapp.domain.model.sales
 
 import android.os.Parcel
 import android.os.Parcelable
-import com.example.inventariosapp.database.entity.SalesEntity
+import com.example.inventariosapp.local.entity.SalesEntity
 import com.google.gson.annotations.SerializedName
 import java.util.UUID
 

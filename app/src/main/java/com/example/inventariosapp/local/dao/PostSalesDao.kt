@@ -1,13 +1,13 @@
-package com.example.inventariosapp.database.dao
+package com.example.inventariosapp.local.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import com.example.inventariosapp.database.entity.PostSaleEntity
-import com.example.inventariosapp.database.entity.PostSaleProductEntity
-import com.example.inventariosapp.database.entity.PostSaleWithProducts
+import com.example.inventariosapp.local.entity.PostSaleEntity
+import com.example.inventariosapp.local.entity.PostSaleProductEntity
+import com.example.inventariosapp.local.entity.PostSaleWithProducts
 
 @Dao
 interface PostSalesDao {

@@ -1,4 +1,4 @@
-package com.example.inventariosapp.database.entity
+package com.example.inventariosapp.local.entity
 
 import androidx.room.Embedded
 import androidx.room.Relation

@@ -1,4 +1,4 @@
-package com.example.inventariosapp.database.entity
+package com.example.inventariosapp.local.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

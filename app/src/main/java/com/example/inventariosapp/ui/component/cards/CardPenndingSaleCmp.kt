@@ -20,8 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.appgeneric.ui.component.TextCmp
-import com.example.inventariosapp.database.entity.PostSaleEntity
-import com.example.inventariosapp.database.entity.PostSaleWithProducts
+import com.example.inventariosapp.local.entity.PostSaleEntity
+import com.example.inventariosapp.local.entity.PostSaleWithProducts
 import com.example.inventariosapp.ui.theme.PADDING_4
 import com.example.inventariosapp.ui.theme.PADDING_8
 import com.example.inventariosapp.util.CustomEnums

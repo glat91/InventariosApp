@@ -4,8 +4,7 @@ import com.example.appgeneric.model.payment.NewPayModel
 import com.example.appgeneric.model.payment.toDb
 import com.example.inventariosapp.MainActivity
 import com.example.inventariosapp.api.ApiService
-import com.example.inventariosapp.database.dao.NewPayDao
-import com.example.inventariosapp.database.entity.toModel
+import com.example.inventariosapp.local.dao.NewPayDao
 import com.example.inventariosapp.session.SessionManager
 import javax.inject.Inject
 

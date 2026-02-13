@@ -2,7 +2,7 @@ package com.example.inventariosapp.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.inventariosapp.database.CompanyDatabase
+import com.example.inventariosapp.local.CompanyDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

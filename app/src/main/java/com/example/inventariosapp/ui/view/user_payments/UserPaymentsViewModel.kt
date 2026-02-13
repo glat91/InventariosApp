@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.appgeneric.model.payment.NewPayModel
 import com.example.inventariosapp.BaseViewModel
 import com.example.inventariosapp.MainActivity
-import com.example.inventariosapp.database.dao.NewPayDao
+import com.example.inventariosapp.local.dao.NewPayDao
 import com.example.inventariosapp.domain.use_case.payment.GetPenndingPaymentUseCase
 import com.example.inventariosapp.domain.use_case.payment.PostPaymentUseCase
 import com.example.inventariosapp.util.Helpers

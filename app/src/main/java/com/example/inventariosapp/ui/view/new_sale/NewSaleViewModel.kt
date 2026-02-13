@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.inventariosapp.BaseViewModel
 import com.example.inventariosapp.MainActivity
-import com.example.inventariosapp.database.entity.ProductEntity
+import com.example.inventariosapp.local.entity.ProductEntity
 import com.example.inventariosapp.domain.repository.product.GetInventarioProductoRepositoryImp
 import com.example.inventariosapp.domain.use_case.client.GetClientsUseCase
 import com.example.inventariosapp.domain.use_case.product.GetProductsUseCase

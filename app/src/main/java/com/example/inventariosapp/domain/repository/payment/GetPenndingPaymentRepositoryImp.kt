@@ -1,8 +1,8 @@
 package com.example.inventariosapp.domain.repository.payment
 
 import com.example.appgeneric.model.payment.NewPayModel
-import com.example.inventariosapp.database.dao.NewPayDao
-import com.example.inventariosapp.database.entity.toModel
+import com.example.inventariosapp.local.dao.NewPayDao
+import com.example.inventariosapp.local.entity.toModel
 import javax.inject.Inject
 
 class GetPenndingPaymentRepositoryImp @Inject constructor(

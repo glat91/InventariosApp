@@ -3,8 +3,8 @@ package com.example.inventariosapp.domain.repository.product
 import android.util.Log
 import com.example.inventariosapp.MainActivity
 import com.example.inventariosapp.api.ApiService
-import com.example.inventariosapp.database.dao.ProductDao
-import com.example.inventariosapp.database.entity.toModel
+import com.example.inventariosapp.local.dao.ProductDao
+import com.example.inventariosapp.local.entity.toModel
 import com.example.inventariosapp.domain.model.error.ErrorModel
 import com.example.inventariosapp.domain.model.product.ProductsResponseModel
 import com.example.inventariosapp.domain.model.product.toDb
