@@ -43,9 +43,11 @@ import com.example.inventariosapp.ui.component.InputWithTitleLabelCmp
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun LoginView(
-    user: MutableState<String>,
-    password: MutableState<String>,
-    rememberUser: MutableState<Boolean>,
+    user: String,
+    password: String,
+    rememberUser: Boolean,
+    onChanguerUser: (String) -> Unit,
+    onChanguerPassword: (String) -> Unit,
     onClickEnter: () -> Unit,
     onClickRememberPassword: () -> Unit,
 ) {
@@ -94,22 +96,16 @@ fun LoginView(
                                 InputWithTitleLabelCmp(
                                     modifier = Modifier.background(Color.White),
                                     labelText = "email",
-                                    textValue = user.value,
-                                    onValueChange ={
-                                        user.value = it
-                                        it
-                                    }
+                                    textValue = user,
+                                    onValueChange = {txt -> onChanguerUser(txt) }
                                 )
                                 HorizontalDivider(thickness = 20.dp, color = Color.Transparent)
                                 InputWithTitleLabelCmp(
                                     modifier = Modifier.background(Color.White),
                                     labelText = "Password",
                                     visualTransformation = PasswordVisualTransformation(),
-                                    textValue = password.value,
-                                    onValueChange = {
-                                        password.value = it
-                                        it
-                                    }
+                                    textValue = password,
+                                    onValueChange = {txt -> onChanguerPassword(txt) }
                                 )
                                 HorizontalDivider(thickness = 20.dp, color = Color.Transparent)
                                 ButtonCmp(
@@ -128,7 +124,7 @@ fun LoginView(
                                     horizontalArrangement = Arrangement.Center
                                 ) {
                                     RadioButton(
-                                        selected = rememberUser.value,
+                                        selected = rememberUser,
                                         onClick = { onClickRememberPassword() }
                                     )
                                     TextCmp(
@@ -154,9 +150,11 @@ fun LoginView(
 @Composable
 fun LoginViewPreview(){
     LoginView(
-        user = remember { mutableStateOf("mail@gmail.com") },
-        password = remember { mutableStateOf("secret") },
-        rememberUser = remember { mutableStateOf(false) },
+        user = remember { ("mail@gmail.com") },
+        password = remember { ("secret") },
+        rememberUser = remember { (false) },
+        onChanguerUser = {},
+        onChanguerPassword = {},
         onClickEnter = {},
         onClickRememberPassword = {}
     )

@@ -14,14 +14,17 @@ import com.example.inventariosapp.ui.component.Loader
 import com.example.inventariosapp.util.Constants
 
 @Composable
-fun LoginScreen(navController: NavHostController) {
-    val viewModel: LoginViewModel = hiltViewModel()
-    val navegar = viewModel.serverValidateUser.collectAsState()
-
-
+fun LoginScreen(
+    viewModel: LoginViewModel = hiltViewModel(),
+    navController: NavHostController
+) {
+    val navegar = viewModel.uiState.serverValidateUser
+    val state = viewModel.uiState
     val context = LocalContext.current
-    LaunchedEffect(navegar.value){
-        if (navegar.value){
+
+
+    LaunchedEffect(navegar){
+        if (navegar){
             navController.navigate(route = Destinations.SalesScreen.ruta){
                 launchSingleTop = true
                 popUpTo(Destinations.LoginScreen.ruta){ inclusive = true }
@@ -31,18 +34,27 @@ fun LoginScreen(navController: NavHostController) {
 
     val internetUse by viewModel.baseViewModel.internetUses.collectAsState()
 
-
     LoginView(
-        user = viewModel.user,
-        password = viewModel.password,
-        rememberUser = viewModel.rememberUser,
+        user = state.user,
+        password = state.password,
+        rememberUser = state.rememberUser,
         onClickEnter = {
-            if (!viewModel.rememberUser.value) viewModel.clearUser()
+            if (!viewModel.uiState.rememberUser) viewModel.clearUser()
             else viewModel.saveUserLogin()
-            viewModel.validateUserLogin(internetUse)
+            viewModel.validateUserLogin(
+                internetUse,
+                onSuccess = {
+                    navController.navigate(route = Destinations.SalesScreen.ruta){
+                        launchSingleTop = true
+                        popUpTo(Destinations.LoginScreen.ruta){ inclusive = true }
+                    }
+                }
+            )
         },
+        onChanguerUser = { viewModel.onUserChange(it) },
+        onChanguerPassword = { viewModel.onPasswordChange(it) },
         onClickRememberPassword = {
-            viewModel.rememberUser.value = !viewModel.rememberUser.value
+            viewModel.onRememberUserChange(!viewModel.uiState.rememberUser)
         }
     )
 

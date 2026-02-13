@@ -2,7 +2,10 @@ package com.example.inventariosapp.ui.view.login
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.inventariosapp.BaseViewModel
@@ -26,16 +29,13 @@ class LoginViewModel @Inject constructor(
     val baseViewModel: BaseViewModel,
     @ApplicationContext val cnx: Context
 ) : ViewModel() {
+    var uiState by mutableStateOf(LoginUiState())
     // region User Login
-    val user = mutableStateOf("")
-    val password = mutableStateOf("")
-    val rememberUser = mutableStateOf(false)
-    val serverValidateUser = MutableStateFlow(false)
-    fun validateUserLogin(internetUse: Boolean){
+    fun validateUserLogin(internetUse: Boolean, onSuccess: () -> Unit = {}){
         baseViewModel.showLoader()
         viewModelScope.launch {
             if (internetUse){
-                val v = valitdaeUserUseCase(user.value, password.value)
+                val v = valitdaeUserUseCase(uiState.user, uiState.password)
                 if (v.first != null){
                     val perfilID = v.first!!.perfilId!!
                     val usuarioID = v.first!!.usuarioId!!
@@ -54,7 +54,7 @@ class LoginViewModel @Inject constructor(
                     val c = cnx.readPersistData(Constants.USUARIO_SESION_ID, "")
                     val d = cnx.readPersistData(Constants.MAIL, "")
                     val e = cnx.readPersistData(Constants.NOMBRE, "")
-                    Log.i("PErsist___", "$a $b $c $d $e")
+                    Log.i("Persist___", "$a $b $c $d $e")
 
                     baseViewModel.startSession(
                         perfilID,
@@ -64,7 +64,7 @@ class LoginViewModel @Inject constructor(
                         nombre
                     )
                     delay(4000)
-                    serverValidateUser.value = true
+                    onSuccess()
                     baseViewModel.dialogLogin.value = false
                 }
                 else {
@@ -75,7 +75,7 @@ class LoginViewModel @Inject constructor(
                 }
             }
             else{
-                serverValidateUser.value = true
+                uiState.serverValidateUser = true
             }
             baseViewModel.hideLoader()
         }
@@ -83,7 +83,7 @@ class LoginViewModel @Inject constructor(
     // endregion
     fun saveUserLogin(){
         viewModelScope.launch {
-            cnx.savePersistData(key = Constants.REMEMBER_PASSWORD, data = "${user.value}/${password.value}")
+            cnx.savePersistData(key = Constants.REMEMBER_PASSWORD, data = "${uiState.user}/${uiState.password}")
         }
     }
     fun clearUser(){
@@ -96,24 +96,43 @@ class LoginViewModel @Inject constructor(
             cnx.savePersistData(key = key, data = data)
         }
     }
+    // region Update Vars
+    fun onUserChange(newValue: String) {
+        uiState = uiState.copy(user = newValue)
+    }
+    fun onPasswordChange(newValue: String) {
+        uiState = uiState.copy(password = newValue)
+    }
+    fun onRememberUserChange(newValue: Boolean) {
+        uiState = uiState.copy(rememberUser = newValue)
+    }
+    fun onServerValidateUserChange(newValue: Boolean) {
+        uiState = uiState.copy(serverValidateUser = newValue)
+    }
+    // endregion
 
     init {
         viewModelScope.launch {
             baseViewModel.showLoader()
             val session = baseViewModel.isSessionValid()
-            if (session){
-                serverValidateUser.value = true
-            }
+            if (session){ uiState.serverValidateUser = true }
             else{
                 val data = cnx.readPersistData(key = Constants.REMEMBER_PASSWORD, default = "")
                 if (!data.isBlank()){
                     val s = data.split("/")
-                    user.value = s[0]
-                    password.value = s[1]
-                    rememberUser.value = true
+                    onUserChange(s[0])
+                    onPasswordChange(s[1])
+                    onRememberUserChange(true)
                 }
             }
             baseViewModel.hideLoader()
         }
     }
 }
+
+data class LoginUiState(
+    var user: String = "",
+    var password: String = "",
+    var rememberUser: Boolean = false,
+    var serverValidateUser: Boolean = false,
+)

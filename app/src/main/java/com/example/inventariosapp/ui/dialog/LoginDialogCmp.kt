@@ -29,9 +29,11 @@ import com.example.inventariosapp.ui.theme.UI_Backround_Btn_Accept
 
 @Composable
 fun LoginDialogCmp(
-    user: MutableState<String>,
-    password: MutableState<String>,
-    rememberUser: MutableState<Boolean>,
+    user:String,
+    password: String,
+    rememberUser: Boolean,
+    onChanguerUser: (String) -> Unit,
+    onChanguerPassword: (String) -> Unit,
     onClickEnter: () -> Unit,
     onClickRememberPassword: () -> Unit,
 ) {
@@ -47,22 +49,16 @@ fun LoginDialogCmp(
                 InputWithTitleLabelCmp(
                     modifier = Modifier.background(Color.White),
                     labelText = "email",
-                    textValue = user.value,
-                    onValueChange ={
-                        user.value = it
-                        it
-                    }
+                    textValue = user,
+                    onValueChange ={ onChanguerUser(it) }
                 )
                 HorizontalDivider(thickness = 20.dp, color = Color.Transparent)
                 InputWithTitleLabelCmp(
                     modifier = Modifier.background(Color.White),
                     labelText = "Password",
                     visualTransformation = PasswordVisualTransformation(),
-                    textValue = password.value,
-                    onValueChange = {
-                        password.value = it
-                        it
-                    }
+                    textValue = password,
+                    onValueChange = { onChanguerPassword(it) }
                 )
                 HorizontalDivider(thickness = 20.dp, color = Color.Transparent)
                 ButtonCmp(
@@ -81,7 +77,7 @@ fun LoginDialogCmp(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     RadioButton(
-                        selected = rememberUser.value,
+                        selected = rememberUser,
                         onClick = { onClickRememberPassword() }
                     )
                     TextCmp(
@@ -102,10 +98,12 @@ fun LoginDialogCmp(
 @Composable
 fun LoginDialogCmpPreview() {
     LoginDialogCmp(
-        user = remember { mutableStateOf("mail@gmail.com") },
-        password = remember { mutableStateOf("secret") },
-        rememberUser = remember { mutableStateOf(false) },
+        user = remember { ("mail@gmail.com") },
+        password = remember { ("secret") },
+        rememberUser = remember { (false) },
         onClickEnter = {},
-        onClickRememberPassword = {}
+        onClickRememberPassword = {},
+        onChanguerUser = {},
+        onChanguerPassword = {  }
     )
 }

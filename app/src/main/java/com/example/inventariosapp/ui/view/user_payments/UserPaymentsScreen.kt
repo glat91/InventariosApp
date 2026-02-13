@@ -28,16 +28,18 @@ fun UserPaymentsScreen(navController: NavHostController) {
     // region dialog
     if (viewModel.baseViewModel.dialogLogin.value){
         LoginDialogCmp(
-            user = lviewModel.user,
-            password = lviewModel.password,
-            rememberUser = remember { mutableStateOf(false) },
+            user = lviewModel.uiState.user,
+            password = lviewModel.uiState.password,
+            rememberUser = (false),
+            onChanguerUser = { lviewModel.onUserChange(it) },
+            onChanguerPassword = { lviewModel.onPasswordChange(it) },
             onClickEnter = {
-                if (!lviewModel.rememberUser.value) lviewModel.clearUser()
+                if (!lviewModel.uiState.rememberUser) lviewModel.clearUser()
                 else lviewModel.saveUserLogin()
                 lviewModel.validateUserLogin(MainActivity.internetBtn.value)
             },
             onClickRememberPassword = {
-                lviewModel.rememberUser.value = !lviewModel.rememberUser.value
+                lviewModel.uiState.rememberUser = !lviewModel.uiState.rememberUser
             }
         )
     }
