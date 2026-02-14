@@ -28,19 +28,17 @@ class UserPaymentsViewModel @Inject constructor(
     @ApplicationContext val cnx: Context
 ): ViewModel(){
     var uiState by mutableStateOf(UserPaymentsUiState())
-    val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
-    var penndingPayments: MutableState<List<NewPayModel>> = mutableStateOf(arrayListOf())
-
     fun setPayment(){
         baseViewModel.showLoader()
         viewModelScope.launch {
+            setInternetUse(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
             val userID = baseViewModel.getUsiarioId()
-            penndingPayments.value.map { 
+            uiState.penndingPayments.map {
                 it.usuarioSesionId = userID
                 it.tipoConexionId = 2
                 it.origenId = userID
             }
-            var r = postPaymentUseCase(internetUse = baseViewModel.internetBtn.value, newPay = penndingPayments.value)
+            var r = postPaymentUseCase(internetUse = baseViewModel.internetBtn.value, newPay = uiState.penndingPayments)
             if (r.isSuccess){
                 newPayDao.deleteAll()
                 MainActivity.mainDialogMsg.value = "Pago realizado con exito"
@@ -49,23 +47,15 @@ class UserPaymentsViewModel @Inject constructor(
             baseViewModel.hideLoader()
         }
     }
-
     fun getPenndingPayments() {
-        viewModelScope.launch {
-            penndingPayments.value = getPenndingPaymentUseCase()
-        }
+        viewModelScope.launch { setPenndingPayments(getPenndingPaymentUseCase()) }
     }
-
-    init {
-        getPenndingPayments()
-    }
+    init { getPenndingPayments() }
     // region changue uiState
     fun setInternetUse(data: Boolean){ uiState = uiState.copy(internetUse = data) }
     fun setPenndingPayments(data: List<NewPayModel>){ uiState = uiState.copy(penndingPayments = data) }
     //endregion
 }
-
-
 data class UserPaymentsUiState(
     val internetUse: Boolean = false,
     var penndingPayments: List<NewPayModel> = arrayListOf()

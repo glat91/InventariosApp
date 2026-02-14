@@ -9,9 +9,10 @@ fun ProductsScreen(navController: NavHostController) {
     val viewModel: ProductsViewModel = hiltViewModel()
 
     InventoryView(
-        search = viewModel.search,
+        search = viewModel.uiState.search,
         onClickBack = { navController.popBackStack() },
         onClickMenu = { viewModel.baseViewModel.openMenu() },
-        data = viewModel.getFilter()
+        data = viewModel.getFilter(),
+        onChanguedSearch = { viewModel.setSearch(it) }
     )
 }

@@ -50,12 +50,11 @@ fun PaymentsView(
     dateStart: String,
     dateEnd: String,
     data: List<SalesModel>,
-    clickDate: MutableState<Boolean>,
+    clickDate:Boolean,
     onClickBack: () -> Unit,
     onClickMenu: () -> Unit,
     onClickDate: () -> Unit,
     onClickRow: (SalesModel) -> Unit,
-    onClickAdd: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -96,7 +95,7 @@ fun PaymentsView(
                         InputWithTitleLabelCmp(
                             modifier = Modifier.fillMaxWidth(.5f),
                             textFieldModifier = Modifier.clickable{
-                                clickDate.value = false
+                                clickDate = false
                                 onClickDate() },
                             labelText = "Fecha",
                             textValue = dateStart,
@@ -125,7 +124,7 @@ fun PaymentsView(
                         InputWithTitleLabelCmp(
                             modifier = Modifier,
                             textFieldModifier = Modifier.clickable{
-                                clickDate.value = true
+                                clickDate = true
                                 onClickDate() },
                             labelText = "Fecha",
                             textValue = dateEnd,
@@ -189,12 +188,11 @@ fun SellViewPrevie(){
     PaymentsView(
         dateStart = "2025-06-07",
         dateEnd = "2025-06-07",
-        clickDate = remember { mutableStateOf(false) },
+        clickDate =false,
         onClickDate = {},
         onClickBack = {},
         onClickMenu = {},
         data = arrayListOf(),
         onClickRow = {},
-        onClickAdd = {}
     )
 }

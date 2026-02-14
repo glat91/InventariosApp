@@ -45,8 +45,9 @@ import java.time.LocalDate
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InventoryView(
-    search: MutableState<TextFieldValue>,
-    data: MutableState<ArrayList<ProductsResponseModel>>,
+    search: TextFieldValue,
+    data: ArrayList<ProductsResponseModel>,
+    onChanguedSearch: (TextFieldValue) -> Unit,
     onClickBack: () -> Unit,
     onClickMenu: () -> Unit,
 ) {
@@ -88,7 +89,7 @@ fun InventoryView(
                     SearchBarCmp(
                         state = search,
                         opcionContent = {},
-                        onChangeText ={txt -> search.value = txt },
+                        onChangeText ={txt -> onChanguedSearch(txt) },
                         labelText = "Nombre producto"
                     )
                 }
@@ -104,7 +105,7 @@ fun InventoryView(
                         modifier = Modifier.fillMaxSize()
                     ) {
                         var switchColor = true
-                        items(data.value) { product ->
+                        items(data) { product ->
                             var colorRow = if (switchColor) UI_List_Row_1 else UI_List_Row_2
                             product.costo
                             CardInventoryCmp(
@@ -147,9 +148,10 @@ fun SearchViewPreview(){
         initialSelectedDateMillis = selectedDate.toEpochDay() * 24 * 60 * 60 * 1000
     )
     InventoryView(
-        search = remember { mutableStateOf(TextFieldValue("")) },
+        search = TextFieldValue(""),
         onClickBack = {},
         onClickMenu = {},
-        data = mutableStateOf( arrayListOf())
+        data = arrayListOf(),
+        onChanguedSearch = {}
     )
 }

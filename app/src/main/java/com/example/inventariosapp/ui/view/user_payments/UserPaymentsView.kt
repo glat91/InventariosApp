@@ -19,9 +19,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,7 +40,7 @@ import com.example.inventariosapp.util.CustomEnums
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserPaymentsView(
-    data: MutableState<List<NewPayModel>>,
+    data: List<NewPayModel>,
     onClickBack: () -> Unit,
     onClickMenu: () -> Unit,
     onClickUpdate: () -> Unit,
@@ -78,7 +75,7 @@ fun UserPaymentsView(
                     elevation = CardDefaults.cardElevation(4.dp)
                 ){
                     LazyColumn(modifier = Modifier.fillMaxSize()) {
-                        items(data.value) { pay ->
+                        items(data) { pay ->
                             HorizontalDivider(thickness = PADDING_4, color = Color.Transparent, )
                             CardPenndingPayCmp(
                                 modifier = Modifier,
@@ -119,7 +116,7 @@ fun UserPaymentsView(
 @Composable
 fun UserPaymentsViewPreview(){
     UserPaymentsView(
-        data = remember { mutableStateOf(arrayListOf()) },
+        data = arrayListOf(),
         onClickBack = {},
         onClickMenu = {},
         onClickUpdate = {}

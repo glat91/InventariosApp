@@ -91,13 +91,13 @@ fun PaymentsScreen(navController: NavHostController) {
 
     PaymentsView(
         data = viewModel.sales.value,
-        dateStart = viewModel.startDate.value,
-        dateEnd = viewModel.endDate.value,
-        clickDate = viewModel.dialogChoice,
+        dateStart = viewModel.uiState.startDate,
+        dateEnd = viewModel.uiState.endDate,
+        clickDate = viewModel.uiState.dialogChoice,
         onClickBack = { navController.popBackStack() },
         onClickMenu = { viewModel.baseViewModel.openMenu() },
-        onClickAdd = { viewModel.dialogDeposit.value = true},
-        onClickDate = { viewModel.showDatePicker.value = true },
+        onClickAdd = { viewModel.setDialogDeposit(true) },
+        onClickDate = { viewModel.setShowDatePicker(true) },
         onClickRow = {
             viewModel.select.value = it
             viewModel.getPayment(it.folio.toString())

@@ -33,34 +33,30 @@ class SalesViewModel @Inject constructor(
 ): ViewModel() {
     var uiState by mutableStateOf(SalesUiState())
     // region Date
-    var selectedDate = mutableStateOf(LocalDate.now())
-    val dialogChoice = mutableStateOf(false)
-    var showDatePicker = mutableStateOf(false)
     @OptIn(ExperimentalMaterial3Api::class)
     fun updateDateInput(datePickerState: DatePickerState){
         val millis = datePickerState.selectedDateMillis
 
         if (millis != null) {
-            selectedDate.value = Instant.ofEpochMilli(millis)
-                .atZone(ZoneOffset.UTC)
-                .toLocalDate()
+            setSelectedDate(
+                Instant.ofEpochMilli(millis)
+                    .atZone(ZoneOffset.UTC)
+                    .toLocalDate()
+            )
         }
-        if (dialogChoice.value) {
-            MainActivity.endDate.value = selectedDate.value.toString()
+        if (uiState.dialogChoice) {
+            MainActivity.endDate.value = uiState.selectedDate.toString()
         }
-        else MainActivity.startDate.value = selectedDate.value.toString()
+        else MainActivity.startDate.value = uiState.selectedDate.toString()
         getPendingSales()
     }
     // endregion
     // region Sales
-    val searchSale = mutableStateOf(TextFieldValue(""))
-    val sales: MutableState<ArrayList<SalesModel>> = mutableStateOf(arrayListOf())
-    val salesFilter: MutableState<ArrayList<SalesModel>> = mutableStateOf(arrayListOf())
     fun getPendingSales(){
         baseViewModel.showLoader()
         viewModelScope.launch{
-            val internetUse = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
-            MainActivity.internetBtn.value = internetUse
+            setInternetUse(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
+            MainActivity.internetBtn.value = uiState.internetUse
             if (MainActivity.startDate.value.isBlank() && MainActivity.endDate.value.isBlank()) {
                 MainActivity.startDate.value = Helpers.getYesterday()
                 MainActivity.endDate.value = Helpers.getTomrrow()
@@ -69,8 +65,10 @@ class SalesViewModel @Inject constructor(
                 if (MainActivity.endDate.value.isBlank()) { MainActivity.endDate.value = Helpers.getTomrrow() }
             }
             try {
-                val r = getPendingSalesUseCase(MainActivity.startDate.value, MainActivity.endDate.value, internetUse)
-                if (r.first != null){ sales.value = r.first!! as ArrayList<SalesModel> }
+                val r = getPendingSalesUseCase(MainActivity.startDate.value, MainActivity.endDate.value, uiState.internetUse)
+                if (r.first != null){
+                    setSales(r.first!! as ArrayList<SalesModel>)
+                }
             }
             catch (e: Exception){
                 MainActivity.mainDialogMsg.value = e.toString()
@@ -79,15 +77,16 @@ class SalesViewModel @Inject constructor(
             baseViewModel.hideLoader()
         }
     }
-    fun getFilterSales(): MutableState<ArrayList<SalesModel>> {
-        salesFilter.value = if (searchSale.value.text.isBlank()){
-            sales.value
-        } else ArrayList(
-            sales.value.filter {
-                it.nombreCliente!!.contains(searchSale.value.text, ignoreCase = true)
-            }
-        )
-        return salesFilter
+    fun getFilterSales(): ArrayList<SalesModel> {
+        setSalesFilter(
+            if (uiState.searchSale.text.isBlank()){
+                uiState.sales
+            } else ArrayList(
+                uiState.sales.filter {
+                    it.nombreCliente!!.contains(uiState.searchSale.text, ignoreCase = true)
+                }
+        ))
+        return uiState.salesFilter
     }
     // endregion
     // region Persist Data
@@ -108,6 +107,7 @@ class SalesViewModel @Inject constructor(
     }
     // endregion
     // region changue uiState
+    fun setInternetUse(data: Boolean){ uiState = uiState.copy(internetUse = data) }
     fun setSelectedDate(data: LocalDate){ uiState = uiState.copy(selectedDate = data) }
     fun setDialogChoice(data: Boolean){ uiState = uiState.copy(dialogChoice = data) }
     fun setShowDatePicker(data: Boolean){ uiState = uiState.copy(showDatePicker = data) }
@@ -118,11 +118,12 @@ class SalesViewModel @Inject constructor(
     // endregion
 }
 data class SalesUiState(
+    var internetUse: Boolean = false,
     var selectedDate: LocalDate = LocalDate.now(),
-    val dialogChoice: Boolean = false,
+    var dialogChoice: Boolean = false,
     var showDatePicker: Boolean = false,
 
-    val searchSale: TextFieldValue = TextFieldValue(""),
+    var searchSale: TextFieldValue = TextFieldValue(""),
     val sales: ArrayList<SalesModel> = arrayListOf(),
     val salesFilter: ArrayList<SalesModel> = arrayListOf(),
 )

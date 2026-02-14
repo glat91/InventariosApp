@@ -34,7 +34,7 @@ import com.example.appgeneric.ui.component.TextCmp
 @Composable
 fun SearchBarCmp(
     modifier: Modifier = Modifier,
-    state: MutableState<TextFieldValue>,
+    state: TextFieldValue,
     labelText: String = "",
     canModify: Boolean = true,
     opcionContent: @Composable () -> Unit,
@@ -48,7 +48,7 @@ fun SearchBarCmp(
         TextField(modifier = Modifier
             .height(55.dp)
             .fillMaxWidth(),
-            value = state.value,
+            value = state,
             enabled = canModify,
             onValueChange = { if (canModify) onChangeText(it) },
             textStyle = TextStyle(color = Color.Black.copy(0.60f), fontSize = 16.sp),
@@ -62,7 +62,7 @@ fun SearchBarCmp(
                 )
             },
             trailingIcon = {
-                if (state.value.text != "") {
+                if (state.text != "") {
                     IconButton(
                         onClick = {
                             if (canModify) {
@@ -112,7 +112,7 @@ fun SearchCmpPreview(){
     opcions.value.add("Parametro numero 4")
     opcions.value.add("Parametro numero 5")
     SearchBarCmp(
-        state = remember {mutableStateOf(TextFieldValue("Para"))},
+        state = TextFieldValue("Para"),
         onChangeText ={},
         opcionContent = {},
         labelText = "Seach",

@@ -40,14 +40,17 @@ fun SalesScreen(navController: NavHostController) {
     }
 
     SalesView(
-        search = viewModel.searchSale,
+        search = viewModel.uiState.searchSale,
         dateEnd = MainActivity.endDate.value,
         dateStart = MainActivity.startDate.value,
-        dialogChoice = viewModel.dialogChoice,
-        onSearchChangue = { viewModel.searchSale.value = it },
+        dialogChoice = viewModel.uiState.dialogChoice,
+        onSearchChangue = { viewModel.setSearchSale(it)},
         onClickBack = { navController.popBackStack() },
         onClickMenu = { viewModel.baseViewModel.openMenu() },
-        onClickDate = { viewModel.showDatePicker.value = true },
+        onClickDate = {
+            viewModel.setDialogChoice(false)
+            viewModel.setShowDatePicker(true)
+        },
         onclickRow = {
             navController.currentBackStackEntry?.savedStateHandle?.set("sale", it)
             navController.navigate(route = Destinations.NewSaleScreen.ruta){
@@ -63,20 +66,20 @@ fun SalesScreen(navController: NavHostController) {
         data = viewModel.getFilterSales()
     )
     // region Dialog Date
-    if (viewModel.showDatePicker.value) {
+    if (viewModel.uiState.showDatePicker) {
         DatePickerDialog(
-            onDismissRequest = { viewModel.showDatePicker.value = false },
+            onDismissRequest = { viewModel.setShowDatePicker(false) },
             confirmButton = {
                 TextButton(
                     onClick = {
                         viewModel.updateDateInput(datePickerState)
-                        viewModel.showDatePicker.value = false
+                        viewModel.setShowDatePicker(false)
                     }) {
                     TextCmp("OK")
                 }
             },
             dismissButton = {
-                TextButton(onClick = { viewModel.showDatePicker.value = false }) {
+                TextButton(onClick = { viewModel.setShowDatePicker(false) }) {
                     TextCmp("Cancelar")
                 }
             }

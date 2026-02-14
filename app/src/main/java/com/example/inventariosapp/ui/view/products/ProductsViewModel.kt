@@ -26,45 +26,43 @@ class ProductsViewModel @Inject constructor(
     @ApplicationContext private val cnx: Context
 ) : ViewModel() {
     var uiState by mutableStateOf(ProductsUiState())
-    val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
     // region Productos
-    val serverProducts = MutableStateFlow(false)
-    val products: MutableState<ArrayList<ProductsResponseModel>> = mutableStateOf(arrayListOf())
     fun getProducts(){
         baseViewModel.showLoader()
         viewModelScope.launch {
-            val v = getProductsUseCase(internetUse.value)
+            setInternetUse(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
+            val v = getProductsUseCase(uiState.internetUse)
             if (v.first != null){
-                products.value = v.first!! as ArrayList<ProductsResponseModel>
-                serverProducts.value = true
+                setProducts(v.first!! as ArrayList<ProductsResponseModel>)
+                setServerProducts(true)
             }
             baseViewModel.hideLoader()
         }
     }
     // endregion
     // region Search
-    val search = mutableStateOf(TextFieldValue(""))
-    val expandenSearchBar = mutableStateOf(false)
-    val filterData: MutableState<ArrayList<ProductsResponseModel>> = mutableStateOf(arrayListOf())
-    fun getFilter(): MutableState<ArrayList<ProductsResponseModel>> {
-        filterData.value = if (search.value.text.isBlank()) {
-            expandenSearchBar.value = false
-            products.value
-        }
-        else {
-            expandenSearchBar.value = true
-            products.value.filter {
-                it.descripcion!!.contains(search.value.text, ignoreCase = true)
+    fun getFilter(): ArrayList<ProductsResponseModel> {
+        setFilterData(
+            if (uiState.search.text.isBlank()) {
+                setExpandSearchBar(false)
+                uiState.products
             }
-        } as ArrayList<ProductsResponseModel>
+            else {
+                setExpandSearchBar(true)
+                uiState.products.filter {
+                    it.descripcion!!.contains(uiState.search.text, ignoreCase = true)
+                }
+            } as ArrayList<ProductsResponseModel>
+        )
 
-        return filterData
+        return uiState.filterData
     }
     // endregion
     init {
         getProducts()
     }
     // region changue uiState
+    fun setInternetUse(data: Boolean){ uiState = uiState.copy(internetUse = data) }
     fun setServerProducts(data: Boolean){ uiState = uiState.copy(serverProducts = data) }
     fun setProducts(data: ArrayList<ProductsResponseModel>){ uiState = uiState.copy(products = data) }
 
@@ -74,6 +72,7 @@ class ProductsViewModel @Inject constructor(
     // endregion
 }
 data class ProductsUiState(
+    var internetUse: Boolean = false,
     val serverProducts: Boolean = false,
     val products: ArrayList<ProductsResponseModel> = arrayListOf(),
 

@@ -1,11 +1,6 @@
 package com.example.inventariosapp.ui.view.user_payments
 
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.inventariosapp.MainActivity
@@ -19,7 +14,7 @@ fun UserPaymentsScreen(navController: NavHostController) {
 
     // region Screen
     UserPaymentsView(
-        data = viewModel.penndingPayments,
+        data = viewModel.uiState.penndingPayments,
         onClickBack = { navController.popBackStack() },
         onClickMenu = { viewModel.baseViewModel.openMenu() },
         onClickUpdate = { viewModel.setPayment() }

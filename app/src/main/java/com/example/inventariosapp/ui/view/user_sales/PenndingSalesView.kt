@@ -42,7 +42,7 @@ import com.example.inventariosapp.util.CustomEnums
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PenndingSalesView(
-    data: MutableState<ArrayList<PostSaleWithProducts>>,
+    data: ArrayList<PostSaleWithProducts>,
     onClickBack: () -> Unit,
     onClickMenu: () -> Unit,
     onclickRow: (PostSaleWithProducts) -> Unit,
@@ -83,7 +83,7 @@ fun PenndingSalesView(
                         modifier = Modifier.fillMaxSize()
                     ) {
                         var switchColor = true
-                        items(data.value) { sale ->
+                        items(data) { sale ->
                             val c = if (sale.sale.ventaId == 0) CustomEnums.StatusType.PENDING
                             else CustomEnums.StatusType.ERROR
                             CardPenndingSaleCmp(
@@ -127,7 +127,7 @@ fun PenndingSalesView(
 @Preview(showBackground = true)
 private fun PenndingSalesViewPreview(){
     PenndingSalesView(
-        data = remember { mutableStateOf(arrayListOf()) },
+        data = arrayListOf(),
         onClickBack = {  },
         onClickMenu = {  },
         onclickRow = {  },

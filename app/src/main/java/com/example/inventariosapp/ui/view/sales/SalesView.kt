@@ -53,11 +53,11 @@ import com.example.inventariosapp.ui.theme.UI_List_Row_2
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SalesView(
-    search: MutableState<TextFieldValue>,
+    search: TextFieldValue,
     dateStart: String,
     dateEnd: String,
-    data: MutableState<ArrayList<SalesModel>>,
-    dialogChoice: MutableState<Boolean>,
+    data: ArrayList<SalesModel>,
+    dialogChoice: Boolean,
     onSearchChangue: (TextFieldValue) -> Unit,
     onClickBack: () -> Unit,
     onClickMenu: () -> Unit,
@@ -118,7 +118,7 @@ fun SalesView(
                         InputWithTitleLabelCmp(
                             modifier = Modifier.weight(1f),
                             textFieldModifier = Modifier.clickable{
-                                dialogChoice.value = false
+
                                 onClickDate()
                             },
                             labelText = "Fecha Inicio",
@@ -147,10 +147,7 @@ fun SalesView(
                     ){
                         InputWithTitleLabelCmp(
                             modifier = Modifier.weight(1f),
-                            textFieldModifier = Modifier.clickable{
-                                dialogChoice.value = true
-                                onClickDate()
-                            },
+                            textFieldModifier = Modifier.clickable{ onClickDate() },
                             labelText = "Fecha Fin",
                             textValue = dateEnd,
                             onValueChange ={ it },
@@ -181,7 +178,7 @@ fun SalesView(
                         modifier = Modifier.fillMaxSize()
                     ) {
                         var switchColor = true
-                        items(data.value) { client ->
+                        items(data) { client ->
                             var colorRow = if (switchColor) UI_List_Row_1 else UI_List_Row_2
                             CardSaleCmp(
                                 modifier = Modifier.clickable { onclickRow(client) },
@@ -234,16 +231,16 @@ fun SalesViewPreview(){
     opcions.value.add("PArametro numero 4")
     opcions.value.add("PArametro numero 5")
     SalesView(
-        search = mutableStateOf(TextFieldValue("dfdfd")),
+        search = TextFieldValue("dfdfd"),
         dateEnd = "",
         dateStart = "",
-        dialogChoice = remember { mutableStateOf(false) },
+        dialogChoice =false,
         onClickBack = {},
         onClickMenu = {},
         onClickDate = {},
         onclickRow = {},
         onClickAdd = {},
-        data = mutableStateOf(arrayListOf()),
+        data = arrayListOf(),
         onSearchChangue = {}
     )
 }

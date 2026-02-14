@@ -61,14 +61,7 @@ class PaymentsViewModel @Inject constructor(
     @ApplicationContext private val cnx: Context
 ) : ViewModel() {
     var uiState by mutableStateOf(PaymentsUiState())
-
     // region Date
-    var selectedDate = mutableStateOf(LocalDate.now())
-    var showDatePicker = mutableStateOf(false)
-
-    val startDate = mutableStateOf("")
-    val endDate = mutableStateOf("")
-    val dialogChoice = mutableStateOf(false)
 
     @OptIn(ExperimentalMaterial3Api::class)
     fun updateDateInput(datePickerState: DatePickerState){
