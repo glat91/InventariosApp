@@ -22,60 +22,56 @@ fun NewSaleScreen(navController: NavHostController) {
     val viewModel: NewSaleViewModel = hiltViewModel()
     val lviewModel: LoginViewModel = hiltViewModel()
     val editStatus = viewModel.editStatus.collectAsState()
-    val postSale = viewModel.serverPostSale.collectAsState()
-
     // region Previous Data
     LaunchedEffect(true){
         try{
-            viewModel.sale.value = navController.previousBackStackEntry?.savedStateHandle?.get<SalesModel>("sale")!!
+            viewModel.uiState.sale = navController.previousBackStackEntry?.savedStateHandle?.get<SalesModel>("sale")!!
             viewModel.getSale()
         }
         catch (e: Exception){ }
-        viewModel.client.value = TextFieldValue(viewModel.sale.value.nombreCliente ?: "")
+        viewModel.uiState.client = TextFieldValue(viewModel.uiState.sale.nombreCliente ?: "")
     }
     // endregion
-    LaunchedEffect(editStatus.value){
-        if (editStatus.value){
-            navController.navigate(route = Destinations.SalesScreen.ruta){
-                launchSingleTop = true
-            }
-        }
-    }
-    LaunchedEffect(postSale.value) {
-        if (postSale.value){
-            navController.navigate(route = Destinations.SalesScreen.ruta){
-                launchSingleTop = true
-                popUpTo(Destinations.NewSaleScreen.ruta){ inclusive = true }
-            }
-        }
-    }
     // region Composable
     NewSaleView(
-        clientName = viewModel.client,
-        sale = viewModel.sale,
-        salesData = viewModel.products,
-        expandedSearchBar = viewModel.expandenSearchBarS,
+        clientName = viewModel.uiState.client,
+        sale = viewModel.uiState.sale,
+        salesData = viewModel.uiState.products,
+        expandedSearchBar = viewModel.uiState.expandenSearchBarS,
         opcions = viewModel.filterClients(),
-        canModify = viewModel.canModifyClient,
+        canModify = viewModel.uiState.canModifyClient,
+        onTextChangue = { viewModel.setClient(it)},
+        onChangueExpandValue = { viewModel.setExpandSearchBar(it) },
         onClickOpcion = {
-            Log.i("Modify___", viewModel.canModifyClient.toString())
-            if (viewModel.canModifyClient.value) {
-                viewModel.newClient.value = it
-                viewModel.client.value = TextFieldValue(it.nombreCliente.toString())
-                viewModel.sale.value.nombreCliente = it.nombreCliente.toString()
-                viewModel.expandenSearchBarS.value = false
+            Log.i("Modify___", viewModel.uiState.canModifyClient.toString())
+            if (viewModel.uiState.canModifyClient) {
+                viewModel.uiState.newClient = it
+                viewModel.uiState.client = TextFieldValue(it.nombreCliente.toString())
+                viewModel.uiState.sale.nombreCliente = it.nombreCliente.toString()
+                viewModel.setExpandSearchBar(false)
             }
         },
         onClickDelete = { viewModel.deleteRow(it) },
-        onClickProduct = { viewModel.dialogProduct.value = true },
+        onClickProduct = { viewModel.uiState.dialogProduct = true },
         onClickSave = {
-            if (viewModel.sale.value.ventaId == null) {
-                if (viewModel.products.isNotEmpty() && viewModel.newClient.value != null) {
-                    viewModel.createSale()
+            if (viewModel.uiState.sale.ventaId == null) {
+                if (viewModel.uiState.products.isNotEmpty() && viewModel.uiState.newClient != null) {
+                    viewModel.createSale(onSuccesss = {
+                        navController.navigate(route = Destinations.SalesScreen.ruta){
+                            launchSingleTop = true
+                            popUpTo(Destinations.NewSaleScreen.ruta){ inclusive = true }
+                        }
+                    })
                 }
             }
             else {
-                if (viewModel.products.isNotEmpty()){ viewModel.editSale() }
+                if (viewModel.uiState.products.isNotEmpty()){
+                    viewModel.editSale(onSuccesss = {
+                        navController.navigate(route = Destinations.SalesScreen.ruta){
+                            launchSingleTop = true
+                        }
+                    })
+                }
             }
         },
         onClickBack = {
@@ -86,28 +82,54 @@ fun NewSaleScreen(navController: NavHostController) {
     )
     // endregion
     // region Dialog
-    if (viewModel.dialogProduct.value){
+    if (viewModel.uiState.dialogProduct){
         AddProductDialogCmp(
-            state = viewModel.search,
-            opcions = viewModel.getFilter().value,
-            expanded = viewModel.expandenSearchBarD,
-            product = viewModel.selectedProduct,
-            quantity = viewModel.quantity,
+            state = viewModel.uiState.search,
+            opcions = viewModel.getFilter(),
+            expanded = viewModel.uiState.expandenSearchBarD,
+            product = viewModel.uiState.selectedProduct,
+            quantity = viewModel.uiState.quantity,
             onDismiss = { viewModel.clearDialog() },
-            onChangeText = { viewModel.search.value = it },
+            onChangeText = { viewModel.setSearch(it) },
             onClickOpcion = {
                 Log.i("Opcion___", it.toString())
-                viewModel.selectedProduct.value = it
-                viewModel.expandenSearchBarD.value = false
+                viewModel.setSelectedProduct(it)
+                viewModel.setExpandSearchBarD(false)
                 viewModel.getProductInventario(it.productoId!!)
             },
-            onClickPrice = { viewModel.price.value = it },
-            inventario = viewModel.totalInventory.value,
+            onClickPrice = { viewModel.setPrice(it) },
+            onChangueQuienatity = {
+                // Permitir borrar
+                if (it.isEmpty()) {
+                    viewModel.setQuantity("")
+                    return@AddProductDialogCmp
+                }
+
+                // Solo números
+                if (!it.all { it.isDigit() }) return@AddProductDialogCmp
+
+                val sanitized = when {
+                    it == "0" -> "0"
+                    it.startsWith("0") -> it.dropWhile { it == '0' }
+                    else -> it
+                }
+
+                // Validar contra inventario
+                val value = sanitized.toIntOrNull() ?: return@AddProductDialogCmp
+
+
+                if (value <= (viewModel.uiState.totalInventory.inventario ?: 10000)) {
+                    viewModel.setQuantity(sanitized)
+                }
+            },
+            inventario = viewModel.uiState.totalInventory,
+            onChangueExpandValue = { viewModel.setExpandSearchBarD(it) },
             onClickCancel = { viewModel.clearDialog() },
             onClickAccept = {
                 viewModel.addRow(it)
                 viewModel.clearDialog()
-            }
+            },
+            onChangueState = { }
         )
     }
     // endregion

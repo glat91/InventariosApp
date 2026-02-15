@@ -59,13 +59,15 @@ import com.example.inventariosapp.ui.theme.UI_List_Row_2
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewSaleView(
-    clientName: MutableState<TextFieldValue>,
-    sale: MutableState<SalesModel>,
-    salesData: SnapshotStateList<SaleProductModel>,
-    opcions: MutableState<ArrayList<ClientResponseModel>>,
-    expandedSearchBar: MutableState<Boolean>,
-    canModify: MutableState<Boolean>,
+    clientName: TextFieldValue,
+    sale: SalesModel,
+    salesData: ArrayList<SaleProductModel>,
+    opcions: ArrayList<ClientResponseModel>,
+    expandedSearchBar: Boolean,
+    canModify: Boolean,
+    onTextChangue: (TextFieldValue) -> Unit,
     onClickOpcion: (ClientResponseModel) -> Unit,
+    onChangueExpandValue: (Boolean) -> Unit,
     onClickBack: () -> Unit,
     onClickMenu: () -> Unit,
     onClickProduct: () -> Unit,
@@ -78,7 +80,7 @@ fun NewSaleView(
                 modifier = Modifier.padding(0.dp).background(UI_Backround_Top),
                 title = {
                     HeaderCmp(
-                        title = if (sale.value.folio.isNullOrEmpty()) "Nueva venta" else "Editar Venta",
+                        title = if (sale.folio.isNullOrEmpty()) "Nueva venta" else "Editar Venta",
                         backActivate = true,
                         onClickBack = onClickBack,
                         onClickMenu = onClickMenu
@@ -97,8 +99,8 @@ fun NewSaleView(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ){
-                Log.i("Folio___", sale.value.folio.toString())
-                if(!sale.value.folio.isNullOrEmpty()){
+                Log.i("Folio___", sale.folio.toString())
+                if(!sale.folio.isNullOrEmpty()){
                     TextCmp(
                         text = "Folio",
                         modifier = Modifier
@@ -109,7 +111,7 @@ fun NewSaleView(
                         textAlign = TextAlign.Center
                     )
                     TextCmp(
-                        text = "${if(sale.value.folio == null)"" else sale.value.folio}",
+                        text = "${if(sale.folio == null)"" else sale.folio}",
                         modifier = Modifier.fillMaxWidth(),
                         fontWeight = FontWeight.Normal,
                         fontSize = 22.sp,
@@ -128,16 +130,18 @@ fun NewSaleView(
                     SearchBarCmp(
                         state = clientName,
                         labelText = "Nombre de cliente",
-                        canModify = canModify.value,
-                        onChangeText = { txt -> clientName.value = txt },
+                        canModify = canModify,
+                        onChangeText = { txt ->
+                            onTextChangue(txt)
+                                       },
                         opcionContent = {
                             DropdownMenu(
-                                expanded = expandedSearchBar.value,
-                                onDismissRequest = { expandedSearchBar.value = false },
+                                expanded = expandedSearchBar,
+                                onDismissRequest = { onChangueExpandValue(false) },
                                 modifier = Modifier.fillMaxWidth(.9f).padding(),
                                 properties = PopupProperties(focusable = false)
                             ) {
-                                opcions.value.take(10).forEach { option ->
+                                opcions.take(10).forEach { option ->
                                     Column(
                                         modifier = Modifier
                                             .fillMaxWidth()
@@ -149,7 +153,7 @@ fun NewSaleView(
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .clickable {
-                                                    expandedSearchBar.value = false
+                                                    onChangueExpandValue(false)
                                                     onClickOpcion(option)
                                                 },
                                             textAlign = TextAlign.Center,
@@ -238,7 +242,7 @@ fun NewSaleView(
                 )
 
                 TextCmp(
-                    text = if (sale.value.subtotal == null) "0.00" else sale.value.subtotal.toString(),
+                    text = if (sale.subtotal == null) "0.00" else sale.subtotal.toString(),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Normal,
                     color = Color.White
@@ -252,7 +256,7 @@ fun NewSaleView(
                 )
 
                 TextCmp(
-                    text = if (sale.value.iva == null) "0.00" else sale.value.iva.toString(),
+                    text = if (sale.iva == null) "0.00" else sale.iva.toString(),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Normal,
                     color = Color.White
@@ -267,7 +271,7 @@ fun NewSaleView(
                 )
 
                 TextCmp(
-                    text = if (sale.value.total == null) "0.00" else sale.value.total.toString(),
+                    text = if (sale.total == null) "0.00" else sale.total.toString(),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Normal,
                     color = Color.White
@@ -280,7 +284,7 @@ fun NewSaleView(
 @Preview(showBackground = true)
 @Composable
 fun NewSaleViewPreview(){
-    val client =  remember { mutableStateOf(TextFieldValue("")) }
+    val client =  remember { (TextFieldValue("")) }
     val opcions: MutableState<ArrayList<String>> =  remember {mutableStateOf(arrayListOf())}
     opcions.value.add("Parametro numero 1")
     opcions.value.add("Parametro numero 2")
@@ -289,16 +293,18 @@ fun NewSaleViewPreview(){
     opcions.value.add("Parametro numero 5")
     NewSaleView(
         clientName = client,
-        sale = remember {  mutableStateOf(SalesModel(folio = ""))},
-        salesData = remember { mutableStateListOf() },
-        expandedSearchBar = remember { mutableStateOf(true) },
-        canModify = remember { mutableStateOf(true) },
-        opcions = remember { mutableStateOf(arrayListOf()) },
+        sale = remember {  (SalesModel(folio = ""))},
+        salesData = remember { (arrayListOf()) },
+        expandedSearchBar = remember { (true) },
+        canModify = remember { (true) },
+        opcions = remember { (arrayListOf()) },
         onClickOpcion = {},
         onClickDelete = {},
         onClickBack = {},
         onClickProduct = {},
         onClickSave = { },
+        onTextChangue = {},
+        onChangueExpandValue = {},
         onClickMenu = {}
     )
 }

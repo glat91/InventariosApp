@@ -1,9 +1,7 @@
 package com.example.inventariosapp.ui.view.new_sale
 
 import android.util.Log
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.TextFieldValue
@@ -46,33 +44,23 @@ class NewSaleViewModel @Inject constructor(
     @ApplicationContext private val cnx : android.content.Context
 ) : ViewModel() {
     var uiState by mutableStateOf(NewSaleUiState())
-    val sale: MutableState<SalesModel> = mutableStateOf(SalesModel())
-    val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
-    val canModifyClient = mutableStateOf(true)
-
-    val expandenSearchBarS = mutableStateOf(true)
-    val client = mutableStateOf(TextFieldValue(""))
-    val clients: MutableState<List<ClientResponseModel>> = mutableStateOf(listOf())
-    val opcions: MutableState<ArrayList<ClientResponseModel>> = mutableStateOf(arrayListOf())
-
     // region Sale Data
-    var idSale = ""
-    val products = mutableStateListOf(SaleProductModel())
-    val saleData: MutableState<GetSalesByIdResponse> = mutableStateOf(GetSalesByIdResponse())
     fun getSale(){
-        canModifyClient.value = false
+        setCanModifyClient(false)
         baseViewModel.showLoader()
         viewModelScope.launch {
+            setInternetUse(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
+
             if (baseViewModel.isSessionValid()){
-                idSale = sale.value.folio.toString()
-                val r = getSalesByIdUseCase(idSale, internetUse.value)
+                setIdSale(uiState.sale.folio.toString())
+                val r = getSalesByIdUseCase(uiState.idSale, uiState.internetUse)
                 if (r.first != null){
-                    saleData.value = r.first!!
-                    for (p in saleData.value.ventaProductos){
+                    setSaleData(r.first!!)
+                    for (p in uiState.saleData.ventaProductos){
                         Log.i("Sales___", "${p}")
                     }
-                    products.clear()
-                    products.addAll(saleData.value.ventaProductos)
+                    uiState.products.clear()
+                    setProducts(r.first!!.ventaProductos)
                 }
             }
             else{
@@ -82,17 +70,16 @@ class NewSaleViewModel @Inject constructor(
         }
     }
     val editStatus = MutableStateFlow(false)
-    fun editSale(){
-        canModifyClient.value = false
+    fun editSale(onSuccesss: () -> Unit){
+        setCanModifyClient(false)
         baseViewModel.showLoader()
         viewModelScope.launch {
             if (baseViewModel.isSessionValid()){
-                val internetUse = Helpers.isInternetAvailable(cnx)
-                saleData.value.ventaProductos = java.util.ArrayList(products)
-                saleData.value.ventaIdInterno = null
-                Log.i("Sale___", products.toString())
-                val r = editSaleUseCase(saleData.value, idSale, internetUse)
-                if (r.first != null){ editStatus.value = true }
+                setInternetUse(Helpers.isInternetAvailable(cnx))
+                uiState.saleData.ventaProductos = uiState.products
+                uiState.saleData.ventaIdInterno = null
+                val r = editSaleUseCase(uiState.saleData, uiState.idSale, uiState.internetUse)
+                if (r.first != null){ setEditStatus(true) }
                 else{
                     if (r.second != null){
                         MainActivity.mainDialogMsg.value = r.second!!
@@ -105,138 +92,127 @@ class NewSaleViewModel @Inject constructor(
         }
     }
     fun deleteRow(data: SaleProductModel){
-        products.remove(data)
+        uiState.products.remove(data)
         var newTotal = BigDecimal.ZERO
 
-        for (p in products) {
+        for (p in uiState.products) {
             val precio = p.PrecioVenta ?: 0.0
             val cantidad = p.Cantidad ?: 0
             newTotal += (precio * cantidad.toDouble()).toBigDecimal()
             Log.i("Total_Product___", "$precio * $cantidad = $newTotal")
         }
-
-        sale.value = sale.value.copy(total = newTotal.toDouble())
-        saleData.value = saleData.value.copy(total = newTotal.toDouble())
+        uiState.sale = uiState.sale.copy(total = newTotal.toDouble())
+        uiState.saleData = uiState.saleData.copy(total = newTotal.toDouble())
     }
     fun addRow(data: ProductsResponseModel){
         var newTotal = BigDecimal(0.0)
-        val p = if (canModifyClient.value) data.productoId ?: 0 else 0
-        products.add(
+        val p = if (uiState.canModifyClient) data.productoId ?: 0 else 0
+        uiState.products.add(
             SaleProductModel(
                 VentaProductoId = 0,
-                VentaId = sale.value.ventaId,
+                VentaId = uiState.sale.ventaId,
                 ProductoId = data.productoId,
-                Cantidad = quantity.value.toInt(),
-                PrecioVenta = price.value,
+                Cantidad = uiState.quantity.toInt(),
+                PrecioVenta = uiState.price,
                 Costo = data.costo,
-                CantidadSolicitada = quantity.value.toInt(),
+                CantidadSolicitada = uiState.quantity.toInt(),
                 VentaIdInterno = null,
                 Venta = null,
                 nombreProducto = data.descripcion!!
             )
         )
-        for(p in products){
+        for(p in uiState.products){
             newTotal += (p.PrecioVenta!! * p.Cantidad!!.toDouble()).toBigDecimal()
             Log.i("Total_Product___", "${p.PrecioVenta} * ${p.Cantidad} = ${newTotal}")
         }
-        sale.value = sale.value.copy(total = newTotal.toDouble())
-        saleData.value = saleData.value.copy(total = newTotal.toDouble())
+        uiState.sale = uiState.sale.copy(total = newTotal.toDouble())
+        uiState.saleData = uiState.saleData.copy(total = newTotal.toDouble())
     }
     fun getClients(){
         viewModelScope.launch {
+            setInternetUse(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
             baseViewModel.showLoader()
-            val r = getClientsUseCase(internetUse.value)
-            if (r.first != null){
-                clients.value = r.first!!
-            }
+            val r = getClientsUseCase(uiState.internetUse)
+            if (r.first != null){ setClients(r.first!!) }
             baseViewModel.hideLoader()
-
         }
     }
-    fun filterClients(): MutableState<ArrayList<ClientResponseModel>> {
-        expandenSearchBarS.value = true
-        opcions.value = if (client.value.text.isBlank()){
-            expandenSearchBarS.value = false
-            arrayListOf()
-        }
-        else {
-            expandenSearchBarS.value = true
-            ArrayList(clients.value.filter {
-                it.nombreCliente!!.contains(client.value.text, ignoreCase = true)
-            })
-        }
-        if (client.value.text.length > 17 ) expandenSearchBarS.value = false
-        return opcions
+    fun filterClients(): ArrayList<ClientResponseModel> {
+        setExpandSearchBar(true)
+        setOpcions(
+            if (uiState.client.text.isBlank()){
+                setExpandSearchBar(false)
+                arrayListOf()
+            }
+            else {
+                setExpandSearchBar(true)
+                ArrayList(uiState.clients.filter {
+                    it.nombreCliente!!.contains(uiState.client.text, ignoreCase = true)
+                })
+            }
+        )
+        if (uiState.client.text.length > 17 ) setExpandSearchBar(false)
+        return uiState.opcions
     }
     // endregion
     // region Dialog Products
-    val dialogProduct = mutableStateOf(false)
-    val expandenSearchBarD = mutableStateOf(false)
-    var search = mutableStateOf(TextFieldValue(""))
-    val inventory: MutableState<ArrayList<ProductsResponseModel>?> = mutableStateOf(arrayListOf())
-    val filterInventory: MutableState<ArrayList<ProductsResponseModel>> = mutableStateOf(arrayListOf())
-    fun getFilter(): MutableState<ArrayList<ProductsResponseModel>> {
-        val data = inventory.value ?: arrayListOf()
-        val query = search.value.text.trim()
-        filterInventory.value =
+    fun getFilter(): ArrayList<ProductsResponseModel> {
+        val data = uiState.inventory ?: arrayListOf()
+        val query = uiState.search.text.trim()
+        setFilterInventory(
             if (query.length < 3) {
-                expandenSearchBarD.value = false
+                setExpandSearchBarD(false)
                 ArrayList(data)
             }
             else {
-                if (query.length < 8) expandenSearchBarD.value = true
-                else expandenSearchBarD.value = false
+                if (query.length < 8) setExpandSearchBarD(true)
+                else setExpandSearchBarD(false)
                 ArrayList(data.filter {
                     it.descripcion?.contains(query, ignoreCase = true) == true
                 })
             }
-        return filterInventory
+        )
+        return uiState.filterInventory
     }
     fun getProducts(){
         baseViewModel.showLoader()
         viewModelScope.launch {
-            val r = getProductsUseCase(internetUse.value)
+            setInternetUse(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
+            val r = getProductsUseCase(uiState.internetUse)
             if (r.first != null){
-                inventory.value = (r.first as ArrayList<ProductsResponseModel>?)!!
+                setInventory(r.first!! as ArrayList<ProductsResponseModel>)
             }
             baseViewModel.hideLoader()
         }
     }
 
-    val price = mutableStateOf(0.0)
-    val quantity = mutableStateOf("")
-    val serchProductId = mutableStateOf(0)
-    val product: MutableState<ProductEntity?> = mutableStateOf(null)
-    val totalInventory: MutableState<ProductIdResponseModel> = mutableStateOf(ProductIdResponseModel())
-    val selectedProduct: MutableState<ProductsResponseModel?> = mutableStateOf(null)
     fun getProductInventario(productId: Int){
         viewModelScope.launch {
+            setInternetUse(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
             baseViewModel.showLoader()
-            val r = getInventarioProductoUseCase(productId, internetUse.value)
+            val r = getInventarioProductoUseCase(productId, uiState.internetUse)
             if (r.first != null){
-                totalInventory.value = r.first!!
+                setTotalInventory(r.first!!)
             }
-            expandenSearchBarD.value = false
-            serchProductId.value = productId
+            setExpandSearchBarD(false)
+            setSerchProductId(productId)
             baseViewModel.hideLoader()
         }
     }
     // endregion
     // region New Sale
-    val serverPostSale = MutableStateFlow(false)
-    val newSale: MutableState<ArrayList<PostSalesModel>> = mutableStateOf(arrayListOf())
-    val newClient: MutableState<ClientResponseModel?> = mutableStateOf(null)
-    val newProducts: MutableState<ArrayList<PostSaleProductModel>> = mutableStateOf(arrayListOf())
-    fun createSale(){
+
+    fun createSale(onSuccesss: () -> Unit){
         baseViewModel.showLoader()
         viewModelScope.launch {
+            setInternetUse(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
             val userId = baseViewModel.getPerfilId()
             if (baseViewModel.isSessionValid()){
                 var totalSale = 0.0
                 val fecha = Helpers.getDateTime().replace(" ", "T")
-                for (p in products){
+                for (p in uiState.products){
                     totalSale += (p.PrecioVenta!! * p.Cantidad!!)
-                    newProducts.value.add(
+                    uiState.newProducts.add(
                         PostSaleProductModel(
                             cantidad = p.CantidadSolicitada,
                             productoId = p.ProductoId,
@@ -246,62 +222,64 @@ class NewSaleViewModel @Inject constructor(
                         )
                     )
                 }
-                newSale.value.add(PostSalesModel(
-                    clienteId = newClient.value!!.clienteId,
+                uiState.newSale.add(PostSalesModel(
+                    clienteId = uiState.newClient!!.clienteId,
                     ventaId = 0,
                     esActivo = true,
                     fechaIngreso = fecha,
                     fechaVenta = fecha,
                     tipoPagoId = 1,
-                    direccion = newClient.value!!.direccion ?: "null",
+                    direccion = uiState.newClient!!.direccion ?: "null",
                     subtotal = 0.0,
                     iva = 0.0,
                     retencion = 0.0,
                     total = totalSale,
                     usuarioSesionId = userId,
-                    ventaProductos = newProducts.value,
-                    tipoConexionId = if (internetUse.value) 1 else 2
+                    ventaProductos = uiState.newProducts,
+                    tipoConexionId = if (uiState.internetUse) 1 else 2
                 ))
-                val r = postSaleUseCase(newSale.value, internetUse.value)
+                val r = postSaleUseCase(uiState.newSale, uiState.internetUse)
                 if (r.first != null){
                     MainActivity.mainDialogMsg.value = "Venta guardada"
-                    serverPostSale.value = true
+                    setServerPostSale(true)
+                    onSuccesss()
                 }
             }
-            else{
-                baseViewModel.dialogLogin.value = true
-            }
+            else{ baseViewModel.dialogLogin.value = true }
             baseViewModel.hideLoader()
         }
     }
     // endregion
     // region Clean
     fun clearSales(){
-        sale.value = SalesModel()
-        newSale.value = arrayListOf()
-        newClient.value = null
-        newProducts.value = arrayListOf()
-        products.clear()
+        uiState.sale = SalesModel()
+        uiState.newSale = arrayListOf()
+        uiState.newClient = null
+        uiState.newProducts = arrayListOf()
+        uiState.products.clear()
     }
     fun clearDialog() {
-        dialogProduct.value = false
-        search.value = TextFieldValue("")
-        opcions.value.clear()
-        product.value = null
-        expandenSearchBarD.value = false
-        selectedProduct.value = null
-        quantity.value = ""
-        price.value = 0.0
+        uiState.dialogProduct = false
+        uiState.search = TextFieldValue("")
+        uiState.opcions.clear()
+        uiState.product = null
+        uiState.expandenSearchBarD = false
+        uiState.selectedProduct = null
+        uiState.quantity = ""
+        uiState.price = 0.0
     }
     fun clearClient(){
-        client.value = TextFieldValue("")
-        opcions.value.clear()
+        uiState.client = TextFieldValue("")
+        uiState.opcions.clear()
     }
     // endregion
     // region changue uiState
     fun setSale(data: SalesModel){ uiState = uiState.copy(sale = data) }
+    fun setIdSale(data: String){ uiState = uiState.copy(idSale = data) }
+    fun setSaleData(data: GetSalesByIdResponse){ uiState = uiState.copy(saleData = data) }
     fun setInternetUse(data: Boolean){ uiState = uiState.copy(internetUse = data) }
     fun setCanModifyClient(data: Boolean){ uiState = uiState.copy(canModifyClient = data) }
+    fun setProducts(data: ArrayList<SaleProductModel>){ uiState = uiState.copy(products = data) }
 
     fun setExpandSearchBar(data: Boolean){ uiState = uiState.copy(expandenSearchBarS = data) }
     fun setClient(data: TextFieldValue){ uiState = uiState.copy(client = data) }
@@ -330,37 +308,42 @@ class NewSaleViewModel @Inject constructor(
         clearSales()
         getProducts()
         getClients()
-        Log.i("NewSaleViewModel___", "${sale.value}")
-        Log.i("NewSaleViewModel___", "${newSale.value}")
+        Log.i("NewSaleViewModel___", "${uiState.sale}")
+        Log.i("NewSaleViewModel___", "${uiState.newSale}")
     }
 }
 data class NewSaleUiState(
-    val sale: SalesModel = SalesModel(),
+    var sale: SalesModel = SalesModel(),
+    var idSale: String = "",
+    var saleData: GetSalesByIdResponse = GetSalesByIdResponse(),
+    val products: ArrayList<SaleProductModel> = arrayListOf(),
+
+
     val internetUse: Boolean = false,
     val canModifyClient: Boolean = true,
 
     val expandenSearchBarS: Boolean = true,
-    val client: TextFieldValue = (TextFieldValue("")),
+    var client: TextFieldValue = (TextFieldValue("")),
     val clients: List<ClientResponseModel> = listOf(),
     val opcions: ArrayList<ClientResponseModel> = arrayListOf(),
     val editStatus: Boolean = false,
 
-    val dialogProduct: Boolean = (false),
-    val expandenSearchBarD: Boolean = (false),
+    var dialogProduct: Boolean = (false),
+    var expandenSearchBarD: Boolean = (false),
     var search: TextFieldValue = TextFieldValue(""),
     val inventory: ArrayList<ProductsResponseModel>? = arrayListOf(),
     val filterInventory: ArrayList<ProductsResponseModel> = arrayListOf(),
 
-    val price: Double = (0.00),
-    val quantity: String = (""),
-    val serchProductId: Int = (0),
-    val product: ProductEntity? = null,
+    var price: Double = 0.00,
+    var quantity: String = "",
+    val serchProductId: Int = 0,
+    var product: ProductEntity? = null,
     val totalInventory: ProductIdResponseModel = (ProductIdResponseModel()),
-    val selectedProduct: ProductsResponseModel? = null,
+    var selectedProduct: ProductsResponseModel? = null,
 
     val serverPostSale: Boolean = false,
-    val newSale: ArrayList<PostSalesModel> = (arrayListOf()),
-    val newClient: ClientResponseModel? = (null),
-    val newProducts: ArrayList<PostSaleProductModel> = (arrayListOf()),
+    var newSale: ArrayList<PostSalesModel> = (arrayListOf()),
+    var newClient: ClientResponseModel? = (null),
+    var newProducts: ArrayList<PostSaleProductModel> = (arrayListOf())
 )
 

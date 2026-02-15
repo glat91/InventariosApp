@@ -67,64 +67,59 @@ class PaymentsViewModel @Inject constructor(
     fun updateDateInput(datePickerState: DatePickerState){
         val millis = datePickerState.selectedDateMillis
         if (millis != null) {
-            selectedDate.value = Instant.ofEpochMilli(millis)
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate()
+            setSelectDate(
+                Instant.ofEpochMilli(millis)
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate()
+            )
         }
-        if (dialogChoice.value) endDate.value = selectedDate.value.toString()
-        else startDate.value = selectedDate.value.toString()
+        if (uiState.dialogChoice) {
+            setEndDate(uiState.selectedDate.toString())
+        }
+        else {
+            setStartDate(uiState.selectedDate.toString())
+        }
     }
     // endregion
     // region Clients list
-    val clients: MutableState<List<ClientResponseModel>> = mutableStateOf(listOf())
     fun getClients(){
         baseViewModel.showLoader()
         viewModelScope.launch {
             val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
             val r = getClientsUseCase(internetUse.value)
-            if (r.first != null){ clients.value = r.first!! }
+            if (r.first != null){ uiState.clients = r.first!! }
             baseViewModel.hideLoader()
         }
     }
     // endregion
     // region Sales
-    val select: MutableState<SalesModel?> = mutableStateOf(null)
-    val sales: MutableState<List<SalesModel>> = mutableStateOf(arrayListOf())
     fun getPendingSales(){
         baseViewModel.showLoader()
-        if (startDate.value.isBlank() && endDate.value.isBlank()) {
-            startDate.value = Helpers.getYesterday()
-            endDate.value = Helpers.getTomrrow()
-        } else {
-            if (startDate.value.isBlank()) { startDate.value = Helpers.getDate() }
-            if (endDate.value.isBlank()) { endDate.value = Helpers.getTomrrow() }
+        if (uiState.startDate.isBlank() && uiState.endDate.isBlank()) {
+            setStartDate(Helpers.getDate())
+            setEndDate(Helpers.getTomrrow())
+        }
+        else {
+            if (uiState.startDate.isBlank()) { setStartDate(Helpers.getDate()) }
+            if (uiState.endDate.isBlank()) { setEndDate(Helpers.getTomrrow()) }
         }
         viewModelScope.launch {
             val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
-            val r = getPendingSalesUseCase(startDate.value, endDate.value, internetUse.value)
-            if (r.first != null) {
-                Log.i("Sales___", r.first!!.toString())
-                sales.value = r.first!!
-            }
+            val r = getPendingSalesUseCase(uiState.startDate, uiState.endDate, internetUse.value)
+            if (r.first != null) { setSales(r.first!!) }
             baseViewModel.hideLoader()
         }
     }
     // endregion
     // region Dialog
-    val payActualDate = Helpers.getDate()
-    val payTotalPayment = mutableStateOf("")
-    val payObservation = mutableStateOf("")
-    val dialogDeposit = mutableStateOf(false)
-    val showDeposit = mutableStateOf(false)
-    val payments: MutableState<ArrayList<PayModel>> = mutableStateOf(arrayListOf())
     fun getPayment(ventaID: String){
         baseViewModel.showLoader()
         viewModelScope.launch {
             val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
             var r = getPaymentUseCase(ventaID, internetUse.value)
             if (r.first != null){
-                dialogDeposit.value = true
-                payments.value = r.first!! as ArrayList<PayModel>
+                setDialogDeposit(true)
+                setPayments(r.first!! as ArrayList<PayModel>)
             }
             baseViewModel.hideLoader()
         }
@@ -167,10 +162,10 @@ class PaymentsViewModel @Inject constructor(
                 val internetUse = Helpers.isInternetAvailable(cnx) || MainActivity.internetBtn.value
                 var r = deletePaymentUseCase(internetUse, pagoId)
                 if (r.isSuccess){
-                    dialogDeposit.value = false
+                    setDialogDeposit(false)
                     MainActivity.mainDialogMsg.value = "Pago borrado exitosamente"
                     MainActivity.mainDialog.value = true
-                    payments.value.remove(deposit)
+                    uiState.payments.remove(deposit)
                 }
                 else{
                     MainActivity.mainDialogMsg.value = "Error al borrar el pago"
@@ -186,20 +181,6 @@ class PaymentsViewModel @Inject constructor(
     }
     // endregion
     // region BT
-    var dialogBT by mutableStateOf(false)
-    val printerUUID = UUID.fromString(Constants.PRINTER_UUID)
-    val bluetoothAdapter =  BluetoothAdapter.getDefaultAdapter()
-    val bondedDevices =  mutableStateListOf<BluetoothDevice>()
-    var hasPermissions by mutableStateOf(
-        ContextCompat.checkSelfPermission(
-            cnx,
-            Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(
-                    cnx,
-                    Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED
-    )
-
-
     val permissions = buildList {
         add(Manifest.permission.BLUETOOTH_CONNECT)
         add(Manifest.permission.BLUETOOTH_SCAN)
@@ -213,8 +194,8 @@ class PaymentsViewModel @Inject constructor(
         device: BluetoothDevice
     ) {
         baseViewModel.showLoader()
-        dialogBT = false
-        dialogDeposit.value = false
+        setDialogBT(false)
+        setDialogDeposit(false)
         withContext(Dispatchers.IO) {
             try {
                 val PRINTER_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb")
@@ -242,12 +223,12 @@ class PaymentsViewModel @Inject constructor(
                 printBitmap(context, output, R.drawable.casajordan)
                 val recivo = ("--------------------------------\n" +
                         "        Recibo de impresion\n" +
-                        "Cliente: ${select.value!!.nombreCliente!!}\n" +
-                        "Direccion: ${select.value!!.direccion!!}\n" +
-                        "Folio: ${select.value!!.folio}  Total: $${select.value!!.total}\n" +
+                        "Cliente: ${uiState.select!!.nombreCliente!!}\n" +
+                        "Direccion: ${uiState.select!!.direccion!!}\n" +
+                        "Folio: ${uiState.select!!.folio}  Total: $${uiState.select!!.total}\n" +
                         "--------------------------------\n" +
-                        "Fecha de pago: ${select.value!!.fechaVenta}\n" +
-                        "Saldo Restante: $${select.value!!.montoPorPagar}\n" +
+                        "Fecha de pago: ${uiState.select!!.fechaVenta}\n" +
+                        "Saldo Restante: $${uiState.select!!.montoPorPagar}\n" +
                         "Vendedor: $vendedor \n" +
                         "\n" +
                         "              FIRMA\n" +
@@ -263,12 +244,12 @@ class PaymentsViewModel @Inject constructor(
 
                 socket!!.close()
                 baseViewModel.hideLoader()
-                dialogBT = false
+                setDialogBT(false)
                 showToastOnMain(context, "Impresión enviada correctamente")
                 cleanDialog()
             } catch (e: Exception) {
                 baseViewModel.hideLoader()
-                dialogBT = false
+                setDialogBT(false)
                 cleanDialog()
                 showToastOnMain(context, "Error al imprimir: ${e.message}")
             }
@@ -284,15 +265,15 @@ class PaymentsViewModel @Inject constructor(
     //endregion
     // region clean
     fun cleanPayment(){
-        payTotalPayment.value = ""
-        payObservation.value = ""
+        setPayTotalPayment("")
+        setPayObservation("")
     }
     fun cleanDialog(){
-        dialogDeposit.value = false
-        dialogChoice.value = false
-        showDeposit.value = true
-        showDatePicker.value = false
-        selectedDate.value = LocalDate.now()
+        setDialogDeposit(false)
+        setDialogChoice(false)
+        setShowDeposit(true)
+        setShowDatePicker(false)
+        setSelectDate(LocalDate.now())
         cleanPayment()
     }
     // endregion

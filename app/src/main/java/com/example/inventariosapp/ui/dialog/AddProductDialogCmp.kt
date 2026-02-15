@@ -87,16 +87,19 @@ fun rememberAvailableHeight(): Dp {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddProductDialogCmp(
-    state: MutableState<TextFieldValue>,
-    quantity: MutableState<String>,
+    state: TextFieldValue,
+    quantity: String,
     opcions: ArrayList<ProductsResponseModel>,
     inventario: ProductIdResponseModel,
-    product: MutableState<ProductsResponseModel?>,
-    expanded: MutableState<Boolean>,
+    product: ProductsResponseModel?,
+    expanded: Boolean,
     onDismiss: () -> Unit,
     onChangeText: (TextFieldValue) -> Unit,
     onClickOpcion: (ProductsResponseModel) -> Unit,
     onClickPrice: (Double) -> Unit,
+    onChangueQuienatity: (String) -> Unit,
+    onChangueExpandValue: (Boolean) -> Unit,
+    onChangueState: (String) -> Unit,
     onClickCancel: () -> Unit,
     onClickAccept: (ProductsResponseModel) -> Unit,
 ) {
@@ -110,16 +113,16 @@ fun AddProductDialogCmp(
 
     LaunchedEffect(precio1.value || precio2.value || precio3.value || precio4.value){
         if ((precio1.value || precio2.value || precio3.value || precio4.value)
-            && !quantity.value.isNullOrEmpty()
+            && !quantity.isNullOrEmpty()
         ){
             enableBtn.value = true
         }
     }
-    LaunchedEffect(quantity.value){
+    LaunchedEffect(quantity){
         if ((precio1.value || precio2.value || precio3.value || precio4.value)
-            && !quantity.value.isNullOrEmpty()
+            && !quantity.isNullOrEmpty()
         ){
-            if (quantity.value.toInt() > 0) enableBtn.value = true
+            if (quantity.toInt() > 0) enableBtn.value = true
             else enableBtn.value = false
         }
         else enableBtn.value = false
@@ -130,7 +133,6 @@ fun AddProductDialogCmp(
         precio2.value = false
         precio3.value = false
         precio4.value = false
-        quantity.value = ""
     }
     // endregion
     Dialog(onDismissRequest = onDismiss) {
@@ -142,14 +144,14 @@ fun AddProductDialogCmp(
                     modifier = Modifier.padding(PADDING_8),
                     state = state,
                     labelText = "Ingrese el producto",
-                    onClickClear = { expanded.value = false },
+                    onClickClear = { onChangueExpandValue(false) },
                     onChangeText = { onChangeText(it) },
                     opcionContent = {
                         val maxHeight = rememberAvailableHeight()
 
                         DropdownMenu(
-                            expanded = expanded.value && !opcions.isNullOrEmpty(),
-                            onDismissRequest = { expanded.value = false },
+                            expanded = expanded && !opcions.isNullOrEmpty(),
+                            onDismissRequest = { onChangueExpandValue(false) },
                             modifier = Modifier
                                 .padding(top = PADDING_8)
                                 .fillMaxWidth(.7f)
@@ -164,8 +166,8 @@ fun AddProductDialogCmp(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .clickable {
-                                                expanded.value = false
-                                                state.value = TextFieldValue(option.descripcion.orEmpty())
+                                                onChangueExpandValue(false)
+                                                onChangueState(option.descripcion.orEmpty())
                                                 onClickOpcion(option)
                                             },
                                         product = option.descripcion.orEmpty(),
@@ -178,7 +180,7 @@ fun AddProductDialogCmp(
                     }
                 )
 
-                if (product.value?.precioVenta1 != null || product.value?.precioVenta2 != null){
+                if (product?.precioVenta1 != null || product?.precioVenta2 != null){
                     Column(
                         modifier = Modifier
                             .border(border = BorderStroke(2.dp, Color.Black), shape = RoundedCornerShape(10.dp))
@@ -209,12 +211,12 @@ fun AddProductDialogCmp(
                                             precio2.value = false
                                             precio3.value = false
                                             precio4.value = false
-                                            onClickPrice(product.value!!.precioVenta1!!)
+                                            onClickPrice(product!!.precioVenta1!!)
                                         },
-                                    precio = product.value!!.precioVenta1.toString(),
+                                    precio = product!!.precioVenta1.toString(),
                                     selected = precio1
                                 )
-                                if (product.value?.precioVenta2 != null && product.value?.precioVenta2!! > 0.001){
+                                if (product?.precioVenta2 != null && product?.precioVenta2!! > 0.001){
                                     SelecPriceCmp(
                                         modifier = Modifier
                                             .padding(PADDING_8)
@@ -223,10 +225,10 @@ fun AddProductDialogCmp(
                                                 precio2.value = true
                                                 precio3.value = false
                                                 precio4.value = false
-                                                onClickPrice(product.value!!.precioVenta2!!)
+                                                onClickPrice(product!!.precioVenta2!!)
 
                                             },
-                                        precio = product.value!!.precioVenta2.toString(),
+                                        precio = product!!.precioVenta2.toString(),
                                         selected = precio2
                                     )
                                 }
@@ -235,7 +237,7 @@ fun AddProductDialogCmp(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceEvenly
                             ) {
-                                if (product.value?.precioVenta3 != null && product.value?.precioVenta3!! > 0.001){
+                                if (product.precioVenta3 != null && product?.precioVenta3!! > 0.001){
                                     SelecPriceCmp(
                                         modifier = Modifier
                                             .padding(PADDING_8)
@@ -244,13 +246,13 @@ fun AddProductDialogCmp(
                                                 precio2.value = false
                                                 precio3.value = true
                                                 precio4.value = false
-                                                onClickPrice(product.value!!.precioVenta3!!)
+                                                onClickPrice(product!!.precioVenta3!!)
                                             },
-                                        precio = product.value!!.precioVenta3.toString(),
+                                        precio = product!!.precioVenta3.toString(),
                                         selected = precio3
                                     )
                                 }
-                                if (product.value?.precioVenta4 != null && product.value?.precioVenta4!! > 0.001){
+                                if (product.precioVenta4 != null && product.precioVenta4 > 0.001){
                                     SelecPriceCmp(
                                         modifier = Modifier
                                             .padding(PADDING_8)
@@ -259,9 +261,9 @@ fun AddProductDialogCmp(
                                                 precio2.value = false
                                                 precio3.value = false
                                                 precio4.value = true
-                                                onClickPrice(product.value!!.precioVenta4!!)
+                                                onClickPrice(product.precioVenta4)
                                             },
-                                        precio = product.value!!.precioVenta4.toString(),
+                                        precio = product.precioVenta4.toString(),
                                         selected = precio4
                                     )
                                 }
@@ -289,35 +291,13 @@ fun AddProductDialogCmp(
                         )
 
                         InputWithTitleLabelCmp(
-                            textValue = quantity.value,
+                            textValue = quantity,
                             modifier = Modifier,
                             labelText = "Cantidad de productos",
                             keyboardType = KeyboardType.Number,
                             textValueSize = 18.sp,
                             onValueChange = {
-                                // Permitir borrar
-                                if (it.isEmpty()) {
-                                    quantity.value = ""
-                                    return@InputWithTitleLabelCmp
-                                }
-
-                                // Solo números
-                                if (!it.all { it.isDigit() }) return@InputWithTitleLabelCmp
-
-                                val sanitized = when {
-                                    it == "0" -> "0"
-                                    it.startsWith("0") -> it.dropWhile { it == '0' }
-                                    else -> it
-                                }
-
-                                // Validar contra inventario
-                                val value = sanitized.toIntOrNull() ?: return@InputWithTitleLabelCmp
-
-
-                                if (value <= (inventario.inventario ?: 10000)) {
-                                    quantity.value = sanitized
-                                }
-                                it
+                                onChangueQuienatity(it)
                             },
                             fontColor = Color.Black,
                         )
@@ -351,9 +331,9 @@ fun AddProductDialogCmp(
                             icon = Icons.Default.Add,
                             enable = enableBtn.value,
                             onClick = {
-                                if ((precio1.value || precio2.value || precio3.value || precio4.value) && quantity.value.isNotEmpty()){
-                                    if (quantity.value.toInt() > 0){
-                                        onClickAccept(product.value!!)
+                                if ((precio1.value || precio2.value || precio3.value || precio4.value) && quantity.isNotEmpty()){
+                                    if (quantity.toInt() > 0){
+                                        onClickAccept(product!!)
                                         onDismiss()
                                         resetData()
                                     }
@@ -384,28 +364,31 @@ fun AddProductDialogCmpPreview(){
     products.add(ProductsResponseModel(productoId=5437, descripcion ="TOALLITAS HUMEDAS  ABSORSEC 12/120", departamento="RENTA BODEGA", descripcionPresentacion="PAQUETE"))
     products.add(ProductsResponseModel(productoId=5437, descripcion ="TOALLITAS HUMEDAS  ABSORSEC 12/120", departamento="RENTA BODEGA", descripcionPresentacion="PAQUETE"))
     AddProductDialogCmp(
-        state = remember { mutableStateOf(TextFieldValue("")) },
+        state = remember { (TextFieldValue("")) },
         opcions = products,
 
         onDismiss = {},
         onChangeText = {},
-        expanded = remember { mutableStateOf(false) },
+        expanded = remember { (false) },
         onClickOpcion = { Log.i("Opcion___", it.toString()) },
         product = remember {
-            mutableStateOf(
-                ProductsResponseModel(
-                    precioVenta1 = 2.22,
-                    precioVenta2 = 3.3,
-                    precioVenta3 = 33.24,
-                    precioVenta4 = 233.24
+            (
+                    ProductsResponseModel(
+                        precioVenta1 = 2.22,
+                        precioVenta2 = 3.3,
+                        precioVenta3 = 33.24,
+                        precioVenta4 = 233.24
 
-                )
-            )
+                    )
+                    )
         },
         inventario = ProductIdResponseModel(inventario = 10),
         onClickPrice = {},
-        quantity = remember { mutableStateOf("") },
+        quantity = remember { ("") },
         onClickCancel = {},
-        onClickAccept = {}
+        onClickAccept = {},
+        onChangueQuienatity = {},
+        onChangueExpandValue = {},
+        onChangueState = {}
     )
 }

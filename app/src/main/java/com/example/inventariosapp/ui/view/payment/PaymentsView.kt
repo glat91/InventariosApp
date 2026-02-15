@@ -53,7 +53,7 @@ fun PaymentsView(
     clickDate:Boolean,
     onClickBack: () -> Unit,
     onClickMenu: () -> Unit,
-    onClickDate: () -> Unit,
+    onClickDate: (Boolean) -> Unit,
     onClickRow: (SalesModel) -> Unit,
 ) {
     Scaffold(
@@ -95,8 +95,9 @@ fun PaymentsView(
                         InputWithTitleLabelCmp(
                             modifier = Modifier.fillMaxWidth(.5f),
                             textFieldModifier = Modifier.clickable{
-                                clickDate = false
-                                onClickDate() },
+                                //clickDate = false
+                                onClickDate(false)
+                            },
                             labelText = "Fecha",
                             textValue = dateStart,
                             onValueChange ={ it },
@@ -107,7 +108,7 @@ fun PaymentsView(
                             trailingIcon = {
                                 Icon(
                                     modifier = Modifier
-                                        .clickable { onClickDate() },
+                                        .clickable { onClickDate(false) },
                                     imageVector = Icons.Filled.DateRange,
                                     contentDescription = "Seleccionar fecha"
                                 )
@@ -124,8 +125,8 @@ fun PaymentsView(
                         InputWithTitleLabelCmp(
                             modifier = Modifier,
                             textFieldModifier = Modifier.clickable{
-                                clickDate = true
-                                onClickDate() },
+                                //clickDate = true
+                                onClickDate(true) },
                             labelText = "Fecha",
                             textValue = dateEnd,
                             onValueChange ={ it },
@@ -136,7 +137,7 @@ fun PaymentsView(
                             trailingIcon = {
                                 Icon(
                                     modifier = Modifier
-                                        .clickable { onClickDate() },
+                                        .clickable { onClickDate(false) },
                                     imageVector = Icons.Filled.DateRange,
                                     contentDescription = "Seleccionar fecha"
                                 )
