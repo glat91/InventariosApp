@@ -35,7 +35,6 @@ import com.example.inventariosapp.ui.theme.UI_Backround_Btn_Accept
 import com.example.inventariosapp.ui.view.menu.LateralMenuCmp
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

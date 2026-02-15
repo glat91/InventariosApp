@@ -31,7 +31,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.appgeneric.ui.component.TextCmp
 import com.example.inventariosapp.MainActivity
@@ -39,7 +38,6 @@ import com.example.inventariosapp.R
 import com.example.inventariosapp.navigation.Destinations
 import com.example.inventariosapp.ui.component.Loader
 import com.example.inventariosapp.util.Constants
-import com.example.inventariosapp.util.Helpers.Companion.readPersistData
 import kotlinx.coroutines.launch
 @Composable
 fun LateralMenuCmp(

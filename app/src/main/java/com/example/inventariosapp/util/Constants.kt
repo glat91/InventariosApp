@@ -1,6 +1,5 @@
 package com.example.inventariosapp.util
 
-import java.util.UUID
 
 class Constants {
     companion object{

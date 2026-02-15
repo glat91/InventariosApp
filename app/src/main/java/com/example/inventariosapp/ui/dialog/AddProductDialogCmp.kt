@@ -24,7 +24,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,16 +55,6 @@ import com.example.inventariosapp.ui.theme.PADDING_8
 import com.example.inventariosapp.ui.theme.UI_Backround_Btn_Green
 import com.example.inventariosapp.ui.theme.UI_Backround_Btn_Red
 
-@Composable
-fun availableDropdownHeight(): Dp {
-    val density = LocalDensity.current
-    val configuration = LocalConfiguration.current
-
-    val screenHeight = configuration.screenHeightDp.dp
-    val imeHeight = with(density) { WindowInsets.ime.getBottom(this).toDp() }
-
-    return screenHeight - imeHeight - 120.dp
-}
 @Composable
 fun rememberAvailableHeight(): Dp {
     val density = LocalDensity.current
