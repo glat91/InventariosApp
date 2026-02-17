@@ -62,7 +62,7 @@ fun CardPenndingSaleCmp(
         ) {
             val (venta_id, fecha, total, cliente_id) = createRefs()
             TextCmp(
-                text = "Venta ID: ${data.sale.ventaId}",
+                text = "Nombre Cliente: ${data.sale.nombreCliente}",
                 modifier = Modifier.constrainAs(venta_id){
                     top.linkTo(parent.top, PADDING_8)
                     start.linkTo(parent.start, PADDING_8)

@@ -54,7 +54,7 @@ fun UserPaymentsView(
                 modifier = Modifier.padding(0.dp).background(UI_Backround_Top),
                 title = {
                     HeaderCmp(
-                        title = "Ventas pendientes",
+                        title = "Pagos pendientes",
                         onClickBack = onClickBack,
                         onClickMenu = onClickMenu
                     )

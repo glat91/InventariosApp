@@ -25,25 +25,32 @@ class UserPaymentsViewModel @Inject constructor(
     private val newPayDao: NewPayDao,
     @ApplicationContext val cnx: Context
 ): ViewModel(){
-    val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
+
     var penndingPayments: MutableState<List<NewPayModel>> = mutableStateOf(arrayListOf())
 
     fun setPayment(){
-        baseViewModel.showLoader()
-        viewModelScope.launch {
-            val userID = baseViewModel.getUsiarioId()
-            penndingPayments.value.map { 
-                it.usuarioSesionId = userID
-                it.tipoConexionId = 2
-                it.origenId = userID
+        if (penndingPayments.value.isNotEmpty()){
+            val internetUse = (Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
+            baseViewModel.showLoader()
+            viewModelScope.launch {
+                val userID = baseViewModel.getUsiarioId()
+                penndingPayments.value.map {
+                    it.usuarioSesionId = userID
+                    it.tipoConexionId = 2
+                    it.origenId = userID
+                }
+                var r = postPaymentUseCase(internetUse = internetUse, newPay = penndingPayments.value)
+                if (r.isSuccess){
+                    newPayDao.deleteAll()
+                    MainActivity.mainDialogMsg.value = "Pago realizado con exito"
+                    MainActivity.mainDialog.value = true
+                }
+                baseViewModel.hideLoader()
             }
-            var r = postPaymentUseCase(internetUse = baseViewModel.internetBtn.value, newPay = penndingPayments.value)
-            if (r.isSuccess){
-                newPayDao.deleteAll()
-                MainActivity.mainDialogMsg.value = "Pago realizado con exito"
-                MainActivity.mainDialog.value = true
-            }
-            baseViewModel.hideLoader()
+        }
+        else{
+            MainActivity.mainDialogMsg.value = "No tiene pagos pendientes por subir"
+            MainActivity.mainDialog.value = true
         }
     }
 
@@ -51,9 +58,5 @@ class UserPaymentsViewModel @Inject constructor(
         viewModelScope.launch {
             penndingPayments.value = getPenndingPaymentUseCase()
         }
-    }
-
-    init {
-        getPenndingPayments()
     }
 }

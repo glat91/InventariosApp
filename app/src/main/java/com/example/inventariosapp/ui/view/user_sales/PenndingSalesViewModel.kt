@@ -24,14 +24,12 @@ class PenndingSalesViewModel @Inject constructor(
     val baseViewModel: BaseViewModel,
     @ApplicationContext val cnx: Context,
     ): ViewModel() {
-    val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
+
 
     var penndingSales: MutableState<ArrayList<PostSaleWithProducts>> = mutableStateOf(arrayListOf())
 
     private fun getPenndingSales(){
-        viewModelScope.launch {
-            penndingSales.value = ArrayList(postSalesDao.getAllSales())
-        }
+        viewModelScope.launch { penndingSales.value = ArrayList(postSalesDao.getAllSales()) }
     }
     fun updateSales(){
         if (penndingSales.value.size > 0){
@@ -41,7 +39,8 @@ class PenndingSalesViewModel @Inject constructor(
                     it.sale.tipoConexionId = 2
                     it.toModel()
                 }
-                val r = postSaleUseCase(m, internetUse.value)
+                val internetUse = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
+                val r = postSaleUseCase(m, internetUse)
                 if (r.first != null){
                     postSalesDao.deleteAll()
                     MainActivity.mainDialogMsg.value = "Venta guardada"

@@ -321,17 +321,19 @@ fun AddProductDialogCmp(
                             },
                             fontColor = Color.Black,
                         )
-                        TextCmp(
-                            modifier = Modifier.fillMaxWidth().padding(top = PADDING_8),
-                            text = "Total en inventario ${inventario.inventario}",
-                            color = Color.Black,
-                            fontSize = 14.sp,
-                            fontStyle = FontStyle.Normal,
-                            textDecoration = TextDecoration.None,
-                            textAlign = TextAlign.Left,
-                            fontWeight = FontWeight.Bold,
-                            maxLine = 1,
-                        )
+                        if (inventario.inventario != null){
+                            TextCmp(
+                                modifier = Modifier.fillMaxWidth().padding(top = PADDING_8),
+                                text = "Total en inventario ${inventario.inventario}",
+                                color = Color.Black,
+                                fontSize = 14.sp,
+                                fontStyle = FontStyle.Normal,
+                                textDecoration = TextDecoration.None,
+                                textAlign = TextAlign.Left,
+                                fontWeight = FontWeight.Bold,
+                                maxLine = 1,
+                            )
+                        }
                     }
                     HorizontalDivider(thickness = PADDING_8, color = Color.Transparent)
                     Row(

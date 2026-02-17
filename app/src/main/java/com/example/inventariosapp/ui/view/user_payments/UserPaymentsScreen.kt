@@ -3,10 +3,14 @@ package com.example.inventariosapp.ui.view.user_payments
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavHostController
 import com.example.inventariosapp.MainActivity
 import com.example.inventariosapp.ui.dialog.LoginDialogCmp
@@ -16,6 +20,13 @@ import com.example.inventariosapp.ui.view.login.LoginViewModel
 fun UserPaymentsScreen(navController: NavHostController) {
     val viewModel: UserPaymentsViewModel = hiltViewModel()
     val lviewModel: LoginViewModel = hiltViewModel()
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    LaunchedEffect(lifecycleOwner) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewModel.getPenndingPayments()
+        }
+    }
 
     // region Screen
     UserPaymentsView(

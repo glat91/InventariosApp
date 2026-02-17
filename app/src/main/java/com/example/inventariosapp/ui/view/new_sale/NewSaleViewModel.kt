@@ -245,6 +245,7 @@ class NewSaleViewModel @Inject constructor(
                 }
                 newSale.value.add(PostSalesModel(
                     clienteId = newClient.value!!.clienteId,
+                    nombreCliente = newClient.value!!.nombreCliente,
                     ventaId = 0,
                     esActivo = true,
                     fechaIngreso = fecha,

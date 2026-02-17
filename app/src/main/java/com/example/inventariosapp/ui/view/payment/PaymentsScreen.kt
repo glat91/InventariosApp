@@ -381,7 +381,7 @@ fun PaymentsScreen(navController: NavHostController) {
                                     items(viewModel.payments.value) { deposit ->
                                         var colorRow = if (switchColor) UI_List_Row_1 else UI_List_Row_2
                                         CardDepositCmp(
-                                            date = deposit.fechaIngreso.toString(),
+                                            date = deposit.fecha.toString(),
                                             totalAmount = deposit.montoPago.toString(),
                                             observations = deposit.observaciones.toString(),
                                             backgroundColor = colorRow,
