@@ -87,15 +87,18 @@ class MenuViewModel @Inject constructor(
         viewModelScope.launch{
             val internetUse = monitor.isConnected.value
             if (internetUse){
-                val r = getPendingSalesUseCase("1, 2",Helpers.get6Months(), Helpers.getDate(),true)
+                val r = getPendingSalesUseCase("1",Helpers.get6Months(), Helpers.getDate(),true)
                 if (r.first != null){
-                    MainActivity.mainDialogMsg.value = "Update correcto"
-                    MainActivity.lastUpdateSells.value = Helpers.getDateTime()
-                    saveSincroTime(
-                        cnx,
-                        Constants.SINCRO_SALES,
-                        Helpers.getDateTime()
-                    )
+                    val r = getPendingSalesUseCase("2",Helpers.get6Months(), Helpers.getDate(),true)
+                    if (r.first != null){
+                        MainActivity.mainDialogMsg.value = "Update correcto"
+                        MainActivity.lastUpdateSells.value = Helpers.getDateTime()
+                        saveSincroTime(
+                                cnx,
+                            Constants.SINCRO_SALES,
+                            Helpers.getDateTime()
+                        )
+                    }
                     MainActivity.mainDialog.value = true
                 }
             }

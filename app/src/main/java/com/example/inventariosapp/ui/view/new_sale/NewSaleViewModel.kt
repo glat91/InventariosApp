@@ -91,7 +91,11 @@ class NewSaleViewModel @Inject constructor(
                 saleData.value.ventaIdInterno = null
                 Log.i("Sale___", products.toString())
                 val r = editSaleUseCase(saleData.value, idSale, internetUse)
-                if (r.first != null){ editStatus.value = true }
+                if (r.first != null){
+                    MainActivity.mainDialogMsg.value = "Venta modificada"
+                    MainActivity.mainDialog.value = true
+                    editStatus.value = true
+                }
                 else{
                     if (r.second != null){
                         MainActivity.mainDialogMsg.value = r.second!!
@@ -266,6 +270,7 @@ class NewSaleViewModel @Inject constructor(
                 val r = postSaleUseCase(newSale.value, internetUse.value)
                 if (r.first != null){
                     MainActivity.mainDialogMsg.value = "Venta guardada"
+                    MainActivity.mainDialog.value = true
                     serverPostSale.value = true
                 }
             }

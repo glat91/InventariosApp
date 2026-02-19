@@ -109,7 +109,7 @@ interface ApiService {
     @GET("InventariosApi.QA/Api/Venta")
     suspend fun getPendingSales(
         @Query("esActivo") esActivo: Boolean = true,
-        @Query("EstatusVentaIds") estatusVentaIds: String = "1,2",
+        @Query("estatusVentaIds") estatusVentaIds: String = "1,2",
         @Query("fechaInicio") fechaInicio: String,
         @Query("fechaFin") fechaFin: String
     ): Response<List<SalesModel>>

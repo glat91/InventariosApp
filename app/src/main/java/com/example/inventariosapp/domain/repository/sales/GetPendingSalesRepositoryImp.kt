@@ -35,12 +35,10 @@ class GetPendingSalesRepositoryImp @Inject constructor(
                                 val data = body.map { it.toDB() }
                                 val totalSales = salesDao.getAllSales()
                                 Log.i("Sales___", "Save: ${totalSales.size < data.size}")
-                                if (totalSales.size < data.size){
-                                    //salesDao.deleteAllSales()
-                                    salesDao.insertAllSales(data)
-                                    val total = salesDao.getAllSales()
-                                    Log.i("Sales___", "Total: ${total.size}")
-                                }
+                                //salesDao.deleteAllSales()
+                                salesDao.insertAllSales(data)
+                                val total = salesDao.getAllSales()
+                                Log.i("Sales___", "Total: ${total.size}")
                             }
                         }
                         catch (e: Exception) {
@@ -64,7 +62,7 @@ class GetPendingSalesRepositoryImp @Inject constructor(
             }
             else {
                 Log.i("Sales___", "call db Sales")
-                val sales = salesDao.getSalesBetween(startDate, endDate, "1")
+                val sales = salesDao.getSalesBetween(startDate, endDate, estatusVentaIds)
                 val all = salesDao.getAllSales()
                 Log.i("Sales___", "Total: ${all.size}")
                 val entity = ArrayList(sales.map { it.toDb() })
