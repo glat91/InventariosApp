@@ -269,7 +269,7 @@ class NewSaleViewModel @Inject constructor(
                 internetUse.value = monitor.isConnected.value && MainActivity.internetBtn.value
                 val r = postSaleUseCase(newSale.value, internetUse.value)
                 if (r.first != null){
-                    MainActivity.mainDialogMsg.value = "Venta guardada"
+                    MainActivity.mainDialogMsg.value = if (internetUse.value)"Venta guardada" else "Venta guardada en modo offline"
                     MainActivity.mainDialog.value = true
                     serverPostSale.value = true
                 }

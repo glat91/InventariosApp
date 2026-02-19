@@ -41,10 +41,17 @@ class UserPaymentsViewModel @Inject constructor(
                     it.origenId = userID
                 }
                 val internetUse = monitor.isConnected.value
-                var r = postPaymentUseCase(internetUse = internetUse, newPay = penndingPayments.value)
-                if (r.isSuccess){
-                    newPayDao.deleteAll()
-                    MainActivity.mainDialogMsg.value = "Pago realizado con exito"
+                if (internetUse){
+                    var r = postPaymentUseCase(internetUse = internetUse, newPay = penndingPayments.value)
+                    if (r.isSuccess){
+                        newPayDao.deleteAll()
+                        getPenndingPayments()
+                        MainActivity.mainDialogMsg.value = "Pago realizado con exito"
+                        MainActivity.mainDialog.value = true
+                    }
+                }
+                else{
+                    MainActivity.mainDialogMsg.value = "No hay conexion a internet"
                     MainActivity.mainDialog.value = true
                 }
                 baseViewModel.hideLoader()

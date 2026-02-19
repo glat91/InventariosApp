@@ -66,8 +66,10 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         enableEdgeToEdge()
         setContent {
+
             drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
             InventariosAppTheme() {
                 val navController = rememberNavController()

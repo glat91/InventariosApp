@@ -1,8 +1,12 @@
 package com.example.inventariosapp.ui.view.menu
 
+
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -50,6 +54,7 @@ fun LateralMenuCmp(
     val corutine = rememberCoroutineScope()
     val menuViewModel: MenuViewModel = hiltViewModel()
     val cnx = LocalContext.current
+    val version = cnx.getPackageManager().getPackageInfo(cnx.getPackageName(), 0).versionName
 
     LaunchedEffect(true) {
         if (menuViewModel.userName.value.isBlank()) {
@@ -69,12 +74,24 @@ fun LateralMenuCmp(
                     modifier = Modifier.padding(horizontal = 16.dp)
                         .verticalScroll(rememberScrollState())
                 ) {
-                    TextCmp(
-                        text = "Hola, ${menuViewModel.userName.value}",
-                        modifier = Modifier
-                            .padding(16.dp),
-                        fontSize = 20.sp
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        TextCmp(
+                            text = "Hola, ${menuViewModel.userName.value}",
+                            modifier = Modifier
+                                .padding(16.dp),
+                            fontSize = 20.sp
+                        )
+                        TextCmp(
+                            text = "Version:$version",
+                            modifier = Modifier
+                                .padding(16.dp),
+                            fontSize = 14.sp
+                        )
+                    }
+
                     Spacer(Modifier.height(12.dp))
                     // region Opciones Nav
                     TextCmp(
@@ -220,7 +237,7 @@ fun LateralMenuCmp(
                     NavigationDrawerItem(
                         label = {
                             TextCmp(
-                                text = "Productor",
+                                text = "Productos",
                                 fontSize = 14.sp,
                                 maxLine = 2
                             )

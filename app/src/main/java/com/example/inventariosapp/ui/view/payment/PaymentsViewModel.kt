@@ -153,7 +153,7 @@ class PaymentsViewModel @Inject constructor(
                 onSuccess()
                 var r = postPaymentUseCase(internetUse = internetUse, newPay = listOf(createPostSale))
                 if (r.isSuccess){
-                    MainActivity.mainDialogMsg.value = "Pago realizado con exito"
+                    MainActivity.mainDialogMsg.value = if (internetUse)"Pago realizado con exito" else "Pago guardado en modo offline"
                     MainActivity.mainDialog.value = true
 
                 }

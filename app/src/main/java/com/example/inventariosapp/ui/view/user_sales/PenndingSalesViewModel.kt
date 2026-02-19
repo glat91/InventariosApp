@@ -49,6 +49,7 @@ class PenndingSalesViewModel @Inject constructor(
                     if (r.first != null){
                         postSalesDao.deleteAllProducts()
                         postSalesDao.deleteAllSales()
+                        getPenndingSales()
                         MainActivity.mainDialogMsg.value = "Ventas guardadas"
                         MainActivity.mainDialog.value = true
                     }
