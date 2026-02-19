@@ -79,7 +79,6 @@ data class SalesModel(
 }
 
 fun SalesModel.toDB() = SalesEntity(
-    id = UUID.randomUUID().toString(),
     ventaId = ventaId,
     nombreCliente = nombreCliente,
     folio = folio,

@@ -25,6 +25,7 @@ import com.example.inventariosapp.domain.model.sales.PostSalesModel
 import com.example.inventariosapp.domain.model.sales.SaleProductModel
 import com.example.inventariosapp.domain.model.sales.SalesModel
 import com.example.inventariosapp.util.Helpers
+import com.example.inventariosapp.util.NetworkMonitor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,6 +42,7 @@ class NewSaleViewModel @Inject constructor(
     private val getClientsUseCase: GetClientsUseCase,
     private val getInventarioProductoUseCase: GetInventarioProductoRepositoryImp,
     val baseViewModel: BaseViewModel,
+    val monitor: NetworkMonitor,
     @ApplicationContext private val cnx : android.content.Context
 ) : ViewModel() {
     val sale: MutableState<SalesModel> = mutableStateOf(SalesModel())
@@ -251,7 +253,7 @@ class NewSaleViewModel @Inject constructor(
                     fechaIngreso = fecha,
                     fechaVenta = fecha,
                     tipoPagoId = 1,
-                    direccion = newClient.value!!.direccion ?: "null",
+                    direccion = newClient.value!!.direccion ?: "",
                     subtotal = 0.0,
                     iva = 0.0,
                     retencion = 0.0,
@@ -260,6 +262,7 @@ class NewSaleViewModel @Inject constructor(
                     ventaProductos = newProducts.value,
                     tipoConexionId = if (internetUse.value) 1 else 2
                 ))
+                internetUse.value = monitor.isConnected.value && MainActivity.internetBtn.value
                 val r = postSaleUseCase(newSale.value, internetUse.value)
                 if (r.first != null){
                     MainActivity.mainDialogMsg.value = "Venta guardada"

@@ -56,7 +56,7 @@ class SalesViewModel @Inject constructor(
     fun getPendingSales(){
         baseViewModel.showLoader()
         viewModelScope.launch{
-            val internetUse = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
+            val internetUse = MainActivity.internetBtn.value
             MainActivity.internetBtn.value = internetUse
             if (MainActivity.startDate.value.isBlank() && MainActivity.endDate.value.isBlank()) {
                 MainActivity.startDate.value = Helpers.getYesterday()
@@ -66,7 +66,7 @@ class SalesViewModel @Inject constructor(
                 if (MainActivity.endDate.value.isBlank()) { MainActivity.endDate.value = Helpers.getTomrrow() }
             }
             try {
-                val r = getPendingSalesUseCase(MainActivity.startDate.value, MainActivity.endDate.value, internetUse)
+                val r = getPendingSalesUseCase("1",MainActivity.startDate.value, MainActivity.endDate.value, internetUse)
                 if (r.first != null){ sales.value = r.first!! as ArrayList<SalesModel> }
             }
             catch (e: Exception){

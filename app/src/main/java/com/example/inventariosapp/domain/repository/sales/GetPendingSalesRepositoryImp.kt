@@ -17,10 +17,15 @@ class GetPendingSalesRepositoryImp @Inject constructor(
     private val apiService: ApiService,
     private val salesDao: SalesDao,
 ) {
-    suspend operator fun invoke(startDate: String, endDate: String, refresh: Boolean): Pair<ArrayList<SalesModel>?, String?> {
+    suspend operator fun invoke(
+        estatusVentaIds: String,
+        startDate: String,
+        endDate: String,
+        refresh: Boolean
+    ): Pair<ArrayList<SalesModel>?, String?> {
         return try {
             if (refresh) {
-                val r = apiService.getPendingSales(fechaInicio = startDate, fechaFin = endDate)
+                val r = apiService.getPendingSales(fechaInicio = startDate, fechaFin = endDate, estatusVentaIds = estatusVentaIds)
                 if (r.isSuccessful) {
                     val body = r.body()
                     if (body != null) {
@@ -31,7 +36,7 @@ class GetPendingSalesRepositoryImp @Inject constructor(
                                 val totalSales = salesDao.getAllSales()
                                 Log.i("Sales___", "Save: ${totalSales.size < data.size}")
                                 if (totalSales.size < data.size){
-                                    salesDao.deleteAllSales()
+                                    //salesDao.deleteAllSales()
                                     salesDao.insertAllSales(data)
                                     val total = salesDao.getAllSales()
                                     Log.i("Sales___", "Total: ${total.size}")
@@ -59,7 +64,9 @@ class GetPendingSalesRepositoryImp @Inject constructor(
             }
             else {
                 Log.i("Sales___", "call db Sales")
-                val sales = salesDao.getSalesBetween(startDate, endDate)
+                val sales = salesDao.getSalesBetween(startDate, endDate, "1")
+                val all = salesDao.getAllSales()
+                Log.i("Sales___", "Total: ${all.size}")
                 val entity = ArrayList(sales.map { it.toDb() })
                 Pair(entity, null)
             }

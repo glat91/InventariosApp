@@ -15,6 +15,7 @@ import com.example.inventariosapp.util.Helpers
 import com.example.inventariosapp.util.Helpers.Companion.deletePersistKey
 import com.example.inventariosapp.util.Helpers.Companion.readPersistData
 import com.example.inventariosapp.util.Helpers.Companion.savePersistData
+import com.example.inventariosapp.util.NetworkMonitor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
@@ -26,6 +27,7 @@ class MenuViewModel @Inject constructor(
     private val getClientsUseCase: GetClientsUseCase,
     private val getPendingSalesUseCase: GetPendingSalesUseCase,
     private val getPaymentUseCase: GetPaymentUseCase,
+    private val monitor: NetworkMonitor,
     val baseViewModel: BaseViewModel,
     @ApplicationContext val cnx: Context
 ) : ViewModel() {
@@ -35,15 +37,22 @@ class MenuViewModel @Inject constructor(
     fun updateClientsDb(){
         baseViewModel.showLoader()
         viewModelScope.launch {
-            val r = getClientsUseCase(true)
-            if (r.first != null){
-                MainActivity.mainDialogMsg.value = "Update correcto"
-                MainActivity.lastUpdateClient.value = Helpers.getDateTime()
-                saveSincroTime(
-                    cnx,
-                    Constants.SINCRO_CLIENTS,
-                    Helpers.getDateTime()
-                )
+            val internetUse = monitor.isConnected.value
+            if (internetUse){
+                val r = getClientsUseCase(true)
+                if (r.first != null){
+                    MainActivity.mainDialogMsg.value = "Update correcto"
+                    MainActivity.lastUpdateClient.value = Helpers.getDateTime()
+                    saveSincroTime(
+                        cnx,
+                        Constants.SINCRO_CLIENTS,
+                        Helpers.getDateTime()
+                    )
+                    MainActivity.mainDialog.value = true
+                }
+            }
+            else{
+                MainActivity.mainDialogMsg.value = "No hay conexion a internet"
                 MainActivity.mainDialog.value = true
             }
             baseViewModel.hideLoader()
@@ -52,15 +61,22 @@ class MenuViewModel @Inject constructor(
     fun updateProductsDb(){
         baseViewModel.showLoader()
         viewModelScope.launch {
-            val r = getProductsUseCase(true)
-            if (r.first != null){
-                MainActivity.mainDialogMsg.value = "Update correcto"
-                MainActivity.lastUpdateProducts.value = Helpers.getDateTime()
-                saveSincroTime(
-                    cnx,
-                    Constants.SINCRO_PRODUCTS,
-                    Helpers.getDateTime()
-                )
+            val internetUse = monitor.isConnected.value
+            if (internetUse){
+                val r = getProductsUseCase(true)
+                if (r.first != null){
+                    MainActivity.mainDialogMsg.value = "Update correcto"
+                    MainActivity.lastUpdateProducts.value = Helpers.getDateTime()
+                    saveSincroTime(
+                        cnx,
+                        Constants.SINCRO_PRODUCTS,
+                        Helpers.getDateTime()
+                    )
+                    MainActivity.mainDialog.value = true
+                }
+            }
+            else{
+                MainActivity.mainDialogMsg.value = "No hay conexion a internet"
                 MainActivity.mainDialog.value = true
             }
             baseViewModel.hideLoader()
@@ -69,15 +85,22 @@ class MenuViewModel @Inject constructor(
     fun updatePendingSales(){
         baseViewModel.showLoader()
         viewModelScope.launch{
-            val r = getPendingSalesUseCase(Helpers.get6Months(), Helpers.getDate(),true)
-            if (r.first != null){
-                MainActivity.mainDialogMsg.value = "Update correcto"
-                MainActivity.lastUpdateSells.value = Helpers.getDateTime()
-                saveSincroTime(
-                    cnx,
-                    Constants.SINCRO_SALES,
-                    Helpers.getDateTime()
-                )
+            val internetUse = monitor.isConnected.value
+            if (internetUse){
+                val r = getPendingSalesUseCase("1, 2",Helpers.get6Months(), Helpers.getDate(),true)
+                if (r.first != null){
+                    MainActivity.mainDialogMsg.value = "Update correcto"
+                    MainActivity.lastUpdateSells.value = Helpers.getDateTime()
+                    saveSincroTime(
+                        cnx,
+                        Constants.SINCRO_SALES,
+                        Helpers.getDateTime()
+                    )
+                    MainActivity.mainDialog.value = true
+                }
+            }
+            else{
+                MainActivity.mainDialogMsg.value = "No hay conexion a internet"
                 MainActivity.mainDialog.value = true
             }
             baseViewModel.hideLoader()
@@ -86,7 +109,7 @@ class MenuViewModel @Inject constructor(
     fun updatePayment(){
         baseViewModel.showLoader()
         viewModelScope.launch {
-            val sales = getPendingSalesUseCase(Helpers.get6Months(), Helpers.getDate(),true)
+            val sales = getPendingSalesUseCase("2",Helpers.get6Months(), Helpers.getDate(),true)
             if (sales.first != null){
                 for (s in sales.first!!){
                     var r = getPaymentUseCase(s.ventaId.toString(), true)

@@ -12,6 +12,7 @@ import com.example.inventariosapp.local.entity.PostSaleWithProducts
 import com.example.inventariosapp.local.entity.toModel
 import com.example.inventariosapp.domain.use_case.sales.PostSaleUseCase
 import com.example.inventariosapp.util.Helpers
+import com.example.inventariosapp.util.NetworkMonitor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
@@ -22,6 +23,7 @@ class PenndingSalesViewModel @Inject constructor(
     private val postSaleUseCase: PostSaleUseCase,
     private val postSalesDao: PostSalesDao,
     val baseViewModel: BaseViewModel,
+    val monitor: NetworkMonitor,
     @ApplicationContext val cnx: Context,
     ): ViewModel() {
 
@@ -29,7 +31,9 @@ class PenndingSalesViewModel @Inject constructor(
     var penndingSales: MutableState<ArrayList<PostSaleWithProducts>> = mutableStateOf(arrayListOf())
 
     private fun getPenndingSales(){
-        viewModelScope.launch { penndingSales.value = ArrayList(postSalesDao.getAllSales()) }
+
+        viewModelScope.launch {
+            penndingSales.value = ArrayList(postSalesDao.getAllSales()) }
     }
     fun updateSales(){
         if (penndingSales.value.size > 0){
@@ -39,11 +43,18 @@ class PenndingSalesViewModel @Inject constructor(
                     it.sale.tipoConexionId = 2
                     it.toModel()
                 }
-                val internetUse = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
-                val r = postSaleUseCase(m, internetUse)
-                if (r.first != null){
-                    postSalesDao.deleteAll()
-                    MainActivity.mainDialogMsg.value = "Venta guardada"
+                val internetUse = monitor.isConnected.value
+                if (internetUse){
+                    val r = postSaleUseCase(m, internetUse)
+                    if (r.first != null){
+                        postSalesDao.deleteAllProducts()
+                        postSalesDao.deleteAllSales()
+                        MainActivity.mainDialogMsg.value = "Ventas guardadas"
+                        MainActivity.mainDialog.value = true
+                    }
+                }
+                else{
+                    MainActivity.mainDialogMsg.value = "No hay conexion a internet"
                     MainActivity.mainDialog.value = true
                 }
             }

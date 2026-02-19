@@ -7,7 +7,6 @@ import com.example.inventariosapp.domain.model.sales.SalesModel
 @Entity(tableName = "sales")
 data class SalesEntity(
     @PrimaryKey
-    val id: String = java.util.UUID.randomUUID().toString(),
     val ventaId: Int?,
     val nombreCliente: String?,
     val folio: String?,

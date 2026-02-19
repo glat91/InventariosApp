@@ -38,7 +38,9 @@ interface PostSalesDao {
     suspend fun deleteSaleById(id: String): Int
 
     @Query("DELETE FROM post_sale_products")
-    suspend fun deleteAll(): Int
+    suspend fun deleteAllProducts(): Int
+    @Query("DELETE FROM post_sales")
+    suspend fun deleteAllSales(): Int
 
     @Query("UPDATE post_sales SET estatusVentaId = :newStatus WHERE id = :id")
     suspend fun updateSaleStatusById(id: String, newStatus: Int): Int

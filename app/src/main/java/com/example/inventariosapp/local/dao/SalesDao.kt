@@ -20,13 +20,17 @@ interface SalesDao {
     @Query("SELECT * FROM sales WHERE ventaId = :ventaId LIMIT 1")
     suspend fun getSaleByVentaId(ventaId: Int): SalesEntity?
 
+    @Query("SELECT * FROM sales WHERE estatusVenta = :estatusVenta")
+    suspend fun getSalesByEstatus(estatusVenta: Int): SalesEntity?
+
     @Query("DELETE FROM sales")
     suspend fun deleteAllSales(): Int
 
     @Query("""
         SELECT * FROM sales 
         WHERE fechaVenta BETWEEN :startDate AND :endDate 
+        AND estatusVentaId = :estatusVenta
         ORDER BY fechaVenta DESC
     """)
-    suspend fun getSalesBetween(startDate: String, endDate: String): List<SalesEntity>
+    suspend fun getSalesBetween(startDate: String, endDate: String, estatusVenta: String): List<SalesEntity>
 }

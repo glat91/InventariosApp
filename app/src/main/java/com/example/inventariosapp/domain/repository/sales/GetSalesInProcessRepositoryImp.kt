@@ -49,7 +49,7 @@ class GetSalesInProcessRepositoryImp @Inject constructor(
         }
         else{
             try {
-                val sales = salesDao.getSalesBetween(startDate, endDate)
+                val sales = salesDao.getSalesBetween(startDate, endDate, "1")
                 val entity = ArrayList(sales.map { it.toDb() })
                 return Pair(entity, null)
             }

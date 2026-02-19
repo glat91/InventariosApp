@@ -106,7 +106,7 @@ class PaymentsViewModel @Inject constructor(
         }
         viewModelScope.launch {
             val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
-            val r = getPendingSalesUseCase(startDate.value, endDate.value, internetUse.value)
+            val r = getPendingSalesUseCase("2", startDate.value, endDate.value, internetUse.value)
             if (r.first != null) {
                 Log.i("Sales___", r.first!!.toString())
                 sales.value = r.first!!

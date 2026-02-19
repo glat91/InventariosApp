@@ -12,6 +12,7 @@ import com.example.inventariosapp.local.dao.NewPayDao
 import com.example.inventariosapp.domain.use_case.payment.GetPenndingPaymentUseCase
 import com.example.inventariosapp.domain.use_case.payment.PostPaymentUseCase
 import com.example.inventariosapp.util.Helpers
+import com.example.inventariosapp.util.NetworkMonitor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
@@ -23,6 +24,7 @@ class UserPaymentsViewModel @Inject constructor(
     private val getPenndingPaymentUseCase: GetPenndingPaymentUseCase,
     val baseViewModel: BaseViewModel,
     private val newPayDao: NewPayDao,
+    val monitor: NetworkMonitor,
     @ApplicationContext val cnx: Context
 ): ViewModel(){
 
@@ -30,7 +32,6 @@ class UserPaymentsViewModel @Inject constructor(
 
     fun setPayment(){
         if (penndingPayments.value.isNotEmpty()){
-            val internetUse = (Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
             baseViewModel.showLoader()
             viewModelScope.launch {
                 val userID = baseViewModel.getUsiarioId()
@@ -39,6 +40,7 @@ class UserPaymentsViewModel @Inject constructor(
                     it.tipoConexionId = 2
                     it.origenId = userID
                 }
+                val internetUse = monitor.isConnected.value
                 var r = postPaymentUseCase(internetUse = internetUse, newPay = penndingPayments.value)
                 if (r.isSuccess){
                     newPayDao.deleteAll()
