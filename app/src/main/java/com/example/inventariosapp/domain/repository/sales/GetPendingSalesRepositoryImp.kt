@@ -70,9 +70,9 @@ class GetPendingSalesRepositoryImp @Inject constructor(
             }
         } catch (e: Exception) {
             Log.e("Sales___", "Error in invoke: ${e.message}")
-            MainActivity.mainDialogMsg.value = "Error en Base de Datos, favor de contactar a Administracion"
+            MainActivity.mainDialogMsg.value = e.message.toString()
             MainActivity.mainDialog.value = true
-            Pair(null, "Error en Base de Datos, favor de contactar a Administracion")
+            Pair(null, e.message.toString())
         }
     }
 }

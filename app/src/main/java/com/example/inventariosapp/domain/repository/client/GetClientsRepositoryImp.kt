@@ -46,7 +46,7 @@ class GetClientsRepositoryImp @Inject constructor(
                 return Pair(entity, null)
             }
             catch (e: Exception){
-                return Pair(null, "Error en Base de Datos, favor de contactar a Administracion")
+                return Pair(null, e.message.toString())
             }
         }
 

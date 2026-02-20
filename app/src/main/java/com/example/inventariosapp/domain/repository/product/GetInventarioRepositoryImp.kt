@@ -47,7 +47,7 @@ class GetInventarioRepositoryImp @Inject constructor(
                 return Pair(inventory, null)
             }
             catch (e: Exception){
-                return Pair(null, ErrorModel(error("Error en Base de Datos, favor de contactar a Administracion")))
+                return Pair(null, ErrorModel(error(e.message.toString())))
             }
         }
     }
