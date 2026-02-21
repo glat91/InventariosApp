@@ -49,7 +49,7 @@ class NewSaleViewModel @Inject constructor(
     val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
     val canModifyClient = mutableStateOf(true)
 
-    val expandenSearchBarS = mutableStateOf(true)
+    val expandenSearchBarS = mutableStateOf(false)
     val client = mutableStateOf(TextFieldValue(""))
     val clients: MutableState<List<ClientResponseModel>> = mutableStateOf(listOf())
     val opcions: MutableState<ArrayList<ClientResponseModel>> = mutableStateOf(arrayListOf())
@@ -77,7 +77,7 @@ class NewSaleViewModel @Inject constructor(
             else{
                 baseViewModel.dialogLogin.value = true
             }
-            baseViewModel.hideLoader()
+            //if (setLoading())baseViewModel.hideLoader()
         }
     }
     val editStatus = MutableStateFlow(false)
@@ -145,30 +145,36 @@ class NewSaleViewModel @Inject constructor(
         sale.value = sale.value.copy(total = newTotal.toDouble())
         saleData.value = saleData.value.copy(total = newTotal.toDouble())
     }
+    val serviceClientStatus = mutableStateOf(false)
     fun getClients(){
+        baseViewModel.showLoader()
         viewModelScope.launch {
-            baseViewModel.showLoader()
             val r = getClientsUseCase(internetUse.value)
             if (r.first != null){
                 clients.value = r.first!!
             }
-            baseViewModel.hideLoader()
-
+            serviceClientStatus.value = true
+            ///if (setLoading()) baseViewModel.hideLoader()
         }
     }
     fun filterClients(): MutableState<ArrayList<ClientResponseModel>> {
-        expandenSearchBarS.value = true
         opcions.value = if (client.value.text.isBlank()){
+            Log.i("If___1", saleData.value.folio.toString())
             expandenSearchBarS.value = false
             arrayListOf()
         }
         else {
-            expandenSearchBarS.value = true
+            if (newClient.value == null){
+                expandenSearchBarS.value = true
+            }
+            Log.i("Else___1", saleData.value.folio.toString())
             ArrayList(clients.value.filter {
                 it.nombreCliente!!.contains(client.value.text, ignoreCase = true)
             })
         }
-        if (client.value.text.length > 17 ) expandenSearchBarS.value = false
+        if (!saleData.value.folio.isNullOrEmpty()) {
+            expandenSearchBarS.value = false
+        }
         return opcions
     }
     // endregion
@@ -179,6 +185,7 @@ class NewSaleViewModel @Inject constructor(
     val inventory: MutableState<ArrayList<ProductsResponseModel>?> = mutableStateOf(arrayListOf())
     val filterInventory: MutableState<ArrayList<ProductsResponseModel>> = mutableStateOf(arrayListOf())
     fun getFilter(): MutableState<ArrayList<ProductsResponseModel>> {
+        Log.i("Filtro___", expandenSearchBarD.value.toString())
         val data = inventory.value ?: arrayListOf()
         val query = search.value.text.trim()
         filterInventory.value =
@@ -195,6 +202,7 @@ class NewSaleViewModel @Inject constructor(
             }
         return filterInventory
     }
+    val serviceProductMessage = mutableStateOf(false)
     fun getProducts(){
         baseViewModel.showLoader()
         viewModelScope.launch {
@@ -202,8 +210,14 @@ class NewSaleViewModel @Inject constructor(
             if (r.first != null){
                 inventory.value = (r.first as ArrayList<ProductsResponseModel>?)!!
             }
-            baseViewModel.hideLoader()
+            serviceProductMessage.value = true
+            //if (setLoading()) baseViewModel.hideLoader()
         }
+    }
+    fun setLoading(): Boolean {
+        val r= serviceProductMessage.value && serviceClientStatus.value
+        Log.i("Loading___", r.toString())
+        return r
     }
 
     val price = mutableStateOf(0.0)
@@ -213,13 +227,14 @@ class NewSaleViewModel @Inject constructor(
     val totalInventory: MutableState<ProductIdResponseModel> = mutableStateOf(ProductIdResponseModel())
     val selectedProduct: MutableState<ProductsResponseModel?> = mutableStateOf(null)
     fun getProductInventario(productId: Int){
+        baseViewModel.showLoader()
         viewModelScope.launch {
-            baseViewModel.showLoader()
+            internetUse.value = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
             val r = getInventarioProductoUseCase(productId, internetUse.value)
             if (r.first != null){
                 totalInventory.value = r.first!!
             }
-            expandenSearchBarD.value = false
+            expandenSearchBarD.value = true
             serchProductId.value = productId
             baseViewModel.hideLoader()
         }

@@ -56,10 +56,15 @@ class PostSaleRepositoryImp @Inject constructor(
                     val productsEntity = it.ventaProductos.map { product ->
                         product.toEntity(parentId = saleEntity.id)
                     }
+                    productsEntity.forEach {
+                        Log.d("FK_CHECK___", "productId=${it.postSaleId} postSaleId=${it.postSaleId}")
+                    }
                     newSales.insertSaleWithProducts(
                         sale = saleEntity,
                         products = productsEntity
                     )
+                    val total = newSales.getTotalProducts()
+                    Log.d("PRODUCTS_BY_SALE", total.toString())
                 }
                 Pair(Unit, null)
             }

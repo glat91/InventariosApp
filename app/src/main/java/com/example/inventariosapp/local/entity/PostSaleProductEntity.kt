@@ -8,15 +8,15 @@ import java.util.UUID
 
 @Entity(
     tableName = "post_sale_products",
-    indices = [Index(value = ["postSaleId"])],
     foreignKeys = [
         ForeignKey(
             entity = PostSaleEntity::class,
             parentColumns = ["id"],
-            childColumns = ["postSaleId"],
+            childColumns = ["postSaleId"], // 🔥 ESTE ES EL FIX
             onDelete = ForeignKey.CASCADE
         )
-    ]
+    ],
+    indices = [Index(value = ["postSaleId"])]
 )
 data class PostSaleProductEntity(
     @PrimaryKey val id: String = UUID.randomUUID().toString(),

@@ -1,13 +1,8 @@
 package com.example.inventariosapp.ui.component.cards
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -32,25 +27,21 @@ import com.example.inventariosapp.ui.theme.UI_Backround_Btn_Cancel
 fun CardProductCmp(
     modifier: Modifier,
     product: String,
-    measureUnit: String,
     backgroundColor: Color,
 ) {
     Card(
-        modifier = modifier.fillMaxWidth().padding(PADDING_4),
+        modifier = modifier.fillMaxWidth(),
         colors = CardColors(
             containerColor = backgroundColor,
             contentColor = Color.White,
             disabledContainerColor = Color.White,
             disabledContentColor = Color.White
         ),
-        shape = RoundedCornerShape(5.dp),
-        border = BorderStroke(2.dp, Color.Black.copy(alpha = .1f)),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp, pressedElevation = 0.dp),
     ){
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(PADDING_4)
                 .clip(RoundedCornerShape(10.dp))
                 .background(backgroundColor)
                 .padding(PADDING_8),
@@ -65,22 +56,6 @@ fun CardProductCmp(
                 color = Color.Black,
                 maxLine = 2
             )
-
-            Spacer(modifier = Modifier.height(PADDING_8))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                TextCmp(
-                    text = "Medida: $measureUnit",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 12.sp,
-                    textAlign = TextAlign.Center,
-                    color = Color.Black,
-                    maxLine = 1
-                )
-            }
         }
     }
 }
@@ -90,8 +65,7 @@ fun CardProductCmp(
 fun CartProductCmpPreview(){
     CardProductCmp(
         modifier = Modifier,
-        backgroundColor = UI_Backround_Btn_Cancel,
+        backgroundColor = Color.Transparent,
         product = "DEO AE NIVEA FRESH OCEAN CABALLERO 4/150ML",
-        measureUnit = "PAQUETE",
     )
 }

@@ -14,7 +14,7 @@ interface PostSalesDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSale(sale: PostSaleEntity): Long
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertSaleProducts(products: List<PostSaleProductEntity>): List<Long>
 
     @Transaction
@@ -44,4 +44,10 @@ interface PostSalesDao {
 
     @Query("UPDATE post_sales SET estatusVentaId = :newStatus WHERE id = :id")
     suspend fun updateSaleStatusById(id: String, newStatus: Int): Int
+
+    @Query("""
+    SELECT COUNT(*)
+    FROM post_sale_products
+""")
+    suspend fun getTotalProducts(): Int
 }

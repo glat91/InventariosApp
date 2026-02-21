@@ -169,7 +169,6 @@ fun AddProductDialogCmp(
                                                 onClickOpcion(option)
                                             },
                                         product = option.descripcion.orEmpty(),
-                                        measureUnit = option.nombreUnidadMedida,
                                         backgroundColor = Color.White
                                     )
                                 }

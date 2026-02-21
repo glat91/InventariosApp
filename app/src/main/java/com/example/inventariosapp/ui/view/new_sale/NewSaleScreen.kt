@@ -24,6 +24,14 @@ fun NewSaleScreen(navController: NavHostController) {
     val editStatus = viewModel.editStatus.collectAsState()
     val postSale = viewModel.serverPostSale.collectAsState()
 
+    LaunchedEffect(viewModel.expandenSearchBarS.value) {
+        if (viewModel.newClient.value != null){
+            Log.i("Expanded___2", viewModel.expandenSearchBarS.value.toString())
+            viewModel.expandenSearchBarS.value = false
+            viewModel.expandenSearchBarD.value = false
+            Log.i("Expanded___2", viewModel.expandenSearchBarS.value.toString())
+        }
+    }
     // region Previous Data
     LaunchedEffect(true){
         try{
@@ -63,7 +71,8 @@ fun NewSaleScreen(navController: NavHostController) {
                 viewModel.newClient.value = it
                 viewModel.client.value = TextFieldValue(it.nombreCliente.toString())
                 viewModel.sale.value.nombreCliente = it.nombreCliente.toString()
-                viewModel.expandenSearchBarS.value = false
+                //viewModel.expandenSearchBarS.value = false
+                Log.i("Expanded___", viewModel.expandenSearchBarS.value.toString())
             }
         },
         onClickDelete = { viewModel.deleteRow(it) },
@@ -98,7 +107,7 @@ fun NewSaleScreen(navController: NavHostController) {
             onClickOpcion = {
                 Log.i("Opcion___", it.toString())
                 viewModel.selectedProduct.value = it
-                viewModel.expandenSearchBarD.value = false
+                //viewModel.expandenSearchBarD.value = false
                 viewModel.getProductInventario(it.productoId!!)
             },
             onClickPrice = { viewModel.price.value = it },

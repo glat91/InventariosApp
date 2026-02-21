@@ -56,7 +56,7 @@ class SalesViewModel @Inject constructor(
     fun getPendingSales(){
         baseViewModel.showLoader()
         viewModelScope.launch{
-            val internetUse = MainActivity.internetBtn.value
+            val internetUse = MainActivity.internetBtn.value && Helpers.isInternetAvailable(cnx)
             MainActivity.internetBtn.value = internetUse
             if (MainActivity.startDate.value.isBlank() && MainActivity.endDate.value.isBlank()) {
                 MainActivity.startDate.value = Helpers.getYesterday()

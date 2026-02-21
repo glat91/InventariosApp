@@ -89,7 +89,6 @@ fun PostSaleProductModel.toEntity(parentId: String) =
         costo = costo,
         cantidadSolicitada = cantidadSolicitada,
         ventaIdInterno = ventaIdInterno,
-        id = parentId,
         nombreProducto = nombreProducto,
     )
 

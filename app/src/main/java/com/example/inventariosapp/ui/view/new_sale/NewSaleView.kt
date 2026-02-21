@@ -6,8 +6,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -23,7 +26,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,10 +36,13 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
@@ -56,6 +64,23 @@ import com.example.inventariosapp.ui.theme.UI_Divier
 import com.example.inventariosapp.ui.theme.UI_List_Row_1
 import com.example.inventariosapp.ui.theme.UI_List_Row_2
 
+
+@Composable
+fun rememberAvailableHeight(): Dp {
+    val density = LocalDensity.current
+    val configuration = LocalConfiguration.current
+    val imeInsets = WindowInsets.ime
+
+    return remember(configuration, density, imeInsets) {
+        derivedStateOf {
+            val screenHeight = configuration.screenHeightDp.dp
+            val imeHeight = with(density) {
+                imeInsets.getBottom(this).toDp()
+            }
+            screenHeight - imeHeight - 200.dp
+        }
+    }.value
+}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewSaleView(
@@ -72,6 +97,9 @@ fun NewSaleView(
     onClickSave: () -> Unit,
     onClickDelete: (SaleProductModel) -> Unit
 ) {
+    LaunchedEffect(expandedSearchBar.value) {
+        Log.i("Expanded___", expandedSearchBar.value.toString())
+    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -97,7 +125,6 @@ fun NewSaleView(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ){
-                Log.i("Folio___", sale.value.folio.toString())
                 if(!sale.value.folio.isNullOrEmpty()){
                     TextCmp(
                         text = "Folio",
@@ -131,10 +158,14 @@ fun NewSaleView(
                         canModify = canModify.value,
                         onChangeText = { txt -> clientName.value = txt },
                         opcionContent = {
+                            val maxHeight = rememberAvailableHeight()
                             DropdownMenu(
-                                expanded = expandedSearchBar.value,
+                                expanded = expandedSearchBar.value && canModify.value,
                                 onDismissRequest = { expandedSearchBar.value = false },
-                                modifier = Modifier.fillMaxWidth(.9f).padding(),
+                                modifier = Modifier
+                                    .fillMaxWidth(.9f)
+                                    .padding()
+                                    .heightIn(max = maxHeight),
                                 properties = PopupProperties(focusable = false)
                             ) {
                                 opcions.value.take(10).forEach { option ->
@@ -292,7 +323,7 @@ fun NewSaleViewPreview(){
         sale = remember {  mutableStateOf(SalesModel(folio = ""))},
         salesData = remember { mutableStateListOf() },
         expandedSearchBar = remember { mutableStateOf(true) },
-        canModify = remember { mutableStateOf(true) },
+        canModify = remember { mutableStateOf(false) },
         opcions = remember { mutableStateOf(arrayListOf()) },
         onClickOpcion = {},
         onClickDelete = {},
