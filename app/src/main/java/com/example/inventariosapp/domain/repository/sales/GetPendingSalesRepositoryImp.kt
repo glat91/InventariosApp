@@ -8,6 +8,7 @@ import com.example.inventariosapp.local.entity.toDb
 import com.example.inventariosapp.domain.model.error.ErrorModel
 import com.example.inventariosapp.domain.model.sales.SalesModel
 import com.example.inventariosapp.domain.model.sales.toDB
+import com.example.inventariosapp.util.Helpers
 import kotlinx.coroutines.withContext
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
@@ -63,8 +64,6 @@ class GetPendingSalesRepositoryImp @Inject constructor(
             else {
                 Log.i("Sales___", "call db Sales")
                 val sales = salesDao.getSalesBetween(startDate, endDate, estatusVentaIds)
-                val all = salesDao.getAllSales()
-                Log.i("Sales___", "Total: ${all.size}")
                 val entity = ArrayList(sales.map { it.toDb() })
                 Pair(entity, null)
             }

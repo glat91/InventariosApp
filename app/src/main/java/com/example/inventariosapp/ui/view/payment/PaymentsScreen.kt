@@ -434,7 +434,7 @@ fun PaymentsScreen(navController: NavHostController) {
                                     labelText = "Observaciones",
                                     keyboardType = KeyboardType.Text,
                                     textValue = viewModel.payObservation.value,
-                                    onValueChange = { viewModel.payObservation.value = it },
+                                    onValueChange = { if (it.length <= 50) viewModel.payObservation.value = it },
                                     textAlign = TextAlign.Left,
                                     disableTextColor = Color.Gray,
                                     enabled = true,

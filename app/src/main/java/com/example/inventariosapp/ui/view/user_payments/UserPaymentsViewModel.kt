@@ -24,7 +24,6 @@ class UserPaymentsViewModel @Inject constructor(
     private val getPenndingPaymentUseCase: GetPenndingPaymentUseCase,
     val baseViewModel: BaseViewModel,
     private val newPayDao: NewPayDao,
-    val monitor: NetworkMonitor,
     @ApplicationContext val cnx: Context
 ): ViewModel(){
 
@@ -40,7 +39,7 @@ class UserPaymentsViewModel @Inject constructor(
                     it.tipoConexionId = 2
                     it.origenId = userID
                 }
-                val internetUse = monitor.isConnected.value
+                val internetUse = Helpers.isInternetAvailable(cnx)
                 if (internetUse){
                     var r = postPaymentUseCase(internetUse = internetUse, newPay = penndingPayments.value)
                     if (r.isSuccess){

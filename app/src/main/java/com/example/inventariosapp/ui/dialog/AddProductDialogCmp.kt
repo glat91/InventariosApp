@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -153,7 +154,9 @@ fun AddProductDialogCmp(
                             modifier = Modifier
                                 .padding(top = PADDING_8)
                                 .fillMaxWidth(.7f)
-                                .heightIn(max = maxHeight),
+                                //.heightIn(max = maxHeight)
+                                .windowInsetsPadding(WindowInsets.ime),
+
                             properties = PopupProperties(focusable = false)
                         ) {
                             Column(
@@ -165,10 +168,10 @@ fun AddProductDialogCmp(
                                             .fillMaxWidth()
                                             .clickable {
                                                 expanded.value = false
-                                                state.value = TextFieldValue(option.descripcion.orEmpty())
+                                                state.value = TextFieldValue(option.descripcionPresentacion.orEmpty())
                                                 onClickOpcion(option)
                                             },
-                                        product = option.descripcion.orEmpty(),
+                                        product = option.descripcionPresentacion.orEmpty(),
                                         backgroundColor = Color.White
                                     )
                                 }

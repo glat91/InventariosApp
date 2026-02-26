@@ -30,6 +30,7 @@ class ProductsViewModel @Inject constructor(
     fun getProducts(){
         baseViewModel.showLoader()
         viewModelScope.launch {
+            internetUse.value = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
             val v = getProductsUseCase(internetUse.value)
             if (v.first != null){
                 products.value = v.first!! as ArrayList<ProductsResponseModel>

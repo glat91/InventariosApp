@@ -85,8 +85,8 @@ class PaymentsViewModel @Inject constructor(
     fun getClients(){
         baseViewModel.showLoader()
         viewModelScope.launch {
-            val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
-            val r = getClientsUseCase(internetUse.value)
+            val internetUse = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
+            val r = getClientsUseCase(internetUse)
             if (r.first != null){ clients.value = r.first!! }
             baseViewModel.hideLoader()
         }
@@ -105,8 +105,8 @@ class PaymentsViewModel @Inject constructor(
             if (endDate.value.isBlank()) { endDate.value = Helpers.getTomrrow() }
         }
         viewModelScope.launch {
-            val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
-            val r = getPendingSalesUseCase("2", startDate.value, endDate.value, internetUse.value)
+            val internetUse = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
+            val r = getPendingSalesUseCase("2", startDate.value, endDate.value, internetUse)
             if (r.first != null) {
                 Log.i("Sales___", r.first!!.toString())
                 sales.value = r.first!!
@@ -169,7 +169,7 @@ class PaymentsViewModel @Inject constructor(
         baseViewModel.showLoader()
         viewModelScope.launch {
             if (baseViewModel.isSessionValid()){
-                val internetUse = Helpers.isInternetAvailable(cnx) || MainActivity.internetBtn.value
+                val internetUse = Helpers.isInternetAvailable(cnx)
                 var r = deletePaymentUseCase(internetUse, pagoId)
                 if (r.isSuccess){
                     dialogDeposit.value = false

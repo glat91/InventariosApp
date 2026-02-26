@@ -57,7 +57,6 @@ class SalesViewModel @Inject constructor(
         baseViewModel.showLoader()
         viewModelScope.launch{
             val internetUse = MainActivity.internetBtn.value && Helpers.isInternetAvailable(cnx)
-            MainActivity.internetBtn.value = internetUse
             if (MainActivity.startDate.value.isBlank() && MainActivity.endDate.value.isBlank()) {
                 MainActivity.startDate.value = Helpers.getYesterday()
                 MainActivity.endDate.value = Helpers.getTomrrow()
@@ -103,6 +102,7 @@ class SalesViewModel @Inject constructor(
             cnx.savePersistData(key = key, data = data)
         }
     }
+
     // endregion
 
 }

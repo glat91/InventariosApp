@@ -42,7 +42,6 @@ class NewSaleViewModel @Inject constructor(
     private val getClientsUseCase: GetClientsUseCase,
     private val getInventarioProductoUseCase: GetInventarioProductoRepositoryImp,
     val baseViewModel: BaseViewModel,
-    val monitor: NetworkMonitor,
     @ApplicationContext private val cnx : android.content.Context
 ) : ViewModel() {
     val sale: MutableState<SalesModel> = mutableStateOf(SalesModel())
@@ -62,6 +61,7 @@ class NewSaleViewModel @Inject constructor(
         canModifyClient.value = false
         baseViewModel.showLoader()
         viewModelScope.launch {
+            internetUse.value = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
             if (baseViewModel.isSessionValid()){
                 idSale = sale.value.folio.toString()
                 val r = getSalesByIdUseCase(idSale, internetUse.value)
@@ -149,6 +149,7 @@ class NewSaleViewModel @Inject constructor(
     fun getClients(){
         baseViewModel.showLoader()
         viewModelScope.launch {
+            internetUse.value = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
             val r = getClientsUseCase(internetUse.value)
             if (r.first != null){
                 clients.value = r.first!!
@@ -206,6 +207,7 @@ class NewSaleViewModel @Inject constructor(
     fun getProducts(){
         baseViewModel.showLoader()
         viewModelScope.launch {
+            internetUse.value = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
             val r = getProductsUseCase(internetUse.value)
             if (r.first != null){
                 inventory.value = (r.first as ArrayList<ProductsResponseModel>?)!!
@@ -214,12 +216,6 @@ class NewSaleViewModel @Inject constructor(
             //if (setLoading()) baseViewModel.hideLoader()
         }
     }
-    fun setLoading(): Boolean {
-        val r= serviceProductMessage.value && serviceClientStatus.value
-        Log.i("Loading___", r.toString())
-        return r
-    }
-
     val price = mutableStateOf(0.0)
     val quantity = mutableStateOf("")
     val serchProductId = mutableStateOf(0)
@@ -250,6 +246,7 @@ class NewSaleViewModel @Inject constructor(
         viewModelScope.launch {
             val userId = baseViewModel.getPerfilId()
             if (baseViewModel.isSessionValid()){
+                internetUse.value = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
                 var totalSale = 0.0
                 val fecha = Helpers.getDateTime().replace(" ", "T")
                 for (p in products){
@@ -281,7 +278,6 @@ class NewSaleViewModel @Inject constructor(
                     ventaProductos = newProducts.value,
                     tipoConexionId = if (internetUse.value) 1 else 2
                 ))
-                internetUse.value = monitor.isConnected.value && MainActivity.internetBtn.value
                 val r = postSaleUseCase(newSale.value, internetUse.value)
                 if (r.first != null){
                     MainActivity.mainDialogMsg.value = if (internetUse.value)"Venta guardada" else "Venta guardada en modo offline"
@@ -289,9 +285,7 @@ class NewSaleViewModel @Inject constructor(
                     serverPostSale.value = true
                 }
             }
-            else{
-                baseViewModel.dialogLogin.value = true
-            }
+            else{ baseViewModel.dialogLogin.value = true }
             baseViewModel.hideLoader()
         }
     }
@@ -313,6 +307,7 @@ class NewSaleViewModel @Inject constructor(
         selectedProduct.value = null
         quantity.value = ""
         price.value = 0.0
+        totalInventory.value = ProductIdResponseModel()
     }
     fun clearClient(){
         client.value = TextFieldValue("")

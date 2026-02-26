@@ -24,14 +24,13 @@ class NetworkMonitor @Inject constructor(
     val isConnected: StateFlow<Boolean> = _isConnected
 
     private val callback = object : ConnectivityManager.NetworkCallback() {
-        // TODO Agregar Validacion para que no ocurra en cada pantalla
         override fun onAvailable(network: Network) {
             _isConnected.value = true
         }
         override fun onLost(network: Network) {
             _isConnected.value = false
             MainActivity.mainDialogColor.value = Color.Red
-            MainActivity.mainDialogMsg.value = "Sin internet, modo offline"
+            MainActivity.mainDialogMsg.value = "Sin internet"
             MainActivity.mainDialog.value = true
         }
     }

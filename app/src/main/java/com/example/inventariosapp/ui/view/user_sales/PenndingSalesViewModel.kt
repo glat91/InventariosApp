@@ -23,9 +23,8 @@ class PenndingSalesViewModel @Inject constructor(
     private val postSaleUseCase: PostSaleUseCase,
     private val postSalesDao: PostSalesDao,
     val baseViewModel: BaseViewModel,
-    val monitor: NetworkMonitor,
-    @ApplicationContext val cnx: Context,
-    ): ViewModel() {
+    @ApplicationContext val cnx: Context
+): ViewModel() {
 
 
     var penndingSales: MutableState<ArrayList<PostSaleWithProducts>> = mutableStateOf(arrayListOf())
@@ -43,7 +42,7 @@ class PenndingSalesViewModel @Inject constructor(
                     it.sale.tipoConexionId = 2
                     it.toModel()
                 }
-                val internetUse = monitor.isConnected.value
+                val internetUse = Helpers.isInternetAvailable(cnx)
                 if (internetUse){
                     val r = postSaleUseCase(m, internetUse)
                     if (r.first != null){

@@ -35,7 +35,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.appgeneric.ui.component.TextCmp
 import com.example.inventariosapp.MainActivity
@@ -192,10 +191,11 @@ fun LateralMenuCmp(
                     NavigationDrawerItem(
                         icon = {
                             Image(
-                                painter = painterResource(id = R.drawable.ic_pennding_sale),
+                                painter = painterResource(id = R.drawable.ic_up_payments),
                                 contentDescription = null,
                                 contentScale = ContentScale.Crop,
-                                modifier = Modifier.size(35.dp)
+                                modifier = Modifier.size(35.dp),
+                                colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(Color.Gray)
                             )
                         },
                         label = {

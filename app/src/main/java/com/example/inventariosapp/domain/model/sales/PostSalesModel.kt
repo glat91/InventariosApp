@@ -26,7 +26,7 @@ data class PostSalesModel(
     @SerializedName("MontoPorPagar") var montoPorPagar: Double? = null,
     @SerializedName("tipoPagoId") var tipoPagoId: Int? = null,
     @SerializedName("esFueraDeLinea") var esFueraDeLinea: Boolean = false,
-    @SerializedName("origenId") var origenId: Int = 1,
+    @SerializedName("origenId") var origenId: Int = 2,
     @SerializedName("tipoConexionId") var tipoConexionId: Int = 1,
     @SerializedName("VentaIdInterno") var ventaIdInterno: Int? = null,
     @SerializedName("Version") var version: Int? = null,

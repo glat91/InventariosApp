@@ -6,6 +6,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -16,6 +17,7 @@ import com.example.inventariosapp.ui.component.Loader
 import com.example.inventariosapp.ui.dialog.AddProductDialogCmp
 import com.example.inventariosapp.ui.dialog.LoginDialogCmp
 import com.example.inventariosapp.ui.view.login.LoginViewModel
+import com.example.inventariosapp.util.Helpers
 
 @Composable
 fun NewSaleScreen(navController: NavHostController) {
@@ -23,6 +25,7 @@ fun NewSaleScreen(navController: NavHostController) {
     val lviewModel: LoginViewModel = hiltViewModel()
     val editStatus = viewModel.editStatus.collectAsState()
     val postSale = viewModel.serverPostSale.collectAsState()
+    val cnx = LocalContext.current
 
     LaunchedEffect(viewModel.expandenSearchBarS.value) {
         if (viewModel.newClient.value != null){
@@ -129,6 +132,7 @@ fun NewSaleScreen(navController: NavHostController) {
             onClickEnter = {
                 if (!lviewModel.rememberUser.value) lviewModel.clearUser()
                 else lviewModel.saveUserLogin()
+                val internetUse = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
                 lviewModel.validateUserLogin(MainActivity.internetBtn.value)
             },
             onClickRememberPassword = {
