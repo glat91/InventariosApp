@@ -87,7 +87,13 @@ fun NewSaleScreen(navController: NavHostController) {
                 }
             }
             else {
-                if (viewModel.products.isNotEmpty()){ viewModel.editSale() }
+                if (MainActivity.internetBtn.value){
+                    if (viewModel.products.isNotEmpty()){ viewModel.editSale() }
+                }
+                else{
+                    MainActivity.mainDialogMsg.value = "Modo offline no activado"
+                    MainActivity.mainDialog.value = true
+                }
             }
         },
         onClickBack = {

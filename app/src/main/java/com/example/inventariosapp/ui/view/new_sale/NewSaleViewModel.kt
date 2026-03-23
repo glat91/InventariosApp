@@ -85,25 +85,22 @@ class NewSaleViewModel @Inject constructor(
         canModifyClient.value = false
         baseViewModel.showLoader()
         viewModelScope.launch {
-            if (baseViewModel.isSessionValid()){
-                val internetUse = Helpers.isInternetAvailable(cnx)
-                saleData.value.ventaProductos = java.util.ArrayList(products)
-                saleData.value.ventaIdInterno = null
-                Log.i("Sale___", products.toString())
-                val r = editSaleUseCase(saleData.value, idSale, internetUse)
-                if (r.first != null){
-                    MainActivity.mainDialogMsg.value = "Venta modificada"
+            val internetUse = Helpers.isInternetAvailable(cnx)
+            saleData.value.ventaProductos = java.util.ArrayList(products)
+            saleData.value.ventaIdInterno = null
+            Log.i("Sale___", products.toString())
+            val r = editSaleUseCase(saleData.value, idSale, internetUse)
+            if (r.first != null){
+                MainActivity.mainDialogMsg.value = "Venta modificada"
+                MainActivity.mainDialog.value = true
+                editStatus.value = true
+            }
+            else{
+                if (r.second != null){
+                    MainActivity.mainDialogMsg.value = r.second!!
                     MainActivity.mainDialog.value = true
-                    editStatus.value = true
-                }
-                else{
-                    if (r.second != null){
-                        MainActivity.mainDialogMsg.value = r.second!!
-                        MainActivity.mainDialog.value = true
-                    }
                 }
             }
-            else{ baseViewModel.dialogLogin.value = true }
             baseViewModel.hideLoader()
         }
     }
@@ -213,7 +210,6 @@ class NewSaleViewModel @Inject constructor(
                 inventory.value = (r.first as ArrayList<ProductsResponseModel>?)!!
             }
             serviceProductMessage.value = true
-            //if (setLoading()) baseViewModel.hideLoader()
         }
     }
     val price = mutableStateOf(0.0)

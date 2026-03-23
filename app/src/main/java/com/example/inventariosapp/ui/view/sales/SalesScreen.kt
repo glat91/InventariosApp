@@ -26,11 +26,10 @@ import com.example.inventariosapp.ui.component.Loader
 @Composable
 fun SalesScreen(navController: NavHostController) {
     val viewModel: SalesViewModel = hiltViewModel()
-    val internetUse by viewModel.baseViewModel.internetUses.collectAsState()
-    val cnx = LocalContext.current
 
     @OptIn(ExperimentalMaterial3Api::class)
-    var datePickerState = rememberDatePickerState()
+    var datePickerState1 = rememberDatePickerState()
+    var datePickerState2 = rememberDatePickerState()
     val lifecycleOwner = LocalLifecycleOwner.current
 
     LaunchedEffect(lifecycleOwner) {
@@ -49,9 +48,15 @@ fun SalesScreen(navController: NavHostController) {
         onClickMenu = { viewModel.baseViewModel.openMenu() },
         onClickDate = { viewModel.showDatePicker.value = true },
         onclickRow = {
-            navController.currentBackStackEntry?.savedStateHandle?.set("sale", it)
-            navController.navigate(route = Destinations.NewSaleScreen.ruta){
-                launchSingleTop = true
+            if (MainActivity.internetBtn.value){
+                navController.currentBackStackEntry?.savedStateHandle?.set("sale", it)
+                navController.navigate(route = Destinations.NewSaleScreen.ruta){
+                    launchSingleTop = true
+                }
+            }
+            else{
+                MainActivity.mainDialogMsg.value = "Modo offline activado, no es posible editar ventas"
+                MainActivity.mainDialog.value = true
             }
         },
         onClickAdd = {
@@ -69,7 +74,9 @@ fun SalesScreen(navController: NavHostController) {
             confirmButton = {
                 TextButton(
                     onClick = {
-                        viewModel.updateDateInput(datePickerState)
+                        viewModel.updateDateInput(
+                            if (viewModel.dialogChoice.value) datePickerState2 else datePickerState1
+                        )
                         viewModel.showDatePicker.value = false
                     }) {
                     TextCmp("OK")
@@ -80,7 +87,9 @@ fun SalesScreen(navController: NavHostController) {
                     TextCmp("Cancelar")
                 }
             }
-        ) { DatePicker(state = datePickerState) }
+        ) {
+            DatePicker(state = if (viewModel.dialogChoice.value) datePickerState2 else datePickerState1)
+        }
     }
     // endregion
     Loader(viewModel.baseViewModel.getLoader())

@@ -15,7 +15,6 @@ import com.example.inventariosapp.ui.view.login.LoginViewModel
 fun PenndingSalesScreen(navController: NavHostController) {
     val viewModel: PenndingSalesViewModel = hiltViewModel()
     val lviewModel: LoginViewModel = hiltViewModel()
-    val cnx = LocalContext.current
 
     PenndingSalesView(
         data = viewModel.penndingSales,

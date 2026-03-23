@@ -7,12 +7,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.inventariosapp.BaseViewModel
 import com.example.inventariosapp.MainActivity
+import com.example.inventariosapp.domain.model.product.ProductIdResponseModel
+import com.example.inventariosapp.domain.model.product.ProductsResponseModel
+import com.example.inventariosapp.domain.model.sales.PostSalesModel
+import com.example.inventariosapp.domain.repository.product.GetInventarioProductoRepositoryImp
 import com.example.inventariosapp.local.dao.PostSalesDao
 import com.example.inventariosapp.local.entity.PostSaleWithProducts
 import com.example.inventariosapp.local.entity.toModel
 import com.example.inventariosapp.domain.use_case.sales.PostSaleUseCase
 import com.example.inventariosapp.util.Helpers
-import com.example.inventariosapp.util.NetworkMonitor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
@@ -20,17 +23,17 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PenndingSalesViewModel @Inject constructor(
+    private val getInventarioProductoUseCase: GetInventarioProductoRepositoryImp,
     private val postSaleUseCase: PostSaleUseCase,
     private val postSalesDao: PostSalesDao,
     val baseViewModel: BaseViewModel,
     @ApplicationContext val cnx: Context
 ): ViewModel() {
-
-
     var penndingSales: MutableState<ArrayList<PostSaleWithProducts>> = mutableStateOf(arrayListOf())
-
+    val inventory: MutableState<ArrayList<ProductsResponseModel>?> = mutableStateOf(arrayListOf())
+    val notInInventory = mutableListOf<PostSaleWithProducts>()
+    val totalInventory: MutableState<ProductIdResponseModel> = mutableStateOf(ProductIdResponseModel())
     private fun getPenndingSales(){
-
         viewModelScope.launch {
             penndingSales.value = ArrayList(postSalesDao.getAllSales()) }
     }
@@ -41,6 +44,7 @@ class PenndingSalesViewModel @Inject constructor(
                 val m = penndingSales.value.map {
                     it.sale.tipoConexionId = 2
                     it.toModel()
+                    it.productos
                 }
                 val internetUse = Helpers.isInternetAvailable(cnx)
                 if (internetUse){
@@ -63,6 +67,19 @@ class PenndingSalesViewModel @Inject constructor(
         else{
             MainActivity.mainDialogMsg.value = "No tiene ventas pendientes por subir"
             MainActivity.mainDialog.value = true
+        }
+    }
+    fun deleteSale(id: Int) {
+        val newList = ArrayList(penndingSales.value)
+        newList.removeAll { it.sale.ventaId == id }
+        penndingSales.value = newList
+    }
+
+    suspend fun getProductInventario(productId: Int){
+        val internetUse = Helpers.isInternetAvailable(cnx)
+        val r = getInventarioProductoUseCase(productId, internetUse)
+        if (r.first != null){
+            totalInventory.value = r.first!!
         }
     }
 

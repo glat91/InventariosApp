@@ -84,7 +84,7 @@ fun PenndingSalesView(
                     ) {
                         var switchColor = true
                         items(data.value) { sale ->
-                            val c = if (sale.sale.ventaId == 0) CustomEnums.StatusType.PENDING
+                            val c = if (sale.sale.esActivo) CustomEnums.StatusType.PENDING
                             else CustomEnums.StatusType.ERROR
                             CardPenndingSaleCmp(
                                 modifier = Modifier.clickable {
