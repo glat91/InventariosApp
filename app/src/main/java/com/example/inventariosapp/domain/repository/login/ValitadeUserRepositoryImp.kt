@@ -24,6 +24,6 @@ class ValitdateUserRepositoryImp @Inject constructor(
 
         }
         catch (e: IOException) { Pair(null, "No hay conexión a internet") }
-        catch (e: Exception) { Pair(null, ("Ocurrió un error inesperado")) }
+        catch (e: Exception) { Pair(null, ("Ocurrió un error inesperado ${e.message}")) }
     }
 }

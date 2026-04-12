@@ -144,28 +144,30 @@ fun LateralMenuCmp(
                             corutine.launch { drawerState.close() }
                         }
                     )
-                    NavigationDrawerItem(
-                        icon = {
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_cases),
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier.size(35.dp)
-                            )
-                        },
-                        label = {
-                            TextCmp(
-                                text = "Productos",
-                                fontSize = 14.sp
-                            ) },
-                        selected = false,
-                        onClick = {
-                            navController.navigate(route = Destinations.ProductsScreen.ruta){
-                                launchSingleTop = true
+                    if (menuViewModel.userId.value == 1){
+                        NavigationDrawerItem(
+                            icon = {
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_cases),
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.size(35.dp)
+                                )
+                            },
+                            label = {
+                                TextCmp(
+                                    text = "Productos",
+                                    fontSize = 14.sp
+                                ) },
+                            selected = false,
+                            onClick = {
+                                navController.navigate(route = Destinations.ProductsScreen.ruta){
+                                    launchSingleTop = true
+                                }
+                                corutine.launch { drawerState.close() }
                             }
-                            corutine.launch { drawerState.close() }
-                        }
-                    )
+                        )
+                    }
                     NavigationDrawerItem(
                         icon = {
                             Image(
@@ -339,6 +341,6 @@ fun LateralMenuCmp(
         drawerState = drawerState
     ) {
         screenContent()
-    }
-    Loader(menuViewModel.baseViewModel.getLoader())
+}
+Loader(menuViewModel.baseViewModel.getLoader())
 }

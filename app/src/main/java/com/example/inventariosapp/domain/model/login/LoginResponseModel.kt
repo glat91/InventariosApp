@@ -16,5 +16,5 @@ data class LoginResponseModel(
     @SerializedName("usuarioSesionId") var usuarioSesionId : Int? = null,
     @SerializedName("fechaIngreso") var fechaIngreso : String? = null,
     @SerializedName("fechaModifico") var fechaModifico : String? = null,
-    @SerializedName("porcentajeComision") var porcentajeComision : Int? = null
+    @SerializedName("porcentajeComision") var porcentajeComision : Double? = null
 )

@@ -93,6 +93,7 @@ fun AddProductDialogCmp(
     opcions: ArrayList<ProductsResponseModel>,
     inventario: ProductIdResponseModel,
     product: MutableState<ProductsResponseModel?>,
+    comentarios: MutableState<String>,
     expanded: MutableState<Boolean>,
     onDismiss: () -> Unit,
     onChangeText: (TextFieldValue) -> Unit,
@@ -338,6 +339,39 @@ fun AddProductDialogCmp(
                         }
                     }
                     HorizontalDivider(thickness = PADDING_8, color = Color.Transparent)
+                    Column(
+                        modifier = Modifier
+                            .border(border = BorderStroke(2.dp, Color.Black), shape = RoundedCornerShape(10.dp))
+                            .padding(PADDING_8)
+                        ,
+                    ){
+                        TextCmp(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = "Comentarios",
+                            color = Color.Black,
+                            fontSize = 24.sp,
+                            fontStyle = FontStyle.Italic,
+                            textDecoration = TextDecoration.Underline,
+                            textAlign = TextAlign.Left,
+                            fontWeight = FontWeight.Bold,
+                            maxLine = 1,
+                        )
+
+                        InputWithTitleLabelCmp(
+                            textValue = comentarios.value,
+                            modifier = Modifier,
+                            labelText = "",
+                            keyboardType = KeyboardType.Text,
+                            textValueSize = 18.sp,
+                            onValueChange = {
+                                Log.i("Commets___", it.toString())
+                                comentarios.value = it
+                                it
+                            },
+                            fontColor = Color.Black,
+                        )
+                    }
+                    HorizontalDivider(thickness = PADDING_8, color = Color.Transparent)
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(PADDING_8),
                         horizontalArrangement = Arrangement.SpaceAround
@@ -408,6 +442,7 @@ fun AddProductDialogCmpPreview(){
         },
         inventario = ProductIdResponseModel(inventario = 10),
         onClickPrice = {},
+        comentarios = remember { mutableStateOf("") },
         quantity = remember { mutableStateOf("") },
         onClickCancel = {},
         onClickAccept = {}

@@ -16,7 +16,8 @@ data class ProductsResponseModel(
     @SerializedName("precioVenta2") val precioVenta2: Double? = null,
     @SerializedName("precioVenta3") val precioVenta3: Double? = null,
     @SerializedName("precioVenta4") val precioVenta4: Double? = null,
-    @SerializedName("nombreUnidadMedida") val nombreUnidadMedida: String = ""
+    @SerializedName("nombreUnidadMedida") val nombreUnidadMedida: String = "",
+    @SerializedName("comentarios") var comentarios: String = "",
 )
 
 fun ProductsResponseModel.toDb() = ProductEntity(

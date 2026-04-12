@@ -23,24 +23,24 @@ import retrofit2.http.Query
 interface ApiService {
 
     // region login
-    @GET("InventariosApi.QA/Api/usuario/{user},{password}")
+    @GET("InventariosApi.CJ/Api/usuario/{user},{password}")
     suspend fun validateUser(
         @Path("user") user: String,
         @Path("password") password: String
     ): Response<LoginResponseModel>
     // endregion
     // region productos
-    @GET("InventariosApi.QA/Api/Producto")
+    @GET("InventariosApi.CJ/Api/Producto")
     suspend fun getProducts(
         @Query("EsActivo") esActivo: Boolean = true
     ): Response<List<ProductsResponseModel>>
 
-    @GET("InventariosApi.QA/Api/Producto/GetByIdData")
+    @GET("InventariosApi.CJ/Api/Producto/GetByIdData")
     suspend fun getProductId(
         @Query("productoId") productId: Int
     ): Response<ProductIdResponseModel>
 
-    @GET("InventariosApi.QA/Api/Inventario")
+    @GET("InventariosApi.CJ/Api/Inventario")
     suspend fun getInventario(
         @Query("EsActivo") esActivo: Boolean = true
     ): Response<List<InventarioRseponeModel>>
@@ -48,7 +48,7 @@ interface ApiService {
 
 
     // region clientes
-    @GET("InventariosApi.QA/Api/Cliente")
+    @GET("InventariosApi.CJ/Api/Cliente")
     suspend fun getClient(
         @Query("EsActivo") esActivo: Boolean = true
     ): Response<List<ClientResponseModel>>
@@ -56,28 +56,28 @@ interface ApiService {
 
 
     // region payment
-    @GET("InventariosApi.QA/Api/TipoPago")
+    @GET("InventariosApi.CJ/Api/TipoPago")
     suspend fun getPaymentMethod(
         @Query("EsActivo") esActivo: Boolean = true
     ): Response<List<GetPaymentResponseModel>>
 
-    @GET("InventariosApi.QA/Api/VentaPago/{pagoId}")
+    @GET("InventariosApi.CJ/Api/VentaPago/{pagoId}")
     suspend fun getPaymentById(
         @Path("pagoId") pagoId: String
     ): Response<GetPaymentResponseModel>
 
-    @GET("InventariosApi.QA/Api/VentaPago")
+    @GET("InventariosApi.CJ/Api/VentaPago")
     suspend fun getPayment(
         @Query("VentaID") ventaID: String,
         @Query("EsActivo") esActivo: Boolean = true
     ): Response<List<PayModel>>
 
-    @POST("InventariosApi.QA/Api/VentaPago")
+    @POST("InventariosApi.CJ/Api/VentaPago")
     suspend fun setPayment(
         @Body payments: List<NewPayModel>
     ): Response<Unit>
 
-    @DELETE("InventariosApi.QA/Api/VentaPago/{pagoId}")
+    @DELETE("InventariosApi.CJ/Api/VentaPago/{pagoId}")
     suspend fun deletePayment(
         @Path("pagoId") pagoId: Int
     ): Response<Unit>
@@ -85,20 +85,20 @@ interface ApiService {
 
 
     // region ventas
-    @POST("InventariosApi.QA/Api/Venta")
+    @POST("InventariosApi.CJ/Api/Venta")
     suspend fun postSale(
         @Body sales: List<PostSalesModel>
     ): Response<Unit>
 
-    @GET("InventariosApi.QA/Api/Venta/{saleId}")
+    @GET("InventariosApi.CJ/Api/Venta/{saleId}")
     suspend fun getSalesById(
         @Path("saleId") saleId: String
     ): Response<GetSalesByIdResponse>
 
-    @PUT("InventariosApi.QA/Api/Venta/{ventaId}")
+    @PUT("InventariosApi.CJ/Api/Venta/{ventaId}")
     suspend fun editSale(@Body venta: GetSalesByIdResponse, @Path("ventaId") ventaId: String) : Response<Unit>
 
-    @GET("InventariosApi.QA/Api/Venta")
+    @GET("InventariosApi.CJ/Api/Venta")
     suspend fun getSalesInProcess(
         @Query("esActivo") esActivo: Boolean = true,
         @Query("EstatusVentaIds") statusSales: String,
@@ -106,7 +106,7 @@ interface ApiService {
         @Query("fechaFin") endDate: String
     ): Response<List<SalesModel>>
 
-    @GET("InventariosApi.QA/Api/Venta")
+    @GET("InventariosApi.CJ/Api/Venta")
     suspend fun getPendingSales(
         @Query("esActivo") esActivo: Boolean = true,
         @Query("estatusVentaIds") estatusVentaIds: String = "1,2",
@@ -114,7 +114,7 @@ interface ApiService {
         @Query("fechaFin") fechaFin: String
     ): Response<List<SalesModel>>
 
-    @GET("InventariosApi.QA/Api/VentaPago")
+    @GET("InventariosApi.CJ/Api/VentaPago")
     suspend fun getSalePayments(
         @Query("VentaId") pagoId: String,
         @Query("EsActivo") esActivo: Boolean = true

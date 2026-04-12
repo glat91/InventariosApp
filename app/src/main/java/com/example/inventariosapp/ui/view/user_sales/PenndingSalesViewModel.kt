@@ -44,7 +44,6 @@ class PenndingSalesViewModel @Inject constructor(
                 val m = penndingSales.value.map {
                     it.sale.tipoConexionId = 2
                     it.toModel()
-                    it.productos
                 }
                 val internetUse = Helpers.isInternetAvailable(cnx)
                 if (internetUse){

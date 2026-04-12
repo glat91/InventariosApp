@@ -84,7 +84,7 @@ fun LoginView(
                                     elevation = CardDefaults.elevatedCardElevation(8.dp)
                                 ){
                                     Image(
-                                        painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                                        painter = painterResource(id = R.drawable.logo_casajordan),
                                         contentDescription = "Logo de la app",
                                         modifier = Modifier.size(150.dp),
                                         contentScale = ContentScale.Fit

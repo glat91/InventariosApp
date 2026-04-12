@@ -1,6 +1,7 @@
 package com.example.inventariosapp.ui.view.menu
 
 import android.content.Context
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -33,6 +34,7 @@ class MenuViewModel @Inject constructor(
 ) : ViewModel() {
     val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
     val userName = mutableStateOf("")
+    val userId = mutableIntStateOf(0)
     // region Servicios
     fun updateClientsDb(){
         baseViewModel.showLoader()
@@ -149,6 +151,11 @@ class MenuViewModel @Inject constructor(
             cnx.savePersistData(key = key, data = data)
         }
     }
+    fun getUserId(cnx: Context){
+        viewModelScope.launch {
+            val a = cnx.readPersistData(Constants.PERFIL_ID, 0)
+        }
+    }
     // endregion
     init {
         viewModelScope.launch {
@@ -159,6 +166,7 @@ class MenuViewModel @Inject constructor(
             MainActivity.lastUpdateInventory.value = cnx.readPersistData(Constants.SINCRO_INVENTORY, "")
             MainActivity.internetBtn.value = cnx.readPersistData(Constants.INTERNET, true)
             userName.value = cnx.readPersistData(Constants.NOMBRE, "")
+            userId.intValue = cnx.readPersistData(Constants.USUARIO_ID, 0)
         }
     }
 }

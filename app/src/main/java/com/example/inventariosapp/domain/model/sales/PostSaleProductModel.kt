@@ -13,7 +13,7 @@ data class PostSaleProductModel(
     @SerializedName("CantidadSolicitada") var cantidadSolicitada: Int = 0,
     @SerializedName("VentaIdInterno") var ventaIdInterno: Int? = 0,
     @SerializedName("nombreProducto") var nombreProducto: String = "",
-
+    @SerializedName("comentarios") var comentarios: String = "",
     )
 
 fun PostSaleProductModel.toDB(id: String) =
@@ -28,5 +28,6 @@ fun PostSaleProductModel.toDB(id: String) =
         ventaProductoId = ventaProductoId,
         cantidadSolicitada = cantidadSolicitada,
         ventaIdInterno = ventaIdInterno,
-        nombreProducto = nombreProducto
+        nombreProducto = nombreProducto,
+        comentarios = comentarios
     )

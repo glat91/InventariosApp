@@ -46,6 +46,7 @@ class NewSaleViewModel @Inject constructor(
 ) : ViewModel() {
     val sale: MutableState<SalesModel> = mutableStateOf(SalesModel())
     val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
+    val comentarios = mutableStateOf("")
     val canModifyClient = mutableStateOf(true)
 
     val expandenSearchBarS = mutableStateOf(false)
@@ -118,9 +119,10 @@ class NewSaleViewModel @Inject constructor(
         sale.value = sale.value.copy(total = newTotal.toDouble())
         saleData.value = saleData.value.copy(total = newTotal.toDouble())
     }
-    fun addRow(data: ProductsResponseModel){
+    fun addRow(data: ProductsResponseModel, comentarios: String){
         var newTotal = BigDecimal(0.0)
         val p = if (canModifyClient.value) data.productoId ?: 0 else 0
+        Log.i("C___", comentarios)
         products.add(
             SaleProductModel(
                 VentaProductoId = 0,
@@ -132,7 +134,8 @@ class NewSaleViewModel @Inject constructor(
                 CantidadSolicitada = quantity.value.toInt(),
                 VentaIdInterno = null,
                 Venta = null,
-                nombreProducto = data.descripcion!!
+                nombreProducto = data.descripcion ?: "",
+                comentarios = comentarios
             )
         )
         for(p in products){
@@ -254,6 +257,7 @@ class NewSaleViewModel @Inject constructor(
                             precioVenta = p.PrecioVenta,
                             costo = p.Costo,
                             ventaId = 0,
+                            comentarios = p.comentarios
                         )
                     )
                 }

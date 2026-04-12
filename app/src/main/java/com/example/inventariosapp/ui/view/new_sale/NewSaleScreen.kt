@@ -3,6 +3,7 @@ package com.example.inventariosapp.ui.view.new_sale
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -105,6 +106,10 @@ fun NewSaleScreen(navController: NavHostController) {
     // endregion
     // region Dialog
     if (viewModel.dialogProduct.value){
+        val loadComents: MutableState<String> = remember { mutableStateOf(
+            (if (viewModel.canModifyClient.value) viewModel.comentarios.value else viewModel.selectedProduct.value?.comentarios ?: "")
+        ) }
+        Log.i("Coments2___", loadComents.value)
         AddProductDialogCmp(
             state = viewModel.search,
             opcions = viewModel.getFilter().value,
@@ -123,9 +128,11 @@ fun NewSaleScreen(navController: NavHostController) {
             inventario = viewModel.totalInventory.value,
             onClickCancel = { viewModel.clearDialog() },
             onClickAccept = {
-                viewModel.addRow(it)
+                Log.i("Coments3___", loadComents.value)
+                viewModel.addRow(it, loadComents.value)
                 viewModel.clearDialog()
-            }
+            },
+            comentarios = loadComents
         )
     }
     // endregion

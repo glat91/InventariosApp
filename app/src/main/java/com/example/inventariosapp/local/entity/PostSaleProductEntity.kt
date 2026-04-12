@@ -30,4 +30,5 @@ data class PostSaleProductEntity(
     var cantidadSolicitada: Int = 0,
     var ventaIdInterno: Int? = 0,
     var nombreProducto: String,
+    var comentarios: String? = null,
 )

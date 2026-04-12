@@ -14,5 +14,6 @@ data class SaleProductModel(
     @SerializedName("cantidad") var Cantidad: Int?  = null,
     @SerializedName("ventaIdInterno") var VentaIdInterno: Int? = null,
     @SerializedName("venta") var Venta: String? = null,
-    @SerializedName("nombreProducto") var nombreProducto: String = ""
+    @SerializedName("nombreProducto") var nombreProducto: String = "",
+    @SerializedName("comentarios") var comentarios: String = "",
 )
