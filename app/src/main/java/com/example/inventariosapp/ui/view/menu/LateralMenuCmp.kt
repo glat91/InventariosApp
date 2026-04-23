@@ -144,7 +144,7 @@ fun LateralMenuCmp(
                             corutine.launch { drawerState.close() }
                         }
                     )
-                    if (menuViewModel.userId.value == 1){
+                    if (menuViewModel.baseViewModel.getUsarId() == 1){
                         NavigationDrawerItem(
                             icon = {
                                 Image(

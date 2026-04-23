@@ -49,12 +49,12 @@ class LoginViewModel @Inject constructor(
                     cnx.savePersistData(correo, Constants.MAIL)
                     cnx.savePersistData(nombre, Constants.NOMBRE)
 
-                    val a = cnx.readPersistData(Constants.PERFIL_ID, 0)
+                    baseViewModel.setUsarId(cnx.readPersistData(Constants.PERFIL_ID, 0))
                     val b = cnx.readPersistData(Constants.USUARIO_ID, 0)
                     val c = cnx.readPersistData(Constants.USUARIO_SESION_ID, "")
                     val d = cnx.readPersistData(Constants.MAIL, "")
                     val e = cnx.readPersistData(Constants.NOMBRE, "")
-                    Log.i("PErsist___", "$a $b $c $d $e")
+                    Log.i("Persist___", "${baseViewModel.getPerfilId()} $b $c $d $e")
 
                     baseViewModel.startSession(
                         perfilID,

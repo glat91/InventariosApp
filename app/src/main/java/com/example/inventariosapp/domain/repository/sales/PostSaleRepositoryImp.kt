@@ -25,7 +25,8 @@ class PostSaleRepositoryImp @Inject constructor(
                     if (response.isSuccessful) {
                         Log.i("PostSales___", "Sales enviadas correctamente")
                         Pair(Unit, null)
-                    } else {
+                    }
+                    else {
                         val errorJson = response.errorBody()?.string()
                         val error = errorJson?.let {
                             Gson().fromJson(it, ErrorModel::class.java)

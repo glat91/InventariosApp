@@ -29,12 +29,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.inventariosapp.domain.model.sales.SalesModel
 import com.example.inventariosapp.ui.component.cards.CardSaleCmp
 import com.example.inventariosapp.ui.component.HeaderCmp
 import com.example.inventariosapp.ui.component.InputWithTitleLabelCmp
+import com.example.inventariosapp.ui.component.SearchBarCmp
+import com.example.inventariosapp.ui.theme.PADDING_16
 import com.example.inventariosapp.ui.theme.PADDING_8
 import com.example.inventariosapp.ui.theme.UI_Backround_Top
 import com.example.inventariosapp.ui.theme.UI_Divier
@@ -47,6 +50,7 @@ import java.time.LocalDate
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PaymentsView(
+    search: MutableState<TextFieldValue>,
     dateStart: String,
     dateEnd: String,
     data: List<SalesModel>,
@@ -82,7 +86,21 @@ fun PaymentsView(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // TODO falta serchBar
+                HorizontalDivider(thickness = 20.dp, color = Color.Transparent)
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.White
+                    ),
+                    modifier = Modifier.padding(start = PADDING_16, end = PADDING_16),
+                    elevation = CardDefaults.cardElevation(4.dp)
+                ) {
+                    SearchBarCmp(
+                        state = search,
+                        opcionContent = {},
+                        onChangeText ={txt -> search.value = txt },
+                        labelText = "Nombre cliente"
+                    )
+                }
                 HorizontalDivider(thickness = 20.dp, color = Color.Transparent)
                 Row {
                     Card(
@@ -190,6 +208,7 @@ fun SellViewPrevie(){
         dateStart = "2025-06-07",
         dateEnd = "2025-06-07",
         clickDate = remember { mutableStateOf(false) },
+        search = remember { mutableStateOf(TextFieldValue("")) },
         onClickDate = {},
         onClickBack = {},
         onClickMenu = {},

@@ -35,7 +35,7 @@ data class PostSalesModel(
 
     @SerializedName("Cliente") var cliente: String? = null,
     @SerializedName("Direccion") var direccion: String = "",
-    @SerializedName("UsuarioSesionId") var usuarioSesionId: Int = 1,
+    @SerializedName("UsuarioSesionId") var usuarioSesionId: Int = 0,
     @SerializedName("FechaIngreso") var fechaIngreso: String = "",
     @SerializedName("FechaModifico") var fechaModifico: String? = null,
     @SerializedName("Estatus") var estatus: String? = "",

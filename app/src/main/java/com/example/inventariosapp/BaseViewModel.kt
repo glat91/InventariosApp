@@ -27,6 +27,9 @@ class BaseViewModel @Inject constructor(
 ): ViewModel() {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     // region Menu
+    private val usarId = mutableStateOf(0)
+    fun getUsarId() = usarId.value
+    fun setUsarId(id: Int){ usarId.value = id }
     fun openMenu(){ MainActivity.scope.launch { MainActivity.drawerState.open() } }
     fun closeMenu(){ MainActivity.scope.launch { MainActivity.drawerState.close() } }
     // endregion

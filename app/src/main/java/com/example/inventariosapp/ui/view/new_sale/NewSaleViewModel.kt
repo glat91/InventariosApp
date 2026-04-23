@@ -134,7 +134,7 @@ class NewSaleViewModel @Inject constructor(
                 CantidadSolicitada = quantity.value.toInt(),
                 VentaIdInterno = null,
                 Venta = null,
-                nombreProducto = data.descripcion ?: "",
+                nombreProducto = data.descripcionPresentacion ?: "",
                 comentarios = comentarios
             )
         )
@@ -240,28 +240,28 @@ class NewSaleViewModel @Inject constructor(
     val newSale: MutableState<ArrayList<PostSalesModel>> = mutableStateOf(arrayListOf())
     val newClient: MutableState<ClientResponseModel?> = mutableStateOf(null)
     val newProducts: MutableState<ArrayList<PostSaleProductModel>> = mutableStateOf(arrayListOf())
-    fun createSale(){
+    fun createSale() {
         baseViewModel.showLoader()
         viewModelScope.launch {
-            val userId = baseViewModel.getPerfilId()
+            val usuarioSesionId = baseViewModel.getUsuarioSessionId()
             if (baseViewModel.isSessionValid()){
                 internetUse.value = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
-                var totalSale = 0.0
                 val fecha = Helpers.getDateTime().replace(" ", "T")
-                for (p in products){
+
+                var totalSale = 0.0
+                val saleProducts = products.map { p ->
                     totalSale += (p.PrecioVenta!! * p.Cantidad!!)
-                    newProducts.value.add(
-                        PostSaleProductModel(
-                            cantidad = p.CantidadSolicitada,
-                            productoId = p.ProductoId,
-                            precioVenta = p.PrecioVenta,
-                            costo = p.Costo,
-                            ventaId = 0,
-                            comentarios = p.comentarios
-                        )
+                    PostSaleProductModel(
+                        cantidad = p.CantidadSolicitada,
+                        productoId = p.ProductoId,
+                        precioVenta = p.PrecioVenta,
+                        costo = p.Costo,
+                        ventaId = 0,
+                        comentarios = p.comentarios
                     )
                 }
-                newSale.value.add(PostSalesModel(
+
+                val sale = PostSalesModel(
                     clienteId = newClient.value!!.clienteId,
                     nombreCliente = newClient.value!!.nombreCliente,
                     ventaId = 0,
@@ -274,18 +274,24 @@ class NewSaleViewModel @Inject constructor(
                     iva = 0.0,
                     retencion = 0.0,
                     total = totalSale,
-                    usuarioSesionId = userId,
-                    ventaProductos = newProducts.value,
+                    usuarioSesionId = usuarioSesionId,
+                    ventaProductos = saleProducts as ArrayList<PostSaleProductModel>,
                     tipoConexionId = if (internetUse.value) 1 else 2
-                ))
-                val r = postSaleUseCase(newSale.value, internetUse.value)
-                if (r.first != null){
-                    MainActivity.mainDialogMsg.value = if (internetUse.value)"Venta guardada" else "Venta guardada en modo offline"
+                )
+                val r = postSaleUseCase(listOf(sale), internetUse.value)
+
+                if (r.first != null) {
+                    newProducts.value = saleProducts.toMutableList() as ArrayList<PostSaleProductModel>
+                    newSale.value = arrayListOf(sale)
+
+                    MainActivity.mainDialogMsg.value =
+                        if (internetUse.value) "Venta guardada" else "Venta guardada en modo offline"
                     MainActivity.mainDialog.value = true
                     serverPostSale.value = true
                 }
+            } else {
+                baseViewModel.dialogLogin.value = true
             }
-            else{ baseViewModel.dialogLogin.value = true }
             baseViewModel.hideLoader()
         }
     }
@@ -318,8 +324,6 @@ class NewSaleViewModel @Inject constructor(
         clearSales()
         getProducts()
         getClients()
-        Log.i("NewSaleViewModel___", "${sale.value}")
-        Log.i("NewSaleViewModel___", "${newSale.value}")
     }
 }
 

@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -59,7 +60,7 @@ class PaymentsViewModel @Inject constructor(
     val baseViewModel: BaseViewModel,
     @ApplicationContext private val cnx: Context
 ) : ViewModel() {
-
+    val search = mutableStateOf(TextFieldValue(""))
     // region Date
     var selectedDate = mutableStateOf(LocalDate.now())
     var showDatePicker = mutableStateOf(false)
@@ -82,6 +83,7 @@ class PaymentsViewModel @Inject constructor(
     // endregion
     // region Clients list
     val clients: MutableState<List<ClientResponseModel>> = mutableStateOf(listOf())
+    val filterData: MutableState<List<SalesModel>> = mutableStateOf(arrayListOf())
     fun getClients(){
         baseViewModel.showLoader()
         viewModelScope.launch {
@@ -91,6 +93,30 @@ class PaymentsViewModel @Inject constructor(
             baseViewModel.hideLoader()
         }
     }
+    fun filterPayments(): MutableState<List<SalesModel>> {
+        if(search.value.text.isBlank()) filterData.value = sales.value
+        else  filterData.value = sales.value.filter {
+            it.nombreCliente!!.contains(search.value.text, ignoreCase = true)
+        }
+        return filterData
+    }
+
+    /**
+    fun getFilter(): MutableState<ArrayList<ProductsResponseModel>> {
+    filterData.value = if (search.value.text.isBlank()) {
+    expandenSearchBar.value = false
+    products.value
+    }
+    else {
+    expandenSearchBar.value = true
+    products.value.filter {
+    it.descripcion!!.contains(search.value.text, ignoreCase = true)
+    }
+    } as ArrayList<ProductsResponseModel>
+
+    return filterData
+    }
+     */
     // endregion
     // region Sales
     val select: MutableState<SalesModel?> = mutableStateOf(null)
@@ -138,17 +164,17 @@ class PaymentsViewModel @Inject constructor(
         baseViewModel.showLoader()
         viewModelScope.launch {
             if (baseViewModel.isSessionValid()){
-                val userID = baseViewModel.getUsiarioId()
+                val userSessionId = baseViewModel.getUsiarioId()
                 val internetUse = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
-                Log.i("UserID___", userID.toString())
+                Log.i("UserID___", userSessionId.toString())
                 val createPostSale = NewPayModel(
                     ventaId = ventaId,
                     montoPago = montoPago,
                     fecha = Helpers.getDateTime().replace(" ", "T"),
                     observaciones = observaciones,
-                    origenId = userID,
+                    origenId = 2 ,
                     tipoConexionId = if (internetUse) 1 else 2,
-                    usuarioSesionId = userID
+                    usuarioSesionId = userSessionId
                 )
                 onSuccess()
                 var r = postPaymentUseCase(internetUse = internetUse, newPay = listOf(createPostSale))

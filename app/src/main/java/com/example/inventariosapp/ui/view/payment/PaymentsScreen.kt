@@ -90,10 +90,11 @@ fun PaymentsScreen(navController: NavHostController) {
     val showDeposit = remember { mutableStateOf(true) }
 
     PaymentsView(
-        data = viewModel.sales.value,
+        data = viewModel.filterPayments().value,
         dateStart = viewModel.startDate.value,
         dateEnd = viewModel.endDate.value,
         clickDate = viewModel.dialogChoice,
+        search = viewModel.search,
         onClickBack = { navController.popBackStack() },
         onClickMenu = { viewModel.baseViewModel.openMenu() },
         onClickAdd = { viewModel.dialogDeposit.value = true},
