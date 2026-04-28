@@ -5,12 +5,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.inventariosapp.MainActivity
 import com.example.inventariosapp.ui.component.Loader
+import com.example.inventariosapp.ui.component.cards.CardPenndingProductCmp
 import com.example.inventariosapp.ui.dialog.LoginDialogCmp
+import com.example.inventariosapp.ui.dialog.PenddingSaleDialogCmp
 import com.example.inventariosapp.ui.view.login.LoginViewModel
 import com.example.inventariosapp.util.Helpers
 
@@ -23,7 +26,10 @@ fun PenndingSalesScreen(navController: NavHostController) {
 
     PenndingSalesView(
         data = viewModel.penndingSales,
-        onclickRow = { },
+        onclickRow = {
+            viewModel.selectedPenndigSale.value = it
+            viewModel.dialogProduct.value = true
+        },
         onClickUpdate = { viewModel.updateSales()},
         onClickMenu = { viewModel.baseViewModel.openMenu() },
         onClickBack = { navController.popBackStack() },
@@ -45,6 +51,23 @@ fun PenndingSalesScreen(navController: NavHostController) {
         )
     }
     // endregion
+
+    PenddingSaleDialogCmp(
+        content = {
+            if (viewModel.selectedPenndigSale.value != null){
+                for (product in viewModel.selectedPenndigSale.value!!.productos){
+                    CardPenndingProductCmp(
+                        backgroundColor = Color.Transparent,
+                        producto = product.nombreProducto,
+                        quantity = product.cantidadSolicitada.toString(),
+                        sellPrice = product.precioVenta.toString(),
+                    )
+                }
+
+            }
+        },
+        onDismiss = { viewModel.dialogProduct.value = false}
+    )
 
     Loader(viewModel.baseViewModel.getLoader())
 }

@@ -69,6 +69,7 @@ fun PostSaleEntity.toModel(productos: List<PostSaleProductModel>) = PostSalesMod
     ventaIdInterno = ventaIdInterno,
     version = version,
     direccion = direccion,
+    usuarioSesionId = usuarioSesionId ?: 0,
     ventaProductos = productos as ArrayList<PostSaleProductModel>
 )
 

@@ -9,7 +9,6 @@ import com.example.inventariosapp.BaseViewModel
 import com.example.inventariosapp.MainActivity
 import com.example.inventariosapp.domain.model.product.ProductIdResponseModel
 import com.example.inventariosapp.domain.model.product.ProductsResponseModel
-import com.example.inventariosapp.domain.model.sales.PostSalesModel
 import com.example.inventariosapp.domain.repository.product.GetInventarioProductoRepositoryImp
 import com.example.inventariosapp.local.dao.PostSalesDao
 import com.example.inventariosapp.local.entity.PostSaleWithProducts
@@ -30,8 +29,8 @@ class PenndingSalesViewModel @Inject constructor(
     @ApplicationContext val cnx: Context
 ): ViewModel() {
     var penndingSales: MutableState<ArrayList<PostSaleWithProducts>> = mutableStateOf(arrayListOf())
-    val inventory: MutableState<ArrayList<ProductsResponseModel>?> = mutableStateOf(arrayListOf())
-    val notInInventory = mutableListOf<PostSaleWithProducts>()
+    var selectedPenndigSale: MutableState<PostSaleWithProducts?> = mutableStateOf(null)
+    var dialogProduct: MutableState<Boolean> = mutableStateOf(false)
     val totalInventory: MutableState<ProductIdResponseModel> = mutableStateOf(ProductIdResponseModel())
     private fun getPenndingSales(){
         viewModelScope.launch {
@@ -42,25 +41,30 @@ class PenndingSalesViewModel @Inject constructor(
             baseViewModel.showLoader()
             viewModelScope.launch {
                 val userId = baseViewModel.getUsuarioSessionId()
-                val m = penndingSales.value.map {
-                    it.sale.tipoConexionId = 2
-                    it.sale.usuarioSesionId = userId
-                    it.toModel()
-                }
-                val internetUse = Helpers.isInternetAvailable(cnx)
-                if (internetUse){
-                    val r = postSaleUseCase(m, internetUse)
-                    if (r.first != null){
-                        postSalesDao.deleteAllProducts()
-                        postSalesDao.deleteAllSales()
-                        getPenndingSales()
-                        MainActivity.mainDialogMsg.value = "Ventas guardadas"
+                if (userId != 0){
+                    val userSales = penndingSales.value.map {
+                        it.sale.tipoConexionId = 2
+                        it.sale.usuarioSesionId = userId
+                        it.toModel()
+                    }
+                    val internetUse = Helpers.isInternetAvailable(cnx)
+                    if (internetUse){
+                        val r = postSaleUseCase(userSales, internetUse)
+                        if (r.first != null){
+                            postSalesDao.deleteAllProducts()
+                            postSalesDao.deleteAllSales()
+                            getPenndingSales()
+                            MainActivity.mainDialogMsg.value = "Ventas guardadas"
+                            MainActivity.mainDialog.value = true
+                        }
+                    }
+                    else{
+                        MainActivity.mainDialogMsg.value = "No hay conexion a internet"
                         MainActivity.mainDialog.value = true
                     }
                 }
                 else{
-                    MainActivity.mainDialogMsg.value = "No hay conexion a internet"
-                    MainActivity.mainDialog.value = true
+                    baseViewModel.dialogLogin.value = true
                 }
             }
             baseViewModel.hideLoader()
