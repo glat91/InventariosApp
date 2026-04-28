@@ -19,6 +19,21 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import androidx.compose.runtime.Immutable
+
+@Immutable
+data class LoginViewState(
+    val user: String = "",
+    val password: String = "",
+    val rememberUser: Boolean = false,
+    val serverValidateUser: Boolean = false
+)
+data class LoginUiState(
+    val user: String = "",
+    val password: String = "",
+    val rememberUser: Boolean = false,
+    val serverValidateUser: Boolean = false
+)
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
@@ -26,17 +41,30 @@ class LoginViewModel @Inject constructor(
     val baseViewModel: BaseViewModel,
     @ApplicationContext val cnx: Context
 ) : ViewModel() {
-    // region User Login
-    val user = mutableStateOf("")
-    val password = mutableStateOf("")
-    val rememberUser = mutableStateOf(false)
-    val serverValidateUser = MutableStateFlow(false)
-    fun validateUserLogin(internetUse: Boolean){
+    // region UI State
+    private val _uiState = MutableStateFlow(LoginUiState())
+    val uiState: MutableStateFlow<LoginUiState> get() = _uiState
+
+    fun updateUser(newUser: String) {
+        _uiState.value = _uiState.value.copy(user = newUser)
+    }
+
+    fun updatePassword(newPassword: String) {
+        _uiState.value = _uiState.value.copy(password = newPassword)
+    }
+
+    fun toggleRememberUser() {
+        _uiState.value = _uiState.value.copy(rememberUser = !_uiState.value.rememberUser)
+    }
+    // endregion
+
+
+    fun validateUserLogin(internetUse: Boolean) {
         baseViewModel.showLoader()
         viewModelScope.launch {
-            if (internetUse){
-                val v = valitdaeUserUseCase(user.value, password.value)
-                if (v.first != null){
+            if (internetUse) {
+                val v = valitdaeUserUseCase(uiState.value.user, uiState.value.password)
+                if (v.first != null) {
                     val perfilID = v.first!!.perfilId!!
                     val usuarioID = v.first!!.usuarioId!!
                     val usuarioSesionID = v.first!!.usuarioSesionId!!
@@ -64,34 +92,34 @@ class LoginViewModel @Inject constructor(
                         nombre
                     )
                     delay(4000)
-                    serverValidateUser.value = true
+                    _uiState.value = _uiState.value.copy(serverValidateUser = true)
                     baseViewModel.dialogLogin.value = false
-                }
-                else {
+                } else {
                     if (v.second != null) {
                         MainActivity.mainDialogMsg.value = v.second!!
                         MainActivity.mainDialog.value = true
                     }
                 }
-            }
-            else{
-                serverValidateUser.value = true
+            } else {
+                _uiState.value = _uiState.value.copy(serverValidateUser = true)
             }
             baseViewModel.hideLoader()
         }
     }
-    // endregion
-    fun saveUserLogin(){
+
+    fun saveUserLogin() {
         viewModelScope.launch {
-            cnx.savePersistData(key = Constants.REMEMBER_PASSWORD, data = "${user.value}/${password.value}")
+            cnx.savePersistData(key = Constants.REMEMBER_PASSWORD, data = "${uiState.value.user}/${uiState.value.password}")
         }
     }
-    fun clearUser(){
+
+    fun clearUser() {
         viewModelScope.launch {
             cnx.deletePersistKey(Constants.REMEMBER_PASSWORD)
         }
     }
-    fun saveBoolean(key: String, data: Boolean){
+
+    fun saveBoolean(key: String, data: Boolean) {
         viewModelScope.launch {
             cnx.savePersistData(key = key, data = data)
         }
@@ -101,16 +129,13 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             baseViewModel.showLoader()
             val session = baseViewModel.isSessionValid()
-            if (session){
-                serverValidateUser.value = true
-            }
-            else{
+            if (session) {
+                _uiState.value = _uiState.value.copy(serverValidateUser = true)
+            } else {
                 val data = cnx.readPersistData(key = Constants.REMEMBER_PASSWORD, default = "")
-                if (!data.isBlank()){
+                if (!data.isBlank()) {
                     val s = data.split("/")
-                    user.value = s[0]
-                    password.value = s[1]
-                    rememberUser.value = true
+                    _uiState.value = _uiState.value.copy(user = s[0], password = s[1], rememberUser = true)
                 }
             }
             baseViewModel.hideLoader()

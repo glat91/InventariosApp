@@ -33,6 +33,8 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -75,6 +77,7 @@ import com.example.inventariosapp.ui.theme.UI_Divier
 import com.example.inventariosapp.ui.theme.UI_List_Row_1
 import com.example.inventariosapp.ui.theme.UI_List_Row_2
 import com.example.inventariosapp.ui.view.login.LoginViewModel
+import com.example.inventariosapp.util.Helpers
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -88,6 +91,8 @@ fun PaymentsScreen(navController: NavHostController) {
     var datePickerState = rememberDatePickerState()
 
     val showDeposit = remember { mutableStateOf(true) }
+
+    val uiState by lviewModel.uiState.collectAsState()
 
     PaymentsView(
         data = viewModel.filterPayments().value,
@@ -134,7 +139,7 @@ fun PaymentsScreen(navController: NavHostController) {
                     }
 
                     // Cargar dispositivos emparejados
-                    LaunchedEffect(Unit) {
+                    LaunchedEffect(Unit) @androidx.annotation.RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT) {
                         viewModel.bondedDevices.clear()
                         viewModel.bluetoothAdapter.bondedDevices?.forEach { device ->
 
@@ -505,17 +510,16 @@ fun PaymentsScreen(navController: NavHostController) {
     // region Dialog Login
     if (viewModel.baseViewModel.dialogLogin.value){
         LoginDialogCmp(
-            user = lviewModel.user,
-            password = lviewModel.password,
-            rememberUser = remember { mutableStateOf(false) },
+            uiState = uiState,
             onClickEnter = {
-                if (!lviewModel.rememberUser.value) lviewModel.clearUser()
+                val internetUse = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
+                if (!uiState.rememberUser) lviewModel.clearUser()
                 else lviewModel.saveUserLogin()
-                lviewModel.validateUserLogin(MainActivity.internetBtn.value)
+                lviewModel.validateUserLogin(internetUse)
             },
-            onClickRememberPassword = {
-                lviewModel.rememberUser.value = !lviewModel.rememberUser.value
-            }
+            onUserChange = { lviewModel.updateUser(it) },
+            onPasswordChange = { lviewModel.updatePassword(it) },
+            onClickRememberPassword = { lviewModel.toggleRememberUser() }
         )
     }
     // endregion

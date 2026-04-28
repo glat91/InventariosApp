@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
@@ -18,6 +19,7 @@ import com.example.inventariosapp.ui.component.Loader
 import com.example.inventariosapp.ui.dialog.AddProductDialogCmp
 import com.example.inventariosapp.ui.dialog.LoginDialogCmp
 import com.example.inventariosapp.ui.view.login.LoginViewModel
+import androidx.compose.runtime.collectAsState
 import com.example.inventariosapp.util.Helpers
 
 @Composable
@@ -27,6 +29,7 @@ fun NewSaleScreen(navController: NavHostController) {
     val editStatus = viewModel.editStatus.collectAsState()
     val postSale = viewModel.serverPostSale.collectAsState()
     val cnx = LocalContext.current
+    val uiState by lviewModel.uiState.collectAsState()
 
     LaunchedEffect(viewModel.expandenSearchBarS.value) {
         if (viewModel.newClient.value != null){
@@ -139,18 +142,16 @@ fun NewSaleScreen(navController: NavHostController) {
     // region Dialog Login
     if (viewModel.baseViewModel.dialogLogin.value){
         LoginDialogCmp(
-            user = lviewModel.user,
-            password = lviewModel.password,
-            rememberUser = remember { mutableStateOf(false) },
+            uiState = uiState,
             onClickEnter = {
-                if (!lviewModel.rememberUser.value) lviewModel.clearUser()
-                else lviewModel.saveUserLogin()
                 val internetUse = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
-                lviewModel.validateUserLogin(MainActivity.internetBtn.value)
+                if (!uiState.rememberUser) lviewModel.clearUser()
+                else lviewModel.saveUserLogin()
+                lviewModel.validateUserLogin(internetUse)
             },
-            onClickRememberPassword = {
-                lviewModel.rememberUser.value = !lviewModel.rememberUser.value
-            }
+            onUserChange = { lviewModel.updateUser(it) },
+            onPasswordChange = { lviewModel.updatePassword(it) },
+            onClickRememberPassword = { lviewModel.toggleRememberUser() }
         )
     }
     // endregion

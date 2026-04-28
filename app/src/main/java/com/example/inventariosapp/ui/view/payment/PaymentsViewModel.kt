@@ -269,27 +269,30 @@ class PaymentsViewModel @Inject constructor(
                 showToastOnMain(context, "Conectado a ${device.name}")
 
                 val output = socket!!.outputStream
-                printBitmap(context, output, R.drawable.casajordan)
-                val recivo = ("--------------------------------\n" +
-                        "        Recibo de impresion\n" +
-                        "Cliente: ${select.value!!.nombreCliente!!}\n" +
-                        "Direccion: ${select.value!!.direccion!!}\n" +
-                        "Folio: ${select.value!!.folio}  Total: $${select.value!!.total}\n" +
-                        "--------------------------------\n" +
-                        "Fecha de pago: ${select.value!!.fechaVenta}\n" +
-                        "Saldo Restante: $${select.value!!.montoPorPagar}\n" +
-                        "Vendedor: $vendedor \n" +
-                        "\n" +
-                        "              FIRMA\n" +
-                        "\n" +
-                        "\n" +
-                        " ____________________________\n" +
-                        "\n" +
-                        "\n" +
-                        "\n").toByteArray()
+                repeat(2){
+                    printBitmap(context, output, R.drawable.casajordan)
+                    val recivo = ("--------------------------------\n" +
+                            "        Recibo de impresion\n" +
+                            "Cliente: ${select.value!!.nombreCliente!!}\n" +
+                            "Direccion: ${select.value!!.direccion!!}\n" +
+                            "Folio: ${select.value!!.folio}  Total: $${select.value!!.total}\n" +
+                            "--------------------------------\n" +
+                            "Fecha de pago: ${select.value!!.fechaVenta}\n" +
+                            "Saldo Restante: $${select.value!!.montoPorPagar!! - select.value!!.total!!}\n" +
+                            "Vendedor: $vendedor \n" +
+                            "\n" +
+                            "              FIRMA\n" +
+                            "\n" +
+                            "\n" +
+                            " ____________________________\n" +
+                            "\n" +
+                            "\n" +
+                            "\n").toByteArray()
 
-                output.write(recivo)
-                output.flush()
+                    output.write(recivo)
+                    output.flush()
+                    Thread.sleep(2200)
+                }
 
                 socket!!.close()
                 baseViewModel.hideLoader()

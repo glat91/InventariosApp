@@ -1,6 +1,8 @@
 package com.example.inventariosapp.ui.view.user_sales
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
@@ -10,11 +12,14 @@ import com.example.inventariosapp.MainActivity
 import com.example.inventariosapp.ui.component.Loader
 import com.example.inventariosapp.ui.dialog.LoginDialogCmp
 import com.example.inventariosapp.ui.view.login.LoginViewModel
+import com.example.inventariosapp.util.Helpers
 
 @Composable
 fun PenndingSalesScreen(navController: NavHostController) {
     val viewModel: PenndingSalesViewModel = hiltViewModel()
     val lviewModel: LoginViewModel = hiltViewModel()
+    val cnx = LocalContext.current
+    val uiState by lviewModel.uiState.collectAsState()
 
     PenndingSalesView(
         data = viewModel.penndingSales,
@@ -27,17 +32,16 @@ fun PenndingSalesScreen(navController: NavHostController) {
     // region dialog
     if (viewModel.baseViewModel.dialogLogin.value){
         LoginDialogCmp(
-            user = lviewModel.user,
-            password = lviewModel.password,
-            rememberUser = remember { mutableStateOf(false) },
+            uiState = uiState,
             onClickEnter = {
-                if (!lviewModel.rememberUser.value) lviewModel.clearUser()
+                val internetUse = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
+                if (!uiState.rememberUser) lviewModel.clearUser()
                 else lviewModel.saveUserLogin()
-                lviewModel.validateUserLogin(MainActivity.internetBtn.value)
+                lviewModel.validateUserLogin(internetUse)
             },
-            onClickRememberPassword = {
-                lviewModel.rememberUser.value = !lviewModel.rememberUser.value
-            }
+            onUserChange = { lviewModel.updateUser(it) },
+            onPasswordChange = { lviewModel.updatePassword(it) },
+            onClickRememberPassword = { lviewModel.toggleRememberUser() }
         )
     }
     // endregion

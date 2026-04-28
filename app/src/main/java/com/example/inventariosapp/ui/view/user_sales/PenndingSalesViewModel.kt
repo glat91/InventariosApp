@@ -41,8 +41,10 @@ class PenndingSalesViewModel @Inject constructor(
         if (penndingSales.value.size > 0){
             baseViewModel.showLoader()
             viewModelScope.launch {
+                val userId = baseViewModel.getUsuarioSessionId()
                 val m = penndingSales.value.map {
                     it.sale.tipoConexionId = 2
+                    it.sale.usuarioSesionId = userId
                     it.toModel()
                 }
                 val internetUse = Helpers.isInternetAvailable(cnx)

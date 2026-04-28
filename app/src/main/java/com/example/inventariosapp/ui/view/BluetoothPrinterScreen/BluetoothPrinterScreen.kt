@@ -36,8 +36,6 @@ import java.util.UUID
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BluetoothPrinterScreen(navController: NavHostController) {
-
-
     val printerUUID = UUID.fromString(Constants.PRINTER_UUID)
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -87,17 +85,11 @@ fun BluetoothPrinterScreen(navController: NavHostController) {
                 bondedDevices.clear()
                 bluetoothAdapter.bondedDevices?.forEach { device ->
 
-                    val hasPrinterUUID = device.uuids?.any {
-                        it.uuid == printerUUID
-                    } == true
+                    val hasPrinterUUID = device.uuids?.any { it.uuid == printerUUID } == true
 
-                    val isImagingDevice =
-                        device.bluetoothClass?.majorDeviceClass ==
-                                BluetoothClass.Device.Major.IMAGING
+                    val isImagingDevice = device.bluetoothClass?.majorDeviceClass == BluetoothClass.Device.Major.IMAGING
 
-                    if (hasPrinterUUID || isImagingDevice) {
-                        bondedDevices.add(device)
-                    }
+                    if (hasPrinterUUID || isImagingDevice) { bondedDevices.add(device) }
                 }
             }
 
