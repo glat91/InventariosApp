@@ -171,7 +171,7 @@ class NewSaleViewModel @Inject constructor(
                 CantidadSolicitada = productState.quantity.toInt(),
                 VentaIdInterno = null,
                 Venta = null,
-                nombreProducto = data.descripcionPresentacion ?: "",
+                nombreProducto = data.descripcion ?: "",
                 comentarios = productState.comentarios
             )
         )
@@ -290,6 +290,7 @@ class NewSaleViewModel @Inject constructor(
                         cantidad = p.CantidadSolicitada,
                         productoId = p.ProductoId,
                         precioVenta = p.PrecioVenta,
+                        nombreProducto = p.nombreProducto,
                         costo = p.Costo,
                         ventaId = 0,
                         comentarios = p.comentarios

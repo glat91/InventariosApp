@@ -1,6 +1,7 @@
 package com.example.inventariosapp.ui.view.user_sales
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -34,7 +35,14 @@ class PenndingSalesViewModel @Inject constructor(
     val totalInventory: MutableState<ProductIdResponseModel> = mutableStateOf(ProductIdResponseModel())
     private fun getPenndingSales(){
         viewModelScope.launch {
-            penndingSales.value = ArrayList(postSalesDao.getAllSales()) }
+            penndingSales.value = ArrayList(postSalesDao.getAllSales())
+            for(a in penndingSales.value){
+                for(b in a.productos){
+                    Log.i("Product___", "${b.cantidad}")
+                }
+            }
+        }
+
     }
     fun updateSales(){
         if (penndingSales.value.size > 0){

@@ -60,7 +60,7 @@ fun PenndingSalesScreen(navController: NavHostController) {
                         CardPenndingProductCmp(
                             backgroundColor = Color.Transparent,
                             producto = product.nombreProducto,
-                            quantity = product.cantidadSolicitada.toString(),
+                            quantity = product.cantidad.toString(),
                             sellPrice = product.precioVenta.toString(),
                         )
                     }
