@@ -90,6 +90,7 @@ fun PostSaleProductModel.toEntity(parentId: String) =
         cantidadSolicitada = cantidadSolicitada,
         ventaIdInterno = ventaIdInterno,
         nombreProducto = nombreProducto,
+        comentarios = comentarios
     )
 
 

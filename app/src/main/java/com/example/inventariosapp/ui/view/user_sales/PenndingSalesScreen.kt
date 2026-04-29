@@ -52,22 +52,25 @@ fun PenndingSalesScreen(navController: NavHostController) {
     }
     // endregion
 
-    PenddingSaleDialogCmp(
-        content = {
-            if (viewModel.selectedPenndigSale.value != null){
-                for (product in viewModel.selectedPenndigSale.value!!.productos){
-                    CardPenndingProductCmp(
-                        backgroundColor = Color.Transparent,
-                        producto = product.nombreProducto,
-                        quantity = product.cantidadSolicitada.toString(),
-                        sellPrice = product.precioVenta.toString(),
-                    )
-                }
+    if (viewModel.dialogProduct.value){
+        PenddingSaleDialogCmp(
+            content = {
+                if (viewModel.selectedPenndigSale.value != null){
+                    for (product in viewModel.selectedPenndigSale.value!!.productos){
+                        CardPenndingProductCmp(
+                            backgroundColor = Color.Transparent,
+                            producto = product.nombreProducto,
+                            quantity = product.cantidadSolicitada.toString(),
+                            sellPrice = product.precioVenta.toString(),
+                        )
+                    }
 
-            }
-        },
-        onDismiss = { viewModel.dialogProduct.value = false}
-    )
+                }
+            },
+            onDismiss = { viewModel.dialogProduct.value = false}
+        )
+
+    }
 
     Loader(viewModel.baseViewModel.getLoader())
 }

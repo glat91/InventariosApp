@@ -58,7 +58,7 @@ class PostSaleRepositoryImp @Inject constructor(
                         product.toEntity(parentId = saleEntity.id)
                     }
                     productsEntity.forEach {
-                        Log.d("FK_CHECK___", "productId=${it.postSaleId} postSaleId=${it.postSaleId}")
+                        Log.d("FK_CHECK___", "productId=${it.postSaleId} postSaleId=${it.comentarios}")
                     }
                     newSales.insertSaleWithProducts(
                         sale = saleEntity,

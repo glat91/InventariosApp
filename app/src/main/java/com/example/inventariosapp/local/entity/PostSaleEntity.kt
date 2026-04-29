@@ -82,7 +82,8 @@ fun PostSaleProductEntity.toModel() = PostSaleProductModel(
     costo = costo,
     cantidadSolicitada = cantidadSolicitada,
     ventaIdInterno = ventaIdInterno,
-    nombreProducto = nombreProducto
+    nombreProducto = nombreProducto,
+    comentarios = comentarios ?: ""
 )
 
 fun PostSaleWithProducts.toModel(): PostSalesModel {

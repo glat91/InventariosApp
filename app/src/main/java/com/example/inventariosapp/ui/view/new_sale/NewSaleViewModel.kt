@@ -156,23 +156,23 @@ class NewSaleViewModel @Inject constructor(
         }
     }
 
-    fun addRow(data: ProductsResponseModel, comentarios: String) {
+    fun addRow(data: ProductsResponseModel, comentarios: String, productState: AddProductUiState) {
         var newTotal = BigDecimal(0.0)
         val p = if (_uiState.value.canModifyClient) data.productoId ?: 0 else 0
-        Log.i("C___", comentarios)
+        Log.i("C___", productState.comentarios)
         products.add(
             SaleProductModel(
                 VentaProductoId = 0,
                 VentaId = _uiState.value.sale.ventaId,
                 ProductoId = data.productoId,
-                Cantidad = _uiState.value.quantity.toInt(),
+                Cantidad = productState.quantity.toInt(),
                 PrecioVenta = _uiState.value.price,
                 Costo = data.costo,
-                CantidadSolicitada = _uiState.value.quantity.toInt(),
+                CantidadSolicitada = productState.quantity.toInt(),
                 VentaIdInterno = null,
                 Venta = null,
                 nombreProducto = data.descripcionPresentacion ?: "",
-                comentarios = comentarios
+                comentarios = productState.comentarios
             )
         )
         for (p in products) {

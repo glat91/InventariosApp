@@ -141,7 +141,7 @@ fun NewSaleScreen(navController: NavHostController) {
                 addProductViewModel.resetData()
             },
             onClickAccept = {
-                viewModel.addRow(it, loadComents.value)
+                viewModel.addRow(it, loadComents.value, addproductUiState)
                 viewModel.clearDialog()
                 addProductViewModel.resetData()
             },
