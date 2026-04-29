@@ -56,17 +56,8 @@ import com.example.inventariosapp.ui.component.SelecPriceCmp
 import com.example.inventariosapp.ui.theme.PADDING_8
 import com.example.inventariosapp.ui.theme.UI_Backround_Btn_Green
 import com.example.inventariosapp.ui.theme.UI_Backround_Btn_Red
+import com.example.inventariosapp.ui.view.new_sale.AddProductUiState
 
-@Composable
-fun availableDropdownHeight(): Dp {
-    val density = LocalDensity.current
-    val configuration = LocalConfiguration.current
-
-    val screenHeight = configuration.screenHeightDp.dp
-    val imeHeight = with(density) { WindowInsets.ime.getBottom(this).toDp() }
-
-    return screenHeight - imeHeight - 120.dp
-}
 @Composable
 fun rememberAvailableHeight(): Dp {
     val density = LocalDensity.current
@@ -88,88 +79,56 @@ fun rememberAvailableHeight(): Dp {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddProductDialogCmp(
-    state: MutableState<TextFieldValue>,
-    quantity: MutableState<String>,
+    uiState: AddProductUiState,
+    search: TextFieldValue,
     opcions: ArrayList<ProductsResponseModel>,
+    expanded: Boolean,
+    product: ProductsResponseModel?,
     inventario: ProductIdResponseModel,
-    product: MutableState<ProductsResponseModel?>,
-    comentarios: MutableState<String>,
-    expanded: MutableState<Boolean>,
     onDismiss: () -> Unit,
     onChangeText: (TextFieldValue) -> Unit,
     onClickOpcion: (ProductsResponseModel) -> Unit,
     onClickPrice: (Double) -> Unit,
     onClickCancel: () -> Unit,
     onClickAccept: (ProductsResponseModel) -> Unit,
+    // Note: In a real refactor, these updates would be handled via an Event/Intent pattern in the ViewModel
+    onUpdateState: (AddProductUiState) -> Unit
 ) {
-    // region Funcionalidad
-    val precio1 = remember { mutableStateOf(false) }
-    val precio2 = remember { mutableStateOf(false) }
-    val precio3 = remember { mutableStateOf(false) }
-    val precio4 = remember { mutableStateOf(false) }
-
-    val enableBtn = remember{ mutableStateOf(false) }
-
-    LaunchedEffect(precio1.value || precio2.value || precio3.value || precio4.value){
-        if ((precio1.value || precio2.value || precio3.value || precio4.value)
-            && !quantity.value.isNullOrEmpty()
-        ){
-            enableBtn.value = true
-        }
-    }
-    LaunchedEffect(quantity.value){
-        if ((precio1.value || precio2.value || precio3.value || precio4.value)
-            && !quantity.value.isNullOrEmpty()
-        ){
-            if (quantity.value.toInt() > 0) enableBtn.value = true
-            else enableBtn.value = false
-        }
-        else enableBtn.value = false
+    // Logic for enabling button moved to side-effect of state changes
+    LaunchedEffect(uiState.precio1, uiState.precio2, uiState.precio3, uiState.precio4, uiState.quantity) {
+        val anyPriceSelected = uiState.precio1 || uiState.precio2 || uiState.precio3 || uiState.precio4
+        val validQuantity = uiState.quantity.isNotEmpty() && uiState.quantity.toIntOrNull()?.let { it > 0 } == true
+        onUpdateState(uiState.copy(enableBtn = anyPriceSelected && validQuantity))
     }
 
-    fun resetData(){
-        precio1.value = false
-        precio2.value = false
-        precio3.value = false
-        precio4.value = false
-        quantity.value = ""
-    }
-    // endregion
     Dialog(onDismissRequest = onDismiss) {
-        Box() {
+        Box {
             Column(
                 modifier = Modifier.background(Color.White).padding(PADDING_8)
-            ){
+            ) {
                 SearchBarCmp(
                     modifier = Modifier.padding(PADDING_8),
-                    state = state,
+                    state = search, // Maintaining UI structure
                     labelText = "Ingrese el producto",
-                    onClickClear = { expanded.value = false },
+                    onClickClear = { onUpdateState(uiState.copy(expanded = false)) },
                     onChangeText = { onChangeText(it) },
                     opcionContent = {
-                        val maxHeight = rememberAvailableHeight()
-
                         DropdownMenu(
-                            expanded = expanded.value && !opcions.isNullOrEmpty(),
-                            onDismissRequest = { expanded.value = false },
+                            expanded = expanded && opcions.isNotEmpty(),
+                            onDismissRequest = { onUpdateState(uiState.copy(expanded = false)) },
                             modifier = Modifier
                                 .padding(top = PADDING_8)
                                 .fillMaxWidth(.7f)
-                                //.heightIn(max = maxHeight)
                                 .windowInsetsPadding(WindowInsets.ime),
-
                             properties = PopupProperties(focusable = false)
                         ) {
-                            Column(
-                                modifier = Modifier
-                            ) {
+                            Column(modifier = Modifier) {
                                 opcions.forEach { option ->
                                     CardProductCmp(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .clickable {
-                                                expanded.value = false
-                                                state.value = TextFieldValue(option.descripcionPresentacion.orEmpty())
+                                                onChangeText(TextFieldValue(option.descripcionPresentacion.toString()))
                                                 onClickOpcion(option)
                                             },
                                         product = option.descripcionPresentacion.orEmpty(),
@@ -181,224 +140,176 @@ fun AddProductDialogCmp(
                     }
                 )
 
-                if (product.value?.precioVenta1 != null || product.value?.precioVenta2 != null){
-                    Column(
-                        modifier = Modifier
-                            .border(border = BorderStroke(2.dp, Color.Black), shape = RoundedCornerShape(10.dp))
-                            .padding(PADDING_8)
-                        ,
-                    ) {
-                        TextCmp(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = "Precios",
-                            color = Color.Black,
-                            fontSize = 24.sp,
-                            fontStyle = FontStyle.Italic,
-                            textDecoration = TextDecoration.Underline,
-                            textAlign = TextAlign.Left,
-                            fontWeight = FontWeight.Bold,
-                            maxLine = 1,
-                        )
-                        Column {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceEvenly
-                            ){
-                                SelecPriceCmp(
-                                    modifier = Modifier
-                                        .padding(PADDING_8)
-                                        .clickable {
-                                            precio1.value = true
-                                            precio2.value = false
-                                            precio3.value = false
-                                            precio4.value = false
-                                            onClickPrice(product.value!!.precioVenta1!!)
-                                        },
-                                    precio = product.value!!.precioVenta1.toString(),
-                                    selected = precio1
-                                )
-                                if (product.value?.precioVenta2 != null && product.value?.precioVenta2!! > 0.001){
-                                    SelecPriceCmp(
-                                        modifier = Modifier
-                                            .padding(PADDING_8)
-                                            .clickable {
-                                                precio1.value = false
-                                                precio2.value = true
-                                                precio3.value = false
-                                                precio4.value = false
-                                                onClickPrice(product.value!!.precioVenta2!!)
-
-                                            },
-                                        precio = product.value!!.precioVenta2.toString(),
-                                        selected = precio2
-                                    )
-                                }
-                            }
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceEvenly
-                            ) {
-                                if (product.value?.precioVenta3 != null && product.value?.precioVenta3!! > 0.001){
-                                    SelecPriceCmp(
-                                        modifier = Modifier
-                                            .padding(PADDING_8)
-                                            .clickable {
-                                                precio1.value = false
-                                                precio2.value = false
-                                                precio3.value = true
-                                                precio4.value = false
-                                                onClickPrice(product.value!!.precioVenta3!!)
-                                            },
-                                        precio = product.value!!.precioVenta3.toString(),
-                                        selected = precio3
-                                    )
-                                }
-                                if (product.value?.precioVenta4 != null && product.value?.precioVenta4!! > 0.001){
-                                    SelecPriceCmp(
-                                        modifier = Modifier
-                                            .padding(PADDING_8)
-                                            .clickable {
-                                                precio1.value = false
-                                                precio2.value = false
-                                                precio3.value = false
-                                                precio4.value = true
-                                                onClickPrice(product.value!!.precioVenta4!!)
-                                            },
-                                        precio = product.value!!.precioVenta4.toString(),
-                                        selected = precio4
-                                    )
-                                }
-                            }
-                        }
-                        }
-
-                    HorizontalDivider(thickness = PADDING_8, color = Color.Transparent)
-                    Column(
-                        modifier = Modifier
-                            .border(border = BorderStroke(2.dp, Color.Black), shape = RoundedCornerShape(10.dp))
-                            .padding(PADDING_8)
-                        ,
-                    ){
-                        TextCmp(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = "Cantidad",
-                            color = Color.Black,
-                            fontSize = 24.sp,
-                            fontStyle = FontStyle.Italic,
-                            textDecoration = TextDecoration.Underline,
-                            textAlign = TextAlign.Left,
-                            fontWeight = FontWeight.Bold,
-                            maxLine = 1,
-                        )
-
-                        InputWithTitleLabelCmp(
-                            textValue = quantity.value,
-                            modifier = Modifier,
-                            labelText = "Cantidad de productos",
-                            keyboardType = KeyboardType.Number,
-                            textValueSize = 18.sp,
-                            onValueChange = {
-                                // Permitir borrar
-                                if (it.isEmpty()) {
-                                    quantity.value = ""
-                                    return@InputWithTitleLabelCmp
-                                }
-
-                                // Solo números
-                                if (!it.all { it.isDigit() }) return@InputWithTitleLabelCmp
-
-                                val sanitized = when {
-                                    it == "0" -> "0"
-                                    it.startsWith("0") -> it.dropWhile { it == '0' }
-                                    else -> it
-                                }
-
-                                // Validar contra inventario
-                                val value = sanitized.toIntOrNull() ?: return@InputWithTitleLabelCmp
-
-
-                                if (value <= (inventario.inventario ?: 10000)) {
-                                    quantity.value = sanitized
-                                }
-                                it
-                            },
-                            fontColor = Color.Black,
-                        )
-                        if (inventario.inventario != null){
+                product?.let { currentProduct ->
+                    if (currentProduct.precioVenta1 != null || currentProduct.precioVenta2 != null) {
+                        Column(
+                            modifier = Modifier
+                                .border(border = BorderStroke(2.dp, Color.Black), shape = RoundedCornerShape(10.dp))
+                                .padding(PADDING_8),
+                        ) {
                             TextCmp(
-                                modifier = Modifier.fillMaxWidth().padding(top = PADDING_8),
-                                text = "Total en inventario ${inventario.inventario}",
+                                modifier = Modifier.fillMaxWidth(),
+                                text = "Precios",
                                 color = Color.Black,
-                                fontSize = 14.sp,
-                                fontStyle = FontStyle.Normal,
-                                textDecoration = TextDecoration.None,
+                                fontSize = 24.sp,
+                                fontStyle = FontStyle.Italic,
+                                textDecoration = TextDecoration.Underline,
                                 textAlign = TextAlign.Left,
                                 fontWeight = FontWeight.Bold,
                                 maxLine = 1,
                             )
-                        }
-                    }
-                    HorizontalDivider(thickness = PADDING_8, color = Color.Transparent)
-                    Column(
-                        modifier = Modifier
-                            .border(border = BorderStroke(2.dp, Color.Black), shape = RoundedCornerShape(10.dp))
-                            .padding(PADDING_8)
-                        ,
-                    ){
-                        TextCmp(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = "Comentarios",
-                            color = Color.Black,
-                            fontSize = 24.sp,
-                            fontStyle = FontStyle.Italic,
-                            textDecoration = TextDecoration.Underline,
-                            textAlign = TextAlign.Left,
-                            fontWeight = FontWeight.Bold,
-                            maxLine = 1,
-                        )
-
-                        InputWithTitleLabelCmp(
-                            textValue = comentarios.value,
-                            modifier = Modifier,
-                            labelText = "",
-                            keyboardType = KeyboardType.Text,
-                            textValueSize = 18.sp,
-                            onValueChange = {
-                                Log.i("Commets___", it.toString())
-                                comentarios.value = it
-                                it
-                            },
-                            fontColor = Color.Black,
-                        )
-                    }
-                    HorizontalDivider(thickness = PADDING_8, color = Color.Transparent)
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(PADDING_8),
-                        horizontalArrangement = Arrangement.SpaceAround
-                    ) {
-                        ButtonWithImgCmp(
-                            text = "Cancelar",
-                            backGroundColor = UI_Backround_Btn_Red,
-                            icon = Icons.Default.Close,
-                            onClick = onClickCancel
-                        )
-                        VerticalDivider(thickness = PADDING_8, color = Color.Transparent)
-                        ButtonWithImgCmp(
-                            text = "Aceptar",
-                            backGroundColor = UI_Backround_Btn_Green,
-                            icon = Icons.Default.Add,
-                            enable = enableBtn.value,
-                            onClick = {
-                                if ((precio1.value || precio2.value || precio3.value || precio4.value) && quantity.value.isNotEmpty()){
-                                    if (quantity.value.toInt() > 0){
-                                        onClickAccept(product.value!!)
-                                        onDismiss()
-                                        resetData()
+                            Column {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceEvenly
+                                ) {
+                                    if (currentProduct.precioVenta1 != null) {
+                                        SelecPriceCmp(
+                                            modifier = Modifier
+                                                .padding(PADDING_8)
+                                                .clickable {
+                                                    onUpdateState(uiState.copy(precio1 = true, precio2 = false, precio3 = false, precio4 = false))
+                                                    onClickPrice(currentProduct.precioVenta1)
+                                                },
+                                            precio = currentProduct.precioVenta1.toString(),
+                                            selected = remember(uiState.precio1) { mutableStateOf(uiState.precio1) }
+                                        )
                                     }
-
+                                    if (currentProduct.precioVenta2 != null && currentProduct.precioVenta2 > 0.001){
+                                        SelecPriceCmp(
+                                            modifier = Modifier
+                                                .padding(PADDING_8)
+                                                .clickable {
+                                                    onUpdateState(uiState.copy(precio1 = false, precio2 = true, precio3 = false, precio4 = false))
+                                                    onClickPrice(currentProduct.precioVenta2)
+                                                },
+                                            precio = currentProduct.precioVenta2.toString(),
+                                            selected = remember(uiState.precio2) { mutableStateOf(uiState.precio2) }
+                                        )
+                                    }
+                                }
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceEvenly
+                                ) {
+                                    if (currentProduct.precioVenta3 != null && currentProduct.precioVenta3 > 0.001) {
+                                        SelecPriceCmp(
+                                            modifier = Modifier
+                                                .padding(PADDING_8)
+                                                .clickable {
+                                                    onUpdateState(uiState.copy(precio1 = false, precio2 = false, precio3 = true, precio4 = false))
+                                                    onClickPrice(currentProduct.precioVenta3)
+                                                },
+                                            precio = currentProduct.precioVenta3.toString(),
+                                            selected = remember(uiState.precio3) { mutableStateOf(uiState.precio3) }
+                                        )
+                                    }
+                                    if (currentProduct.precioVenta4 != null && currentProduct.precioVenta4 > 0.001) {
+                                        SelecPriceCmp(
+                                            modifier = Modifier
+                                                .padding(PADDING_8)
+                                                .clickable {
+                                                    onUpdateState(uiState.copy(precio1 = false, precio2 = false, precio3 = false, precio4 = true))
+                                                    onClickPrice(currentProduct.precioVenta4)
+                                                },
+                                            precio = currentProduct.precioVenta4.toString(),
+                                            selected = remember(uiState.precio4) { mutableStateOf(uiState.precio4) }
+                                        )
+                                    }
                                 }
                             }
-                        )
+                        }
+
+                        HorizontalDivider(thickness = PADDING_8, color = Color.Transparent)
+                        Column(
+                            modifier = Modifier
+                                .border(border = BorderStroke(2.dp, Color.Black), shape = RoundedCornerShape(10.dp))
+                                .padding(PADDING_8),
+                        ) {
+                            TextCmp(
+                                modifier = Modifier.fillMaxWidth(),
+                                text = "Cantidad",
+                                color = Color.Black,
+                                fontSize = 24.sp,
+                                fontStyle = FontStyle.Italic,
+                                textDecoration = TextDecoration.Underline,
+                                textAlign = TextAlign.Left,
+                                fontWeight = FontWeight.Bold,
+                                maxLine = 1,
+                            )
+
+                            InputWithTitleLabelCmp(
+                                textValue = uiState.quantity,
+                                modifier = Modifier,
+                                labelText = "Cantidad de productos",
+                                keyboardType = KeyboardType.Number,
+                                onValueChange = { newValue ->
+                                    val sanitized = if (newValue.startsWith("0") && newValue.length > 1) newValue.dropWhile { it == '0' } else newValue
+                                    val value = sanitized.toIntOrNull() ?: 0
+                                    if (value <= (inventario.inventario ?: 10000)) {
+                                        onUpdateState(uiState.copy(quantity = sanitized))
+                                    }
+                                },
+                                fontColor = Color.Black,
+                            )
+                        }
+
+                        HorizontalDivider(thickness = PADDING_8, color = Color.Transparent)
+                        Column(
+                            modifier = Modifier
+                                .border(border = BorderStroke(2.dp, Color.Black), shape = RoundedCornerShape(10.dp))
+                                .padding(PADDING_8),
+                        ) {
+                            TextCmp(
+                                modifier = Modifier.fillMaxWidth(),
+                                text = "Comentarios",
+                                color = Color.Black,
+                                fontSize = 24.sp,
+                                fontStyle = FontStyle.Italic,
+                                textDecoration = TextDecoration.Underline,
+                                textAlign = TextAlign.Left,
+                                fontWeight = FontWeight.Bold,
+                                maxLine = 1,
+                            )
+
+                            InputWithTitleLabelCmp(
+                                textValue = uiState.comentarios,
+                                modifier = Modifier,
+                                labelText = "",
+                                keyboardType = KeyboardType.Text,
+                                textValueSize = 18.sp,
+                                onValueChange = {
+                                    onUpdateState(uiState.copy(comentarios = it))
+                                },
+                                fontColor = Color.Black,
+                            )
+                        }
+
+                        HorizontalDivider(thickness = PADDING_8, color = Color.Transparent)
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(PADDING_8),
+                            horizontalArrangement = Arrangement.SpaceAround
+                        ) {
+                            ButtonWithImgCmp(
+                                text = "Cancelar",
+                                backGroundColor = UI_Backround_Btn_Red,
+                                icon = Icons.Default.Close,
+                                onClick = onClickCancel
+                            )
+                            VerticalDivider(thickness = PADDING_8, color = Color.Transparent)
+                            ButtonWithImgCmp(
+                                text = "Aceptar",
+                                backGroundColor = UI_Backround_Btn_Green,
+                                icon = Icons.Default.Add,
+                                enable = uiState.enableBtn,
+                                onClick = {
+                                    if (uiState.enableBtn && uiState.quantity.isNotEmpty()) {
+                                        onClickAccept(currentProduct)
+                                        onDismiss()
+                                    }
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -422,29 +333,18 @@ fun AddProductDialogCmpPreview(){
     products.add(ProductsResponseModel(productoId=5437, descripcion ="TOALLITAS HUMEDAS  ABSORSEC 12/120", departamento="RENTA BODEGA", descripcionPresentacion="PAQUETE"))
     products.add(ProductsResponseModel(productoId=5437, descripcion ="TOALLITAS HUMEDAS  ABSORSEC 12/120", departamento="RENTA BODEGA", descripcionPresentacion="PAQUETE"))
     AddProductDialogCmp(
-        state = remember { mutableStateOf(TextFieldValue("")) },
+        uiState = AddProductUiState(),
+        search = TextFieldValue(""),
         opcions = products,
-
+        product = ProductsResponseModel(precioVenta1 = 10.0),
         onDismiss = {},
         onChangeText = {},
-        expanded = remember { mutableStateOf(false) },
         onClickOpcion = { Log.i("Opcion___", it.toString()) },
-        product = remember {
-            mutableStateOf(
-                ProductsResponseModel(
-                    precioVenta1 = 2.22,
-                    precioVenta2 = 3.3,
-                    precioVenta3 = 33.24,
-                    precioVenta4 = 233.24
-
-                )
-            )
-        },
+        expanded = true,
         inventario = ProductIdResponseModel(inventario = 10),
         onClickPrice = {},
-        comentarios = remember { mutableStateOf("") },
-        quantity = remember { mutableStateOf("") },
         onClickCancel = {},
-        onClickAccept = {}
+        onClickAccept = {},
+        onUpdateState = {},
     )
 }

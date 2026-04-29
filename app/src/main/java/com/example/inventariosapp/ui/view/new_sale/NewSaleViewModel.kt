@@ -1,9 +1,7 @@
 package com.example.inventariosapp.ui.view.new_sale
 
 import android.util.Log
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -25,13 +23,51 @@ import com.example.inventariosapp.domain.model.sales.PostSalesModel
 import com.example.inventariosapp.domain.model.sales.SaleProductModel
 import com.example.inventariosapp.domain.model.sales.SalesModel
 import com.example.inventariosapp.util.Helpers
-import com.example.inventariosapp.util.NetworkMonitor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import javax.inject.Inject
+
+data class NewSaleUiState(
+    val sale: SalesModel = SalesModel(),
+    val internetUse: Boolean = false,
+    val comentarios: String = "",
+    val canModifyClient: Boolean = true,
+
+    val expandenSearchBarS: Boolean = false,
+    val client: TextFieldValue = TextFieldValue(""),
+    val clients: List<ClientResponseModel> = listOf(),
+    val opcions: ArrayList<ClientResponseModel> = arrayListOf(),
+
+    val idSale: String = "",
+    val saleData: GetSalesByIdResponse = GetSalesByIdResponse(),
+    val editStatus: Boolean = false,
+
+    val serviceClientStatus: Boolean = false,
+
+    val dialogProduct: Boolean = false,
+    val expandenSearchBarD: Boolean = false,
+    var search: TextFieldValue = TextFieldValue(""),
+    val inventory: ArrayList<ProductsResponseModel>? = arrayListOf(),
+    val filterInventory: ArrayList<ProductsResponseModel> = arrayListOf(),
+    val serviceProductMessage: Boolean = false,
+
+    val price: Double = 0.0,
+    val quantity: String = "",
+    val serchProductId: Int = 0,
+    val product: ProductEntity? = null,
+    val totalInventory: ProductIdResponseModel = ProductIdResponseModel(),
+    val selectedProduct: ProductsResponseModel? = null,
+
+    val serverPostSale: Boolean = false,
+    val newSale: ArrayList<PostSalesModel> = arrayListOf(),
+    val newClient: ClientResponseModel? = null,
+    val newProducts: ArrayList<PostSaleProductModel> = arrayListOf(),
+)
 
 @HiltViewModel
 class NewSaleViewModel @Inject constructor(
@@ -42,62 +78,57 @@ class NewSaleViewModel @Inject constructor(
     private val getClientsUseCase: GetClientsUseCase,
     private val getInventarioProductoUseCase: GetInventarioProductoRepositoryImp,
     val baseViewModel: BaseViewModel,
-    @ApplicationContext private val cnx : android.content.Context
+    @ApplicationContext private val cnx: android.content.Context
 ) : ViewModel() {
-    val sale: MutableState<SalesModel> = mutableStateOf(SalesModel())
-    val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
-    val comentarios = mutableStateOf("")
-    val canModifyClient = mutableStateOf(true)
+    private val _uiState = MutableStateFlow(NewSaleUiState())
+    val uiState = _uiState.asStateFlow()
 
-    val expandenSearchBarS = mutableStateOf(false)
-    val client = mutableStateOf(TextFieldValue(""))
-    val clients: MutableState<List<ClientResponseModel>> = mutableStateOf(listOf())
-    val opcions: MutableState<ArrayList<ClientResponseModel>> = mutableStateOf(arrayListOf())
+    val products = mutableStateListOf(SaleProductModel())
 
     // region Sale Data
-    var idSale = ""
-    val products = mutableStateListOf(SaleProductModel())
-    val saleData: MutableState<GetSalesByIdResponse> = mutableStateOf(GetSalesByIdResponse())
-    fun getSale(){
-        canModifyClient.value = false
+    fun getSale() {
+        _uiState.update { it.copy(canModifyClient = false) }
         baseViewModel.showLoader()
         viewModelScope.launch {
-            internetUse.value = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
-            if (baseViewModel.isSessionValid()){
-                idSale = sale.value.folio.toString()
-                val r = getSalesByIdUseCase(idSale, internetUse.value)
-                if (r.first != null){
-                    saleData.value = r.first!!
-                    for (p in saleData.value.ventaProductos){
+            val internetUse = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
+            _uiState.update { it.copy(internetUse = internetUse) }
+            if (baseViewModel.isSessionValid()) {
+                val idSale = _uiState.value.sale.folio.toString()
+                _uiState.update { it.copy(idSale = idSale) }
+                val r = getSalesByIdUseCase(idSale, internetUse)
+                if (r.first != null) {
+                    _uiState.update { it.copy(saleData = r.first!!) }
+                    for (p in _uiState.value.saleData.ventaProductos) {
                         Log.i("Sales___", "${p}")
                     }
                     products.clear()
-                    products.addAll(saleData.value.ventaProductos)
+                    products.addAll(_uiState.value.saleData.ventaProductos)
                 }
-            }
-            else{
+            } else {
                 baseViewModel.dialogLogin.value = true
             }
             //if (setLoading())baseViewModel.hideLoader()
         }
     }
-    val editStatus = MutableStateFlow(false)
-    fun editSale(){
-        canModifyClient.value = false
+
+    fun editSale() {
+        _uiState.update { it.copy(canModifyClient = false) }
         baseViewModel.showLoader()
         viewModelScope.launch {
             val internetUse = Helpers.isInternetAvailable(cnx)
-            saleData.value.ventaProductos = java.util.ArrayList(products)
-            saleData.value.ventaIdInterno = null
+            val updatedSaleData = _uiState.value.saleData.copy(
+                ventaProductos = java.util.ArrayList(products),
+                ventaIdInterno = null
+            )
+            _uiState.update { it.copy(saleData = updatedSaleData) }
             Log.i("Sale___", products.toString())
-            val r = editSaleUseCase(saleData.value, idSale, internetUse)
-            if (r.first != null){
+            val r = editSaleUseCase(updatedSaleData, _uiState.value.idSale, internetUse)
+            if (r.first != null) {
                 MainActivity.mainDialogMsg.value = "Venta modificada"
                 MainActivity.mainDialog.value = true
-                editStatus.value = true
-            }
-            else{
-                if (r.second != null){
+                _uiState.update { it.copy(editStatus = true) }
+            } else {
+                if (r.second != null) {
                     MainActivity.mainDialogMsg.value = r.second!!
                     MainActivity.mainDialog.value = true
                 }
@@ -105,7 +136,8 @@ class NewSaleViewModel @Inject constructor(
             baseViewModel.hideLoader()
         }
     }
-    fun deleteRow(data: SaleProductModel){
+
+    fun deleteRow(data: SaleProductModel) {
         products.remove(data)
         var newTotal = BigDecimal.ZERO
 
@@ -116,136 +148,139 @@ class NewSaleViewModel @Inject constructor(
             Log.i("Total_Product___", "$precio * $cantidad = $newTotal")
         }
 
-        sale.value = sale.value.copy(total = newTotal.toDouble())
-        saleData.value = saleData.value.copy(total = newTotal.toDouble())
+        _uiState.update {
+            it.copy(
+                sale = it.sale.copy(total = newTotal.toDouble()),
+                saleData = it.saleData.copy(total = newTotal.toDouble())
+            )
+        }
     }
-    fun addRow(data: ProductsResponseModel, comentarios: String){
+
+    fun addRow(data: ProductsResponseModel, comentarios: String) {
         var newTotal = BigDecimal(0.0)
-        val p = if (canModifyClient.value) data.productoId ?: 0 else 0
+        val p = if (_uiState.value.canModifyClient) data.productoId ?: 0 else 0
         Log.i("C___", comentarios)
         products.add(
             SaleProductModel(
                 VentaProductoId = 0,
-                VentaId = sale.value.ventaId,
+                VentaId = _uiState.value.sale.ventaId,
                 ProductoId = data.productoId,
-                Cantidad = quantity.value.toInt(),
-                PrecioVenta = price.value,
+                Cantidad = _uiState.value.quantity.toInt(),
+                PrecioVenta = _uiState.value.price,
                 Costo = data.costo,
-                CantidadSolicitada = quantity.value.toInt(),
+                CantidadSolicitada = _uiState.value.quantity.toInt(),
                 VentaIdInterno = null,
                 Venta = null,
                 nombreProducto = data.descripcionPresentacion ?: "",
                 comentarios = comentarios
             )
         )
-        for(p in products){
+        for (p in products) {
             newTotal += (p.PrecioVenta!! * p.Cantidad!!.toDouble()).toBigDecimal()
             Log.i("Total_Product___", "${p.PrecioVenta} * ${p.Cantidad} = ${newTotal}")
         }
-        sale.value = sale.value.copy(total = newTotal.toDouble())
-        saleData.value = saleData.value.copy(total = newTotal.toDouble())
+        _uiState.update {
+            it.copy(
+                sale = it.sale.copy(total = newTotal.toDouble()),
+                saleData = it.saleData.copy(total = newTotal.toDouble())
+            )
+        }
     }
-    val serviceClientStatus = mutableStateOf(false)
-    fun getClients(){
+
+    fun getClients() {
         baseViewModel.showLoader()
         viewModelScope.launch {
-            internetUse.value = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
-            val r = getClientsUseCase(internetUse.value)
-            if (r.first != null){
-                clients.value = r.first!!
+            val internetUse = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
+            _uiState.update { it.copy(internetUse = internetUse) }
+            val r = getClientsUseCase(internetUse)
+            if (r.first != null) {
+                _uiState.update { it.copy(clients = r.first!!) }
             }
-            serviceClientStatus.value = true
+            _uiState.update { it.copy(serviceClientStatus = true) }
             ///if (setLoading()) baseViewModel.hideLoader()
         }
     }
-    fun filterClients(): MutableState<ArrayList<ClientResponseModel>> {
-        opcions.value = if (client.value.text.isBlank()){
-            Log.i("If___1", saleData.value.folio.toString())
-            expandenSearchBarS.value = false
+
+    fun filterClients(): ArrayList<ClientResponseModel> {
+        val opcions = if (_uiState.value.client.text.isBlank()) {
+            Log.i("If___1", _uiState.value.saleData.folio.toString())
+            _uiState.update { it.copy(expandenSearchBarS = false) }
             arrayListOf()
-        }
-        else {
-            if (newClient.value == null){
-                expandenSearchBarS.value = true
+        } else {
+            if (_uiState.value.newClient == null) {
+                _uiState.update { it.copy(expandenSearchBarS = true) }
             }
-            Log.i("Else___1", saleData.value.folio.toString())
-            ArrayList(clients.value.filter {
-                it.nombreCliente!!.contains(client.value.text, ignoreCase = true)
+            Log.i("Else___1", _uiState.value.saleData.folio.toString())
+            ArrayList(_uiState.value.clients.filter {
+                it.nombreCliente!!.contains(_uiState.value.client.text, ignoreCase = true)
             })
         }
-        if (!saleData.value.folio.isNullOrEmpty()) {
-            expandenSearchBarS.value = false
+        if (!_uiState.value.saleData.folio.isNullOrEmpty()) {
+            _uiState.update { it.copy(expandenSearchBarS = false) }
         }
+        _uiState.update { it.copy(opcions = opcions) }
         return opcions
     }
     // endregion
+
     // region Dialog Products
-    val dialogProduct = mutableStateOf(false)
-    val expandenSearchBarD = mutableStateOf(false)
-    var search = mutableStateOf(TextFieldValue(""))
-    val inventory: MutableState<ArrayList<ProductsResponseModel>?> = mutableStateOf(arrayListOf())
-    val filterInventory: MutableState<ArrayList<ProductsResponseModel>> = mutableStateOf(arrayListOf())
-    fun getFilter(): MutableState<ArrayList<ProductsResponseModel>> {
-        Log.i("Filtro___", expandenSearchBarD.value.toString())
-        val data = inventory.value ?: arrayListOf()
-        val query = search.value.text.trim()
-        filterInventory.value =
+    fun getFilter(filter: TextFieldValue){
+        _uiState.update { it.copy(search = filter) }
+        updateExpandenSearchBarD(true)
+        Log.i("Filtro___", _uiState.value.expandenSearchBarD.toString())
+        val data = _uiState.value.inventory ?: arrayListOf()
+        val query = _uiState.value.search.text.trim()
+        val filterInventory =
             if (query.length < 3) {
-                expandenSearchBarD.value = false
+                _uiState.update { it.copy(expandenSearchBarD = false) }
                 ArrayList(data)
-            }
-            else {
-                if (query.length < 8) expandenSearchBarD.value = true
-                else expandenSearchBarD.value = false
+            } else {
+                _uiState.update {
+                    it.copy(expandenSearchBarD = query.length < 8)
+                }
                 ArrayList(data.filter {
                     it.descripcion?.contains(query, ignoreCase = true) == true
                 })
             }
-        return filterInventory
+        _uiState.update { it.copy(filterInventory = filterInventory) }
     }
-    val serviceProductMessage = mutableStateOf(false)
-    fun getProducts(){
+
+    fun getProducts() {
         baseViewModel.showLoader()
         viewModelScope.launch {
-            internetUse.value = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
-            val r = getProductsUseCase(internetUse.value)
-            if (r.first != null){
-                inventory.value = (r.first as ArrayList<ProductsResponseModel>?)!!
+            val internetUse = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
+            _uiState.update { it.copy(internetUse = internetUse) }
+            val r = getProductsUseCase(internetUse)
+            if (r.first != null) {
+                _uiState.update { it.copy(inventory = r.first as ArrayList<ProductsResponseModel>?) }
             }
-            serviceProductMessage.value = true
+            _uiState.update { it.copy(serviceProductMessage = true) }
         }
     }
-    val price = mutableStateOf(0.0)
-    val quantity = mutableStateOf("")
-    val serchProductId = mutableStateOf(0)
-    val product: MutableState<ProductEntity?> = mutableStateOf(null)
-    val totalInventory: MutableState<ProductIdResponseModel> = mutableStateOf(ProductIdResponseModel())
-    val selectedProduct: MutableState<ProductsResponseModel?> = mutableStateOf(null)
-    fun getProductInventario(productId: Int){
+
+    fun getProductInventario(productId: Int) {
         baseViewModel.showLoader()
         viewModelScope.launch {
-            internetUse.value = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
-            val r = getInventarioProductoUseCase(productId, internetUse.value)
-            if (r.first != null){
-                totalInventory.value = r.first!!
+            val internetUse = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
+            _uiState.update { it.copy(internetUse = internetUse) }
+            val r = getInventarioProductoUseCase(productId, internetUse)
+            if (r.first != null) {
+                _uiState.update { it.copy(totalInventory = r.first!!) }
             }
-            expandenSearchBarD.value = true
-            serchProductId.value = productId
+            _uiState.update { it.copy(expandenSearchBarD = true, serchProductId = productId) }
             baseViewModel.hideLoader()
         }
     }
     // endregion
+
     // region New Sale
-    val serverPostSale = MutableStateFlow(false)
-    val newSale: MutableState<ArrayList<PostSalesModel>> = mutableStateOf(arrayListOf())
-    val newClient: MutableState<ClientResponseModel?> = mutableStateOf(null)
-    val newProducts: MutableState<ArrayList<PostSaleProductModel>> = mutableStateOf(arrayListOf())
     fun createSale() {
         baseViewModel.showLoader()
         viewModelScope.launch {
             val usuarioSesionId = baseViewModel.getUsuarioSessionId()
-            if (baseViewModel.isSessionValid()){
-                internetUse.value = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
+            if (baseViewModel.isSessionValid()) {
+                val internetUse = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
+                _uiState.update { it.copy(internetUse = internetUse) }
                 val fecha = Helpers.getDateTime().replace(" ", "T")
 
                 var totalSale = 0.0
@@ -262,32 +297,35 @@ class NewSaleViewModel @Inject constructor(
                 }
 
                 val sale = PostSalesModel(
-                    clienteId = newClient.value!!.clienteId,
-                    nombreCliente = newClient.value!!.nombreCliente,
+                    clienteId = _uiState.value.newClient!!.clienteId,
+                    nombreCliente = _uiState.value.newClient!!.nombreCliente,
                     ventaId = 0,
                     esActivo = true,
                     fechaIngreso = fecha,
                     fechaVenta = fecha,
                     tipoPagoId = 1,
-                    direccion = newClient.value!!.direccion ?: "",
+                    direccion = _uiState.value.newClient!!.direccion ?: "",
                     subtotal = 0.0,
                     iva = 0.0,
                     retencion = 0.0,
                     total = totalSale,
                     usuarioSesionId = usuarioSesionId,
                     ventaProductos = saleProducts as ArrayList<PostSaleProductModel>,
-                    tipoConexionId = if (internetUse.value) 1 else 2
+                    tipoConexionId = if (internetUse) 1 else 2
                 )
-                val r = postSaleUseCase(listOf(sale), internetUse.value)
+                val r = postSaleUseCase(listOf(sale), internetUse)
 
                 if (r.first != null) {
-                    newProducts.value = saleProducts.toMutableList() as ArrayList<PostSaleProductModel>
-                    newSale.value = arrayListOf(sale)
-
+                    _uiState.update {
+                        it.copy(
+                            newProducts = saleProducts.toMutableList() as ArrayList<PostSaleProductModel>,
+                            newSale = arrayListOf(sale)
+                        )
+                    }
                     MainActivity.mainDialogMsg.value =
-                        if (internetUse.value) "Venta guardada" else "Venta guardada en modo offline"
+                        if (internetUse) "Venta guardada" else "Venta guardada en modo offline"
                     MainActivity.mainDialog.value = true
-                    serverPostSale.value = true
+                    _uiState.update { it.copy(serverPostSale = true) }
                 }
             } else {
                 baseViewModel.dialogLogin.value = true
@@ -296,34 +334,64 @@ class NewSaleViewModel @Inject constructor(
         }
     }
     // endregion
+
+    // region Update UiState
+    fun updateSale(sale: SalesModel) = _uiState.update { it.copy(sale = sale) }
+    fun updateComentarios(comentarios: String) = _uiState.update { it.copy(comentarios = comentarios) }
+    fun updateClient(client: TextFieldValue) = _uiState.update { it.copy(client = client) }
+    fun updateDialogProduct(dialogProduct: Boolean) = _uiState.update { it.copy(dialogProduct = dialogProduct) }
+    fun updateSearch(search: TextFieldValue) = _uiState.update { it.copy(search = search) }
+    fun updatePrice(price: Double) = _uiState.update { it.copy(price = price) }
+    fun updateQuantity(quantity: String) = _uiState.update { it.copy(quantity = quantity) }
+    fun updateSelectedProduct(selectedProduct: ProductsResponseModel?) = _uiState.update { it.copy(selectedProduct = selectedProduct) }
+    fun updateNewClient(newClient: ClientResponseModel?) = _uiState.update { it.copy(newClient = newClient) }
+    fun updateExpandenSearchBarS(expandenSearchBarS: Boolean) = _uiState.update { it.copy(expandenSearchBarS = expandenSearchBarS) }
+    fun updateExpandenSearchBarD(expandenSearchBarD: Boolean) = _uiState.update { it.copy(expandenSearchBarD = expandenSearchBarD) }
+    // endregion
+
     // region Clean
-    fun clearSales(){
-        sale.value = SalesModel()
-        newSale.value = arrayListOf()
-        newClient.value = null
-        newProducts.value = arrayListOf()
+    fun clearSales() {
+        _uiState.update {
+            it.copy(
+                sale = SalesModel(),
+                newSale = arrayListOf(),
+                newClient = null,
+                newProducts = arrayListOf(),
+            )
+        }
         products.clear()
     }
+
     fun clearDialog() {
-        dialogProduct.value = false
-        search.value = TextFieldValue("")
-        opcions.value.clear()
-        product.value = null
-        expandenSearchBarD.value = false
-        selectedProduct.value = null
-        quantity.value = ""
-        price.value = 0.0
-        totalInventory.value = ProductIdResponseModel()
+        _uiState.update {
+            it.copy(
+                dialogProduct = false,
+                search = TextFieldValue(""),
+                product = null,
+                expandenSearchBarD = false,
+                selectedProduct = null,
+                quantity = "",
+                price = 0.0,
+                totalInventory = ProductIdResponseModel()
+            )
+        }
+        _uiState.value.opcions.clear()
     }
-    fun clearClient(){
-        client.value = TextFieldValue("")
-        opcions.value.clear()
+
+    fun clearClient() {
+        _uiState.update {
+            it.copy(
+                client = TextFieldValue(""),
+            )
+        }
+        _uiState.value.opcions.clear()
     }
     // endregion
+
     init {
+        _uiState.update { it.copy(internetUse = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value) }
         clearSales()
         getProducts()
         getClients()
     }
 }
-

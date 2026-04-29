@@ -26,6 +26,7 @@ espresso = "3.6.1"
 
 constraintlayout = "2.2.1"
 composeConstraint = "1.1.1"
+uiText = "1.11.0"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -70,3 +71,4 @@ retrofit-converter = {group = "com.squareup.retrofit2", name = "converter-gson",
 
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 androidx-constraintlayout-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "composeConstraint"}
+androidx-compose-ui-text = { group = "androidx.compose.ui", name = "ui-text", version.ref = "uiText" }

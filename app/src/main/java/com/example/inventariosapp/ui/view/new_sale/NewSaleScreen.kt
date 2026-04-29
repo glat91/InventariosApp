@@ -19,82 +19,82 @@ import com.example.inventariosapp.ui.component.Loader
 import com.example.inventariosapp.ui.dialog.AddProductDialogCmp
 import com.example.inventariosapp.ui.dialog.LoginDialogCmp
 import com.example.inventariosapp.ui.view.login.LoginViewModel
-import androidx.compose.runtime.collectAsState
 import com.example.inventariosapp.util.Helpers
 
 @Composable
 fun NewSaleScreen(navController: NavHostController) {
     val viewModel: NewSaleViewModel = hiltViewModel()
     val lviewModel: LoginViewModel = hiltViewModel()
-    val editStatus = viewModel.editStatus.collectAsState()
-    val postSale = viewModel.serverPostSale.collectAsState()
+    val addProductViewModel: AddProductDialogViewModel = hiltViewModel()
+    val saleUiState by viewModel.uiState.collectAsState()
     val cnx = LocalContext.current
     val uiState by lviewModel.uiState.collectAsState()
+    val addproductUiState by addProductViewModel.uiState.collectAsState()
 
-    LaunchedEffect(viewModel.expandenSearchBarS.value) {
-        if (viewModel.newClient.value != null){
-            Log.i("Expanded___2", viewModel.expandenSearchBarS.value.toString())
-            viewModel.expandenSearchBarS.value = false
-            viewModel.expandenSearchBarD.value = false
-            Log.i("Expanded___2", viewModel.expandenSearchBarS.value.toString())
+    LaunchedEffect(saleUiState.expandenSearchBarS) {
+        if (saleUiState.newClient != null) {
+            Log.i("Expanded___2", saleUiState.expandenSearchBarS.toString())
+            viewModel.updateExpandenSearchBarS(false)
+            viewModel.updateExpandenSearchBarD(false)
+            Log.i("Expanded___2", saleUiState.expandenSearchBarS.toString())
         }
     }
     // region Previous Data
-    LaunchedEffect(true){
-        try{
-            viewModel.sale.value = navController.previousBackStackEntry?.savedStateHandle?.get<SalesModel>("sale")!!
+    LaunchedEffect(true) {
+        try {
+            val sale = navController.previousBackStackEntry?.savedStateHandle?.get<SalesModel>("sale")!!
+            viewModel.updateSale(sale)
             viewModel.getSale()
-        }
-        catch (e: Exception){ }
-        viewModel.client.value = TextFieldValue(viewModel.sale.value.nombreCliente ?: "")
+        } catch (e: Exception) { }
+        viewModel.updateClient(TextFieldValue(saleUiState.sale.nombreCliente ?: ""))
     }
     // endregion
-    LaunchedEffect(editStatus.value){
-        if (editStatus.value){
-            navController.navigate(route = Destinations.SalesScreen.ruta){
+    LaunchedEffect(saleUiState.editStatus) {
+        if (saleUiState.editStatus) {
+            navController.navigate(route = Destinations.SalesScreen.ruta) {
                 launchSingleTop = true
             }
         }
     }
-    LaunchedEffect(postSale.value) {
-        if (postSale.value){
-            navController.navigate(route = Destinations.SalesScreen.ruta){
+    LaunchedEffect(saleUiState.serverPostSale) {
+        if (saleUiState.serverPostSale) {
+            navController.navigate(route = Destinations.SalesScreen.ruta) {
                 launchSingleTop = true
-                popUpTo(Destinations.NewSaleScreen.ruta){ inclusive = true }
+                popUpTo(Destinations.NewSaleScreen.ruta) { inclusive = true }
             }
         }
     }
     // region Composable
     NewSaleView(
-        clientName = viewModel.client,
-        sale = viewModel.sale,
+        clientName = saleUiState.client,
+        sale = saleUiState.sale,
         salesData = viewModel.products,
-        expandedSearchBar = viewModel.expandenSearchBarS,
+        expandedSearchBar = saleUiState.expandenSearchBarS,
         opcions = viewModel.filterClients(),
-        canModify = viewModel.canModifyClient,
+        canModify = saleUiState.canModifyClient,
+        onChangueSearch = { viewModel.updateClient(it) },
+        onDissmissSearchBar = { viewModel.updateExpandenSearchBarD(false) },
         onClickOpcion = {
-            Log.i("Modify___", viewModel.canModifyClient.toString())
-            if (viewModel.canModifyClient.value) {
-                viewModel.newClient.value = it
-                viewModel.client.value = TextFieldValue(it.nombreCliente.toString())
-                viewModel.sale.value.nombreCliente = it.nombreCliente.toString()
-                //viewModel.expandenSearchBarS.value = false
-                Log.i("Expanded___", viewModel.expandenSearchBarS.value.toString())
+            Log.i("Modify___", saleUiState.canModifyClient.toString())
+            if (saleUiState.canModifyClient) {
+                viewModel.updateNewClient(it)
+                viewModel.updateClient(TextFieldValue(it.nombreCliente.toString()))
+                viewModel.updateSale(saleUiState.sale.copy(nombreCliente = it.nombreCliente.toString()))
+                viewModel.updateExpandenSearchBarS(false)
+                Log.i("Expanded___", saleUiState.expandenSearchBarS.toString())
             }
         },
         onClickDelete = { viewModel.deleteRow(it) },
-        onClickProduct = { viewModel.dialogProduct.value = true },
+        onClickProduct = { viewModel.updateDialogProduct(true) },
         onClickSave = {
-            if (viewModel.sale.value.ventaId == null) {
-                if (viewModel.products.isNotEmpty() && viewModel.newClient.value != null) {
+            if (saleUiState.sale.ventaId == null) {
+                if (viewModel.products.isNotEmpty() && saleUiState.newClient != null) {
                     viewModel.createSale()
                 }
-            }
-            else {
-                if (MainActivity.internetBtn.value){
-                    if (viewModel.products.isNotEmpty()){ viewModel.editSale() }
-                }
-                else{
+            } else {
+                if (MainActivity.internetBtn.value) {
+                    if (viewModel.products.isNotEmpty()) { viewModel.editSale() }
+                } else {
                     MainActivity.mainDialogMsg.value = "Modo offline no activado"
                     MainActivity.mainDialog.value = true
                 }
@@ -108,39 +108,49 @@ fun NewSaleScreen(navController: NavHostController) {
     )
     // endregion
     // region Dialog
-    if (viewModel.dialogProduct.value){
-        val loadComents: MutableState<String> = remember { mutableStateOf(
-            (if (viewModel.canModifyClient.value) viewModel.comentarios.value else viewModel.selectedProduct.value?.comentarios ?: "")
-        ) }
-        Log.i("Coments2___", loadComents.value)
+    if (saleUiState.dialogProduct) {
+        val loadComents: MutableState<String> = remember {
+            mutableStateOf(
+                if (saleUiState.canModifyClient) saleUiState.comentarios
+                else saleUiState.selectedProduct?.comentarios ?: ""
+            )
+        }
         AddProductDialogCmp(
-            state = viewModel.search,
-            opcions = viewModel.getFilter().value,
-            expanded = viewModel.expandenSearchBarD,
-            product = viewModel.selectedProduct,
-            quantity = viewModel.quantity,
-            onDismiss = { viewModel.clearDialog() },
-            onChangeText = { viewModel.search.value = it },
-            onClickOpcion = {
-                Log.i("Opcion___", it.toString())
-                viewModel.selectedProduct.value = it
-                //viewModel.expandenSearchBarD.value = false
-                viewModel.getProductInventario(it.productoId!!)
+            uiState = addproductUiState,
+            search = saleUiState.search,
+            opcions = saleUiState.filterInventory,
+            expanded = saleUiState.expandenSearchBarD,
+            product = saleUiState.selectedProduct,
+            onDismiss = {
+                viewModel.clearDialog()
+                addProductViewModel.resetData()
             },
-            onClickPrice = { viewModel.price.value = it },
-            inventario = viewModel.totalInventory.value,
-            onClickCancel = { viewModel.clearDialog() },
+            onChangeText = {
+                viewModel.getFilter(it)
+                           },
+            onClickOpcion = {
+                viewModel.updateSelectedProduct(it)
+                viewModel.updateExpandenSearchBarD(false)
+                viewModel.getProductInventario(it.productoId!!)
+
+            },
+            onClickPrice = { viewModel.updatePrice(it) },
+            inventario = saleUiState.totalInventory,
+            onClickCancel = {
+                viewModel.clearDialog()
+                addProductViewModel.resetData()
+            },
             onClickAccept = {
-                Log.i("Coments3___", loadComents.value)
                 viewModel.addRow(it, loadComents.value)
                 viewModel.clearDialog()
+                addProductViewModel.resetData()
             },
-            comentarios = loadComents
+            onUpdateState = { addProductViewModel.updateState(it) },
         )
     }
     // endregion
     // region Dialog Login
-    if (viewModel.baseViewModel.dialogLogin.value){
+    if (viewModel.baseViewModel.dialogLogin.value) {
         LoginDialogCmp(
             uiState = uiState,
             onClickEnter = {

@@ -34,7 +34,7 @@ import com.example.appgeneric.ui.component.TextCmp
 @Composable
 fun SearchBarCmp(
     modifier: Modifier = Modifier,
-    state: MutableState<TextFieldValue>,
+    state: TextFieldValue,
     labelText: String = "",
     canModify: Boolean = true,
     opcionContent: @Composable () -> Unit,
@@ -44,25 +44,26 @@ fun SearchBarCmp(
 ) {
     Column(
         modifier = modifier.background(Color.Gray),
-    ){
-        TextField(modifier = Modifier
-            .height(55.dp)
-            .fillMaxWidth(),
-            value = state.value,
+    ) {
+        TextField(
+            modifier = Modifier
+                .height(55.dp)
+                .fillMaxWidth(),
+            value = state,
             enabled = canModify,
             onValueChange = { if (canModify) onChangeText(it) },
             textStyle = TextStyle(color = Color.Black.copy(0.60f), fontSize = 16.sp),
             placeholder = {
                 TextCmp(
                     modifier = Modifier.fillMaxWidth(),
-                    fontSize =  16.sp,
+                    fontSize = 16.sp,
                     textAlign = TextAlign.Start,
                     overflow = TextOverflow.Ellipsis,
                     text = labelText
                 )
             },
             trailingIcon = {
-                if (state.value.text != "") {
+                if (state.text != "") {
                     IconButton(
                         onClick = {
                             if (canModify) {
@@ -70,7 +71,7 @@ fun SearchBarCmp(
                                 onChangeText(TextFieldValue(""))
                             }
                         }
-                    ){
+                    ) {
                         Icon(
                             Icons.Default.Close,
                             contentDescription = "",
@@ -88,7 +89,7 @@ fun SearchBarCmp(
             },
             singleLine = true,
             shape = shape,
-            colors = TextFieldDefaults.colors (
+            colors = TextFieldDefaults.colors(
                 cursorColor = Color.Black,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
@@ -101,10 +102,35 @@ fun SearchBarCmp(
     }
 }
 
+// Sobrecarga con MutableState — mantiene compatibilidad con pantallas que aún no migraron a UiState
+@ExperimentalMaterial3Api
+@Composable
+fun SearchBarCmp(
+    modifier: Modifier = Modifier,
+    state: MutableState<TextFieldValue>,
+    labelText: String = "",
+    canModify: Boolean = true,
+    opcionContent: @Composable () -> Unit,
+    shape: Shape = RoundedCornerShape(4.dp),
+    onClickClear: () -> Unit = {},
+    onChangeText: (TextFieldValue) -> Unit = { },
+) {
+    SearchBarCmp(
+        modifier = modifier,
+        state = state.value,
+        labelText = labelText,
+        canModify = canModify,
+        opcionContent = opcionContent,
+        shape = shape,
+        onClickClear = onClickClear,
+        onChangeText = onChangeText,
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
-fun SearchCmpPreview(){
+fun SearchCmpPreview() {
     val opcions: MutableState<ArrayList<String>> = remember { mutableStateOf(arrayListOf()) }
     opcions.value.add("Parametro numero 1")
     opcions.value.add("Parametro numero 2")
