@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -119,6 +121,7 @@ fun AddProductDialogCmp(
                             modifier = Modifier
                                 .padding(top = PADDING_8)
                                 .fillMaxWidth(.7f)
+                                .heightIn(max = 240.dp)          // ← altura máxima fija
                                 .windowInsetsPadding(WindowInsets.ime),
                             properties = PopupProperties(focusable = false)
                         ) {
@@ -241,7 +244,7 @@ fun AddProductDialogCmp(
                             InputWithTitleLabelCmp(
                                 textValue = uiState.quantity,
                                 modifier = Modifier,
-                                labelText = "Cantidad de productos",
+                                labelText = "",
                                 keyboardType = KeyboardType.Number,
                                 onValueChange = { newValue ->
                                     val sanitized = if (newValue.startsWith("0") && newValue.length > 1) newValue.dropWhile { it == '0' } else newValue
@@ -252,6 +255,19 @@ fun AddProductDialogCmp(
                                 },
                                 fontColor = Color.Black,
                             )
+                            if(inventario.inventario != null){
+                                TextCmp(
+                                    modifier = Modifier.fillMaxWidth().padding(top = PADDING_8),
+                                    text = "Total en inventario ${inventario.inventario}",
+                                    color = Color.Black,
+                                    fontSize = 14.sp,
+                                    fontStyle = FontStyle.Normal,
+                                    textDecoration = TextDecoration.None,
+                                    textAlign = TextAlign.Left,
+                                    fontWeight = FontWeight.Bold,
+                                    maxLine = 1,
+                                )
+                            }
                         }
 
                         HorizontalDivider(thickness = PADDING_8, color = Color.Transparent)

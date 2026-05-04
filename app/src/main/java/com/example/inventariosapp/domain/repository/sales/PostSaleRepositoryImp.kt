@@ -23,7 +23,6 @@ class PostSaleRepositoryImp @Inject constructor(
                 return try {
                     val response = apiService.postSale(payload)
                     if (response.isSuccessful) {
-                        Log.i("PostSales___", "Sales enviadas correctamente")
                         Pair(Unit, null)
                     }
                     else {
@@ -51,7 +50,6 @@ class PostSaleRepositoryImp @Inject constructor(
         }
         else {
             return try {
-                Log.i("PostSales___", "Guardando ventas en DB (offline)")
                 sales?.forEach {
                     val saleEntity = it.toEntity()
                     val productsEntity = it.ventaProductos.map { product ->

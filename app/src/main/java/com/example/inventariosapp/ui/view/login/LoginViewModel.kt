@@ -21,13 +21,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import androidx.compose.runtime.Immutable
 
-@Immutable
-data class LoginViewState(
-    val user: String = "",
-    val password: String = "",
-    val rememberUser: Boolean = false,
-    val serverValidateUser: Boolean = false
-)
+
 data class LoginUiState(
     val user: String = "",
     val password: String = "",
@@ -44,21 +38,16 @@ class LoginViewModel @Inject constructor(
     // region UI State
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: MutableStateFlow<LoginUiState> get() = _uiState
-
     fun updateUser(newUser: String) {
         _uiState.value = _uiState.value.copy(user = newUser)
     }
-
     fun updatePassword(newPassword: String) {
         _uiState.value = _uiState.value.copy(password = newPassword)
     }
-
     fun toggleRememberUser() {
         _uiState.value = _uiState.value.copy(rememberUser = !_uiState.value.rememberUser)
     }
     // endregion
-
-
     fun validateUserLogin(internetUse: Boolean) {
         baseViewModel.showLoader()
         viewModelScope.launch {
@@ -106,25 +95,21 @@ class LoginViewModel @Inject constructor(
             baseViewModel.hideLoader()
         }
     }
-
     fun saveUserLogin() {
         viewModelScope.launch {
             cnx.savePersistData(key = Constants.REMEMBER_PASSWORD, data = "${uiState.value.user}/${uiState.value.password}")
         }
     }
-
     fun clearUser() {
         viewModelScope.launch {
             cnx.deletePersistKey(Constants.REMEMBER_PASSWORD)
         }
     }
-
     fun saveBoolean(key: String, data: Boolean) {
         viewModelScope.launch {
             cnx.savePersistData(key = key, data = data)
         }
     }
-
     init {
         viewModelScope.launch {
             baseViewModel.showLoader()

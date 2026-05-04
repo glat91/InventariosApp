@@ -277,7 +277,7 @@ class NewSaleViewModel @Inject constructor(
     fun createSale() {
         baseViewModel.showLoader()
         viewModelScope.launch {
-            val usuarioSesionId = baseViewModel.getUsuarioSessionId()
+            val usuarioSesionId = baseViewModel.getUsiarioId()
             if (baseViewModel.isSessionValid()) {
                 val internetUse = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
                 _uiState.update { it.copy(internetUse = internetUse) }
@@ -390,7 +390,9 @@ class NewSaleViewModel @Inject constructor(
     // endregion
 
     init {
-        _uiState.update { it.copy(internetUse = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value) }
+        _uiState.update {
+            it.copy(internetUse = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
+        }
         clearSales()
         getProducts()
         getClients()

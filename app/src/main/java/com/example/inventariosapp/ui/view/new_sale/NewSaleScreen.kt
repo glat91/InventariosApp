@@ -33,10 +33,8 @@ fun NewSaleScreen(navController: NavHostController) {
 
     LaunchedEffect(saleUiState.expandenSearchBarS) {
         if (saleUiState.newClient != null) {
-            Log.i("Expanded___2", saleUiState.expandenSearchBarS.toString())
             viewModel.updateExpandenSearchBarS(false)
             viewModel.updateExpandenSearchBarD(false)
-            Log.i("Expanded___2", saleUiState.expandenSearchBarS.toString())
         }
     }
     // region Previous Data
@@ -75,13 +73,11 @@ fun NewSaleScreen(navController: NavHostController) {
         onChangueSearch = { viewModel.updateClient(it) },
         onDissmissSearchBar = { viewModel.updateExpandenSearchBarD(false) },
         onClickOpcion = {
-            Log.i("Modify___", saleUiState.canModifyClient.toString())
             if (saleUiState.canModifyClient) {
                 viewModel.updateNewClient(it)
                 viewModel.updateClient(TextFieldValue(it.nombreCliente.toString()))
                 viewModel.updateSale(saleUiState.sale.copy(nombreCliente = it.nombreCliente.toString()))
                 viewModel.updateExpandenSearchBarS(false)
-                Log.i("Expanded___", saleUiState.expandenSearchBarS.toString())
             }
         },
         onClickDelete = { viewModel.deleteRow(it) },

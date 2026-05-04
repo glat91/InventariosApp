@@ -14,8 +14,8 @@ import com.example.inventariosapp.ui.component.Loader
 fun LoginScreen(navController: NavHostController) {
     val viewModel: LoginViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
+    val internetUse by viewModel.baseViewModel.internetUses.collectAsState()
 
-    val context = LocalContext.current
     LaunchedEffect(uiState.serverValidateUser) {
         if (uiState.serverValidateUser) {
             navController.navigate(route = Destinations.SalesScreen.ruta) {
@@ -24,8 +24,6 @@ fun LoginScreen(navController: NavHostController) {
             }
         }
     }
-
-    val internetUse by viewModel.baseViewModel.internetUses.collectAsState()
 
     LoginView(
         uiState = uiState,
