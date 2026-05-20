@@ -45,7 +45,6 @@ class MainActivity : ComponentActivity() {
         var lastUpdateClient: MutableState<String> = mutableStateOf("")
         var lastUpdateProducts: MutableState<String> = mutableStateOf("")
         var lastUpdateSells: MutableState<String> = mutableStateOf("")
-        var lastUpdatePayments: MutableState<String> = mutableStateOf("")
         var lastUpdateInventory: MutableState<String> = mutableStateOf("")
         val internetBtn: MutableState<Boolean> = mutableStateOf(true)
         //var internetBtn = MutableStateFlow(true)
@@ -68,8 +67,8 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-
             drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+
             InventariosAppTheme() {
                 val navController = rememberNavController()
                 scope = rememberCoroutineScope()

@@ -1,29 +1,48 @@
 package com.example.inventariosapp.ui.component.cards
 
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.appgeneric.ui.component.TextCmp
@@ -39,176 +58,103 @@ fun CardSellProductCmp(
     sellPrice: String,
     backgroundColor: Color,
     onClickDelete: () -> Unit,
-    //onClickPrint: () -> Unit
 ) {
-    Card(
-        modifier = Modifier.fillMaxWidth().padding(PADDING_4),
-        colors = CardColors(
-            containerColor = Color.White,
-            contentColor = Color.White,
-            disabledContainerColor = Color.White,
-            disabledContentColor = Color.White
-        ),
-        shape = RoundedCornerShape(5.dp),
-        border = BorderStroke(2.dp, Color.Black.copy(alpha = .1f)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp, pressedElevation = 0.dp),
+    val totalValue = (sellPrice.toDoubleOrNull() ?: 0.0) * (quantity.toDoubleOrNull() ?: 0.0)
+    val totalFormatted = String.format(Locale.US, "%.2f", totalValue)
+
+    val deletePressed = remember { mutableStateOf(false) }
+    val deleteScale by animateFloatAsState(
+        targetValue = if (deletePressed.value) 0.88f else 1f,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+        label = "deleteScale"
+    )
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 4.dp, vertical = 4.dp)
+            .shadow(elevation = 1.dp, shape = RoundedCornerShape(14.dp), ambientColor = Color.Black.copy(alpha = 0.05f))
+            .clip(RoundedCornerShape(14.dp))
+            .background(Color.White)
+            .border(0.5.dp, Color.Black.copy(alpha = 0.09f), RoundedCornerShape(14.dp))
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        ConstraintLayout(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(PADDING_4)
-                .clip(RoundedCornerShape(10.dp))
-                .background(backgroundColor)
-            ,
+        // Nombre + botón delete
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Top
         ) {
-            val (product, cantidad, precioVenta, total, btnDelete, btnPrint) = createRefs()
             TextCmp(
-                text = "${producto}",
-                modifier = Modifier.constrainAs(product){
-                    top.linkTo(parent.top, PADDING_8)
-                    start.linkTo(parent.start, PADDING_8)
-                    end.linkTo(parent.end, PADDING_8)
-                },
-                textDecoration = TextDecoration.Underline,
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
-                textAlign = TextAlign.Center,
-                color = Color.Black,
-                maxLine = 2
+                text = producto,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color(0xFF1A1A1A),
+                maxLine = 2,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f).padding(end = 8.dp)
             )
-            Row(
+            Box(
                 modifier = Modifier
-                    .constrainAs(cantidad){
-                        top.linkTo(product.bottom, PADDING_16)
-                        start.linkTo(parent.start, PADDING_8)
-                    },
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly
+                    .size(32.dp)
+                    .scale(deleteScale)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(Color(0xFFF7F7F7))
+                    .border(1.dp, Color.Black.copy(alpha = 0.08f), RoundedCornerShape(8.dp))
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) { onClickDelete() },
+                contentAlignment = Alignment.Center
             ) {
-                TextCmp(
-                    text = "Cantidad:",
-                    modifier = Modifier,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 12.sp,
-                    textAlign = TextAlign.Center,
-                    color = Color.Black,
-                    maxLine = 1
-                )
-                TextCmp(
-                    text = "$quantity",
-                    modifier = Modifier,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 12.sp,
-                    textAlign = TextAlign.Center,
-                    color = Color.Black,
-                    maxLine = 1
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .constrainAs(precioVenta){
-                        top.linkTo(product.bottom, PADDING_16)
-                        start.linkTo(cantidad.end)
-                        end.linkTo(total.start)
-                    },
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-
-                TextCmp(
-                    text = "Precio:",
-                    modifier = Modifier,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 12.sp,
-                    textAlign = TextAlign.Center,
-                    color = Color.Black,
-                    maxLine = 1
-                )
-                TextCmp(
-                    text = "$sellPrice",
-                    modifier = Modifier,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 12.sp,
-                    textAlign = TextAlign.Center,
-                    color = Color.Black,
-                    maxLine = 1
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .constrainAs(total){
-                        top.linkTo(product.bottom, PADDING_16)
-                        end.linkTo(btnDelete.start, PADDING_8)
-                    },
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-
-                TextCmp(
-                    text = "Total:",
-                    modifier = Modifier,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 12.sp,
-                    textAlign = TextAlign.Center,
-                    color = Color.Black,
-                    maxLine = 1
-                )
-                val totalValue = (sellPrice.toDoubleOrNull() ?: 0.0) * (quantity.toDoubleOrNull() ?: 0.0)
-                val totalFormatted = String.format(
-                    Locale.US,
-                    "%.2f",
-                    totalValue
-                )
-                TextCmp(
-                    text = "${totalFormatted}",
-                    modifier = Modifier,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 12.sp,
-                    textAlign = TextAlign.Center,
-                    color = Color.Black,
-                    maxLine = 1
-                )
-            }
-            Card(
-                modifier = Modifier.constrainAs(btnDelete){
-                    top.linkTo(product.bottom, PADDING_16)
-                    end.linkTo(parent.end, PADDING_8)
-                    bottom.linkTo(parent.bottom, PADDING_8)
-
-                },
-                elevation = CardDefaults.elevatedCardElevation(8.dp)
-            ){
                 Icon(
-                    imageVector = Icons.Filled.Delete,
-                    contentDescription = "",
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp)
-                        .clickable { onClickDelete() }
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Eliminar",
+                    tint = Color.Black.copy(alpha = 0.4f),
+                    modifier = Modifier.size(16.dp)
                 )
             }
-            /*
-            Card(
-                modifier = Modifier
-                    .constrainAs(btnPrint){
-                        top.linkTo(product.bottom, PADDING_16)
-                        end.linkTo(parent.end, PADDING_8)
-                        bottom.linkTo(parent.bottom, PADDING_8)
-
-                },
-                elevation = CardDefaults.elevatedCardElevation(8.dp)
-            ){
-                Image(
-                    painter = painterResource(id = R.drawable.ic_printer),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(25.dp)
-                        .clickable{ onClickPrint() }
-                )
-            }
-
-             */
         }
+
+        HorizontalDivider(thickness = 1.dp, color = Color.Black.copy(alpha = 0.07f))
+
+        // Cantidad · Precio · Total
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Bottom
+        ) {
+            MetaGroup(label = "Cant.", value = quantity)
+            MetaGroup(label = "Precio", value = "$$sellPrice")
+            MetaGroup(label = "Total", value = "$$totalFormatted", valueSize = 16.sp, valueBold = true)
+        }
+    }
+}
+
+@Composable
+private fun MetaGroup(
+    label: String,
+    value: String,
+    valueSize: TextUnit = 14.sp,
+    valueBold: Boolean = false
+) {
+    Column(horizontalAlignment = Alignment.Start) {
+        TextCmp(
+            text = label.uppercase(),
+            fontSize = 10.sp,
+            fontWeight = FontWeight.Medium,
+            letterSpacing = 0.07.em,
+            color = Color.Black.copy(alpha = 0.35f)
+        )
+        Spacer(Modifier.height(2.dp))
+        TextCmp(
+            text = value,
+            fontSize = valueSize,
+            fontWeight = if (valueBold) FontWeight.SemiBold else FontWeight.Medium,
+            color = Color(0xFF1A1A1A),
+            maxLine = 1
+        )
     }
 }
 

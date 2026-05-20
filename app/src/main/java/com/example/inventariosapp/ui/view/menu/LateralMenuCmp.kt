@@ -50,17 +50,20 @@ fun LateralMenuCmp(
     navController: NavHostController,
     screenContent: @Composable () -> Unit
 ) {
+    // region Vars
     val corutine = rememberCoroutineScope()
     val menuViewModel: MenuViewModel = hiltViewModel()
     val cnx = LocalContext.current
     val version = cnx.getPackageManager().getPackageInfo(cnx.getPackageName(), 0).versionName
-
+    // endregion
+    // region Launches
     LaunchedEffect(true) {
         if (menuViewModel.userName.value.isBlank()) {
             menuViewModel.userName.value = menuViewModel.baseViewModel.getGetName()
         }
     }
-
+    // endregion
+    // region View
     ModalNavigationDrawer(
         drawerContent = {
             ModalDrawerSheet(
@@ -90,7 +93,6 @@ fun LateralMenuCmp(
                             fontSize = 14.sp
                         )
                     }
-
                     Spacer(Modifier.height(12.dp))
                     // region Opciones Nav
                     TextCmp(
@@ -277,6 +279,27 @@ fun LateralMenuCmp(
                         },
                         onClick = { menuViewModel.updatePendingSales() },
                     )
+                    NavigationDrawerItem(
+                        label = {
+                            TextCmp(
+                                text = "Inventario",
+                                fontSize = 14.sp,
+                                maxLine = 2
+                            )
+                        },
+                        selected = false,
+                        icon = { Icon(Icons.Outlined.Refresh, contentDescription = null) },
+                        badge = {
+                            val date = MainActivity.lastUpdateInventory.value
+
+                            TextCmp(
+                                text = if (date.isBlank()) "No update" else "Update ${date}",
+                                fontSize = 9.sp,
+                                color = Color.Black
+                            )
+                        },
+                        onClick = { menuViewModel.updateInventory() },
+                    )
                     // endregion
                     // region Internet
                     TextCmp("Opciones")
@@ -341,6 +364,7 @@ fun LateralMenuCmp(
         drawerState = drawerState
     ) {
         screenContent()
-}
-Loader(menuViewModel.baseViewModel.getLoader())
+    }
+    // endregion
+    Loader(menuViewModel.baseViewModel.getLoader())
 }

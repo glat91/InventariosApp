@@ -3,10 +3,12 @@ package com.example.inventariosapp.navigation
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.inventariosapp.ui.animations.animatedComposable
 import com.example.inventariosapp.ui.view.BluetoothPrinterScreen.BluetoothPrinterScreen
 import com.example.inventariosapp.ui.view.login.LoginScreen
 import com.example.inventariosapp.ui.view.new_sale.NewSaleScreen
@@ -36,56 +38,68 @@ fun SetupNavGraph(navController: NavHostController) {
 
 // region Screen
 fun NavGraphBuilder.loginScreen(navController: NavHostController){
-    composable(route = Destinations.LoginScreen.ruta){ LoginScreen(navController)
+    animatedComposable(
+        route = Destinations.LoginScreen.ruta,
+        durationMillis = 600,
+    ){
+        LoginScreen(navController)
     }
 }
 fun NavGraphBuilder.salesScreen(navController: NavHostController){
-    composable(
-        route = Destinations.SalesScreen.ruta
-    ){
+    animatedComposable(
+         route = Destinations.SalesScreen.ruta,
+         durationMillis = 600,
+     ) {
         SalesScreen(navController)
-    }
+     }
+
 }
 
 fun NavGraphBuilder.paymentScreen(navController: NavHostController){
-    composable(
-        route = Destinations.PaymentScreen.ruta
+    animatedComposable(
+        route = Destinations.PaymentScreen.ruta,
+        durationMillis = 600,
     ){
         PaymentsScreen(navController)
     }
 }
 fun NavGraphBuilder.productsScreen(navController: NavHostController){
-    composable(
-        route = Destinations.ProductsScreen.ruta
+    animatedComposable(
+        route = Destinations.ProductsScreen.ruta,
+        durationMillis = 600,
     ){
         ProductsScreen(navController)
     }
 }
 fun NavGraphBuilder.newSaleScreen(navController: NavHostController){
-    composable(
-        route = Destinations.NewSaleScreen.ruta
+    animatedComposable(
+        route = Destinations.NewSaleScreen.ruta,
+        durationMillis = 600,
     ){
         NewSaleScreen(navController)
     }
 }
 fun NavGraphBuilder.penndingSaleScreen(navController: NavHostController){
-    composable(
-        route = Destinations.PenndingSaleScreen.ruta
+    animatedComposable(
+        route = Destinations.PenndingSaleScreen.ruta,
+        durationMillis = 600,
     ){
         PenndingSalesScreen(navController)
     }
 }
 fun NavGraphBuilder.penndingPaymentsScreen(navController: NavHostController){
-    composable(
-        route = Destinations.PenndingPaymentsScreen.ruta
+    animatedComposable(
+        route = Destinations.PenndingPaymentsScreen.ruta,
+        durationMillis = 600,
     ){
         UserPaymentsScreen(navController)
     }
 }
 @RequiresApi(Build.VERSION_CODES.S)
 fun NavGraphBuilder.bluetoothPrinterScreen(navController: NavHostController){
-    composable(
-        route = Destinations.PrintScreen.ruta
+    animatedComposable(
+        route = Destinations.PrintScreen.ruta,
+        durationMillis = 600,
     ){
         BluetoothPrinterScreen(navController)
     }

@@ -1,8 +1,11 @@
 package com.example.inventariosapp.domain.model.sales
 
+import android.os.Parcelable
 import com.example.inventariosapp.domain.model.product.PrecioListaModel
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class SaleProductModel(
     @SerializedName("ventaProductoId") var VentaProductoId: Int = 0,
     @SerializedName("ventaId") var VentaId: Int? = null,
@@ -14,6 +17,6 @@ data class SaleProductModel(
     @SerializedName("cantidad") var Cantidad: Int?  = null,
     @SerializedName("ventaIdInterno") var VentaIdInterno: Int? = null,
     @SerializedName("venta") var Venta: String? = null,
-    @SerializedName("nombreProducto") var nombreProducto: String = "",
-    @SerializedName("comentarios") var comentarios: String = "",
-)
+    @SerializedName("nombreProducto") var nombreProducto: String? = "",
+    @SerializedName("comentarios") var comentarios: String? = "",
+) : Parcelable

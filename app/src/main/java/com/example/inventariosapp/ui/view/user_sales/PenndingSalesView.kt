@@ -1,5 +1,6 @@
 package com.example.inventariosapp.ui.view.user_sales
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -42,12 +43,13 @@ import com.example.inventariosapp.util.CustomEnums
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PenndingSalesView(
-    data: MutableState<ArrayList<PostSaleWithProducts>>,
+    data: ArrayList<PostSaleWithProducts>,
     onClickBack: () -> Unit,
     onClickMenu: () -> Unit,
     onclickRow: (PostSaleWithProducts) -> Unit,
     onClickUpdate: () -> Unit,
 ) {
+    Log.i("PenndingSalesView___", "data: ${data}")
     Scaffold(
         topBar = {
             TopAppBar(
@@ -83,7 +85,7 @@ fun PenndingSalesView(
                         modifier = Modifier.fillMaxSize()
                     ) {
                         var switchColor = true
-                        items(data.value) { sale ->
+                        items(data) { sale ->
                             val c = if (sale.sale.esActivo) CustomEnums.StatusType.PENDING
                             else CustomEnums.StatusType.ERROR
                             CardPenndingSaleCmp(
@@ -127,7 +129,7 @@ fun PenndingSalesView(
 @Preview(showBackground = true)
 private fun PenndingSalesViewPreview(){
     PenndingSalesView(
-        data = remember { mutableStateOf(arrayListOf()) },
+        data = arrayListOf(),
         onClickBack = {  },
         onClickMenu = {  },
         onclickRow = {  },

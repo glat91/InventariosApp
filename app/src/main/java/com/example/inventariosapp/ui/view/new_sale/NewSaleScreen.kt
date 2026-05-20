@@ -1,6 +1,5 @@
 package com.example.inventariosapp.ui.view.new_sale
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -81,7 +80,9 @@ fun NewSaleScreen(navController: NavHostController) {
             }
         },
         onClickDelete = { viewModel.deleteRow(it) },
-        onClickProduct = { viewModel.updateDialogProduct(true) },
+        onClickProduct = {
+            viewModel.updateDialogProduct(true)
+        },
         onClickSave = {
             if (saleUiState.sale.ventaId == null) {
                 if (viewModel.products.isNotEmpty() && saleUiState.newClient != null) {
@@ -116,7 +117,7 @@ fun NewSaleScreen(navController: NavHostController) {
             search = saleUiState.search,
             opcions = saleUiState.filterInventory,
             expanded = saleUiState.expandenSearchBarD,
-            product = saleUiState.selectedProduct,
+            onlineProduct = saleUiState.selectedProduct,
             onDismiss = {
                 viewModel.clearDialog()
                 addProductViewModel.resetData()

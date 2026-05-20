@@ -1,13 +1,9 @@
 package com.example.inventariosapp.ui.view.user_payments
 
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
@@ -25,7 +21,8 @@ fun UserPaymentsScreen(navController: NavHostController) {
     val lviewModel: LoginViewModel = hiltViewModel()
     val lifecycleOwner = LocalLifecycleOwner.current
     val cnx = LocalContext.current
-    val uiState by lviewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
+    val luiState by lviewModel.uiState.collectAsState()
 
     LaunchedEffect(lifecycleOwner) {
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -35,7 +32,7 @@ fun UserPaymentsScreen(navController: NavHostController) {
 
     // region Screen
     UserPaymentsView(
-        data = viewModel.penndingPayments,
+        data = uiState.penndingPayments,
         onClickBack = { navController.popBackStack() },
         onClickMenu = { viewModel.baseViewModel.openMenu() },
         onClickUpdate = { viewModel.setPayment() }
@@ -44,10 +41,10 @@ fun UserPaymentsScreen(navController: NavHostController) {
     // region dialog
     if (viewModel.baseViewModel.dialogLogin.value){
         LoginDialogCmp(
-            uiState = uiState,
+            uiState = luiState,
             onClickEnter = {
                 val internetUse = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
-                if (!uiState.rememberUser) lviewModel.clearUser()
+                if (!luiState.rememberUser) lviewModel.clearUser()
                 else lviewModel.saveUserLogin()
                 lviewModel.validateUserLogin(internetUse)
             },

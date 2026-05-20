@@ -12,11 +12,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
@@ -40,6 +36,8 @@ import com.example.inventariosapp.util.Helpers.Companion.readPersistData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.IOException
@@ -49,6 +47,32 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.util.UUID
 import javax.inject.Inject
+import kotlinx.coroutines.flow.update
+
+data class PaymentsUiState(
+    val search: TextFieldValue = TextFieldValue(""),
+    val selectedDate: LocalDate = LocalDate.now(),
+    val showDatePicker: Boolean = false,
+    val startDate: String = "",
+    val endDate: String = "",
+    val dialogChoice: Boolean = false,
+    val clients: List<ClientResponseModel> = listOf(),
+    val filterData: List<SalesModel> = arrayListOf(),
+    val select: SalesModel? = null,
+    val sales: List<SalesModel> = arrayListOf(),
+    val payActualDate: String = Helpers.getDate(),
+    val payTotalPayment: String = "",
+    val payObservation: String = "",
+    val dialogDeposit: Boolean = false,
+    val showDeposit: Boolean = false,
+    val payments: ArrayList<PayModel> = arrayListOf(),
+    val dialogBT: Boolean = false,
+    val hasPermissions: Boolean = false,
+    val permissions: List<String> = emptyList(),
+    val printerUUID: UUID = UUID.fromString(Constants.PRINTER_UUID),
+    val bluetoothAdapter: BluetoothAdapter =  BluetoothAdapter.getDefaultAdapter(),
+    val bondedDevices: ArrayList<BluetoothDevice> =  arrayListOf<BluetoothDevice>(),
+)
 
 @HiltViewModel
 class PaymentsViewModel @Inject constructor(
@@ -60,110 +84,142 @@ class PaymentsViewModel @Inject constructor(
     val baseViewModel: BaseViewModel,
     @ApplicationContext private val cnx: Context
 ) : ViewModel() {
-    val search = mutableStateOf(TextFieldValue(""))
-    // region Date
-    var selectedDate = mutableStateOf(LocalDate.now())
-    var showDatePicker = mutableStateOf(false)
-
-    val startDate = mutableStateOf("")
-    val endDate = mutableStateOf("")
-    val dialogChoice = mutableStateOf(false)
-
-    @OptIn(ExperimentalMaterial3Api::class)
-    fun updateDateInput(datePickerState: DatePickerState){
-        val millis = datePickerState.selectedDateMillis
-        if (millis != null) {
-            selectedDate.value = Instant.ofEpochMilli(millis)
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate()
+    // region UiState
+    private val _uiState = MutableStateFlow(PaymentsUiState())
+    val uiState = _uiState.asStateFlow()
+    // endregion
+    // region init
+    init {
+        getPendingSales()
+        _uiState.value = _uiState.value.copy(
+            hasPermissions = ContextCompat.checkSelfPermission(
+                cnx,
+                Manifest.permission.BLUETOOTH_CONNECT
+            ) == PackageManager.PERMISSION_GRANTED &&
+                    ContextCompat.checkSelfPermission(
+                        cnx,
+                        Manifest.permission.BLUETOOTH_SCAN
+                    ) == PackageManager.PERMISSION_GRANTED
+        )
+    }
+    val permissions = buildList {
+        add(Manifest.permission.BLUETOOTH_CONNECT)
+        add(Manifest.permission.BLUETOOTH_SCAN)
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R) {
+            add(Manifest.permission.ACCESS_FINE_LOCATION)
         }
-        if (dialogChoice.value) endDate.value = selectedDate.value.toString()
-        else startDate.value = selectedDate.value.toString()
+    }.toTypedArray()
+    // endregion
+    // region Update uiState
+    fun updateSearch(query: TextFieldValue) {
+        _uiState.update { it.copy(search = query) }
+    }
+    fun cleanPayment() {
+        _uiState.update { it.copy(payTotalPayment = "", payObservation = "") }
+    }
+    fun updateHasPermissions(hasPermissions: Boolean) {
+        _uiState.update { it.copy(hasPermissions = hasPermissions) }
+    }
+    fun updateDialogBT(dialogBT: Boolean) {
+        _uiState.update { it.copy(dialogBT = dialogBT) }
+    }
+    fun updateShowDatePicker(showDatePicker: Boolean) {
+        _uiState.update { it.copy(showDatePicker = showDatePicker) }
+    }
+    fun updateShowDeposit(showDeposit: Boolean) {
+        _uiState.update { it.copy(showDeposit = showDeposit) }
+    }
+    fun updatePayTotalPayment(payTotalPayment: String) {
+        _uiState.update { it.copy(payTotalPayment = payTotalPayment) }
+    }
+    fun updatePayObservation(payObservation: String) {
+        _uiState.update { it.copy(payObservation = payObservation) }
+    }
+    fun updateDialogChoice(dialogChoice: Boolean) {
+        _uiState.update { it.copy(dialogChoice = dialogChoice) }
+    }
+    fun updateSelect(select: SalesModel) {
+        _uiState.update { it.copy(select = select) }
     }
     // endregion
-    // region Clients list
-    val clients: MutableState<List<ClientResponseModel>> = mutableStateOf(listOf())
-    val filterData: MutableState<List<SalesModel>> = mutableStateOf(arrayListOf())
-    fun getClients(){
+    // region Date Picker
+    @OptIn(ExperimentalMaterial3Api::class)
+    fun updateDateInput(datePickerState: DatePickerState) {
+        val millis = datePickerState.selectedDateMillis
+        if (millis != null) {
+            val selectedDate = Instant.ofEpochMilli(millis)
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate()
+            _uiState.value = _uiState.value.copy(selectedDate = selectedDate)
+            if (_uiState.value.dialogChoice) {
+                _uiState.value = _uiState.value.copy(endDate = selectedDate.toString())
+            } else {
+                _uiState.value = _uiState.value.copy(startDate = selectedDate.toString())
+            }
+        }
+    }
+    // endregion
+    // region
+    fun getClients() {
         baseViewModel.showLoader()
         viewModelScope.launch {
             val internetUse = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
             val r = getClientsUseCase(internetUse)
-            if (r.first != null){ clients.value = r.first!! }
-            baseViewModel.hideLoader()
-        }
-    }
-    fun filterPayments(): MutableState<List<SalesModel>> {
-        if(search.value.text.isBlank()) filterData.value = sales.value
-        else  filterData.value = sales.value.filter {
-            it.nombreCliente!!.contains(search.value.text, ignoreCase = true)
-        }
-        return filterData
-    }
-
-    /**
-    fun getFilter(): MutableState<ArrayList<ProductsResponseModel>> {
-    filterData.value = if (search.value.text.isBlank()) {
-    expandenSearchBar.value = false
-    products.value
-    }
-    else {
-    expandenSearchBar.value = true
-    products.value.filter {
-    it.descripcion!!.contains(search.value.text, ignoreCase = true)
-    }
-    } as ArrayList<ProductsResponseModel>
-
-    return filterData
-    }
-     */
-    // endregion
-    // region Sales
-    val select: MutableState<SalesModel?> = mutableStateOf(null)
-    val sales: MutableState<List<SalesModel>> = mutableStateOf(arrayListOf())
-    fun getPendingSales(){
-        baseViewModel.showLoader()
-        if (startDate.value.isBlank() && endDate.value.isBlank()) {
-            startDate.value = Helpers.getYesterday()
-            endDate.value = Helpers.getTomrrow()
-        } else {
-            if (startDate.value.isBlank()) { startDate.value = Helpers.getDate() }
-            if (endDate.value.isBlank()) { endDate.value = Helpers.getTomrrow() }
-        }
-        viewModelScope.launch {
-            val internetUse = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
-            val r = getPendingSalesUseCase("2", startDate.value, endDate.value, internetUse)
             if (r.first != null) {
-                Log.i("Sales___", r.first!!.toString())
-                sales.value = r.first!!
+                _uiState.value = _uiState.value.copy(clients = r.first!!)
             }
             baseViewModel.hideLoader()
         }
     }
-    // endregion
-    // region Dialog
-    val payActualDate = Helpers.getDate()
-    val payTotalPayment = mutableStateOf("")
-    val payObservation = mutableStateOf("")
-    val dialogDeposit = mutableStateOf(false)
-    val showDeposit = mutableStateOf(false)
-    val payments: MutableState<ArrayList<PayModel>> = mutableStateOf(arrayListOf())
-    fun getPayment(ventaID: String){
+
+    fun filterPayments(): List<SalesModel> {
+        return if (_uiState.value.search.text.isBlank()) {
+            _uiState.value.sales
+        } else {
+            _uiState.value.sales.filter {
+                it.nombreCliente!!.contains(_uiState.value.search.text, ignoreCase = true)
+            }
+        }
+    }
+
+    fun getPendingSales() {
+        baseViewModel.showLoader()
+        if (_uiState.value.startDate.isBlank() && _uiState.value.endDate.isBlank()) {
+            _uiState.value = _uiState.value.copy(startDate = Helpers.getYesterday(), endDate = Helpers.getTomrrow())
+        } else {
+            if (_uiState.value.startDate.isBlank()) {
+                _uiState.value = _uiState.value.copy(startDate = Helpers.getDate())
+            }
+            if (_uiState.value.endDate.isBlank()) {
+                _uiState.value = _uiState.value.copy(endDate = Helpers.getTomrrow())
+            }
+        }
+        viewModelScope.launch {
+            val r = getPendingSalesUseCase("2", _uiState.value.startDate, _uiState.value.endDate)
+            if (r.first != null) {
+                Log.i("Sales___", r.first!!.toString())
+                _uiState.value = _uiState.value.copy(sales = r.first!!)
+            }
+            baseViewModel.hideLoader()
+        }
+    }
+
+    fun getPayment(ventaID: String) {
         baseViewModel.showLoader()
         viewModelScope.launch {
             val internetUse = mutableStateOf(Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value)
             var r = getPaymentUseCase(ventaID, internetUse.value)
-            if (r.first != null){
-                dialogDeposit.value = true
-                payments.value = r.first!! as ArrayList<PayModel>
+            if (r.first != null) {
+                _uiState.value = _uiState.value.copy(dialogDeposit = true, payments = r.first!! as ArrayList<PayModel>)
             }
             baseViewModel.hideLoader()
         }
     }
-    fun setPayment(ventaId: Int, montoPago: Double, observaciones: String, onSuccess: () -> Unit){
+
+    fun setPayment(ventaId: Int, montoPago: Double, observaciones: String, onSuccess: () -> Unit) {
         baseViewModel.showLoader()
         viewModelScope.launch {
-            if (baseViewModel.isSessionValid()){
+            if (baseViewModel.isSessionValid()) {
                 val userSessionId = baseViewModel.getUsiarioId()
                 val internetUse = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
                 Log.i("UserID___", userSessionId.toString())
@@ -172,79 +228,53 @@ class PaymentsViewModel @Inject constructor(
                     montoPago = montoPago,
                     fecha = Helpers.getDateTime().replace(" ", "T"),
                     observaciones = observaciones,
-                    origenId = 2 ,
+                    origenId = 2,
                     tipoConexionId = if (internetUse) 1 else 2,
                     usuarioSesionId = userSessionId
                 )
                 onSuccess()
                 var r = postPaymentUseCase(internetUse = internetUse, newPay = listOf(createPostSale))
-                if (r.isSuccess){
-                    MainActivity.mainDialogMsg.value = if (internetUse)"Pago realizado con exito" else "Pago guardado en modo offline"
+                if (r.isSuccess) {
+                    MainActivity.mainDialogMsg.value = if (internetUse) "Pago realizado con exito" else "Pago guardado en modo offline"
                     MainActivity.mainDialog.value = true
-
                 }
                 cleanDialog()
                 getPendingSales()
-            }
-            else{
+            } else {
                 baseViewModel.dialogLogin.value = true
             }
         }
     }
-    fun deletePayment(pagoId: Int, deposit: PayModel, cnx: Context){
+
+    fun deletePayment(pagoId: Int, deposit: PayModel, cnx: Context) {
         baseViewModel.showLoader()
         viewModelScope.launch {
-            if (baseViewModel.isSessionValid()){
+            if (baseViewModel.isSessionValid()) {
                 val internetUse = Helpers.isInternetAvailable(cnx)
                 var r = deletePaymentUseCase(internetUse, pagoId)
-                if (r.isSuccess){
-                    dialogDeposit.value = false
+                if (r.isSuccess) {
+                    _uiState.value = _uiState.value.copy(dialogDeposit = false)
                     MainActivity.mainDialogMsg.value = "Pago borrado exitosamente"
                     MainActivity.mainDialog.value = true
-                    payments.value.remove(deposit)
-                }
-                else{
+                    _uiState.value = _uiState.value.copy(payments = _uiState.value.payments.filter { it.ventaPagoId != pagoId } as ArrayList<PayModel>)
+                } else {
                     MainActivity.mainDialogMsg.value = "Error al borrar el pago"
                     MainActivity.mainDialog.value = true
                 }
                 getPendingSales()
-            }
-            else{
+            } else {
                 baseViewModel.dialogLogin.value = true
             }
-
         }
     }
-    // endregion
-    // region BT
-    var dialogBT by mutableStateOf(false)
-    val printerUUID = UUID.fromString(Constants.PRINTER_UUID)
-    val bluetoothAdapter =  BluetoothAdapter.getDefaultAdapter()
-    val bondedDevices =  mutableStateListOf<BluetoothDevice>()
-    var hasPermissions by mutableStateOf(
-        ContextCompat.checkSelfPermission(
-            cnx,
-            Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(
-                    cnx,
-                    Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED
-    )
 
-    val permissions = buildList {
-        add(Manifest.permission.BLUETOOTH_CONNECT)
-        add(Manifest.permission.BLUETOOTH_SCAN)
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R) {
-            add(Manifest.permission.ACCESS_FINE_LOCATION)
-        }
-    }.toTypedArray()
     @SuppressLint("MissingPermission")
     suspend fun connectAndPrint(
         context: Context,
         device: BluetoothDevice
     ) {
         baseViewModel.showLoader()
-        dialogBT = false
-        dialogDeposit.value = false
+        _uiState.value = _uiState.value.copy(dialogBT = false, dialogDeposit = false)
         withContext(Dispatchers.IO) {
             try {
                 val PRINTER_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb")
@@ -269,16 +299,16 @@ class PaymentsViewModel @Inject constructor(
                 showToastOnMain(context, "Conectado a ${device.name}")
 
                 val output = socket!!.outputStream
-                repeat(2){
+                repeat(2) {
                     printBitmap(context, output, R.drawable.casajordan)
                     val recivo = ("--------------------------------\n" +
                             "        Recibo de impresion\n" +
-                            "Cliente: ${select.value!!.nombreCliente!!}\n" +
-                            "Direccion: ${select.value!!.direccion!!}\n" +
-                            "Folio: ${select.value!!.folio}  Total: $${select.value!!.total}\n" +
+                            "Cliente: ${_uiState.value.select?.nombreCliente!!}\n" +
+                            "Direccion: ${_uiState.value.select?.direccion!!}\n" +
+                            "Folio: ${_uiState.value.select?.folio}  Total: $${_uiState.value.select?.total}\n" +
                             "--------------------------------\n" +
-                            "Fecha de pago: ${select.value!!.fechaVenta}\n" +
-                            "Saldo Restante: $${select.value!!.montoPorPagar!! - select.value!!.total!!}\n" +
+                            "Fecha de pago: ${_uiState.value.select?.fechaVenta}\n" +
+                            "Saldo Restante: $${_uiState.value.select?.montoPorPagar!! - _uiState.value.select?.total!!}\n" +
                             "Vendedor: $vendedor \n" +
                             "\n" +
                             "              FIRMA\n" +
@@ -296,38 +326,31 @@ class PaymentsViewModel @Inject constructor(
 
                 socket!!.close()
                 baseViewModel.hideLoader()
-                dialogBT = false
+                _uiState.value = _uiState.value.copy(dialogBT = false)
                 showToastOnMain(context, "Impresión enviada correctamente")
                 cleanDialog()
             } catch (e: Exception) {
                 baseViewModel.hideLoader()
-                dialogBT = false
+                _uiState.value = _uiState.value.copy(dialogBT = false)
                 cleanDialog()
                 showToastOnMain(context, "Error al imprimir: ${e.message}")
             }
         }
     }
 
-    // --- Toast seguro desde hilo ---
     suspend fun showToastOnMain(context: Context, message: String) {
         withContext(Dispatchers.Main) {
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         }
     }
-    //endregion
-    // region clean
-    fun cleanPayment(){
-        payTotalPayment.value = ""
-        payObservation.value = ""
-    }
-    fun cleanDialog(){
-        dialogDeposit.value = false
-        dialogChoice.value = false
-        showDeposit.value = true
-        showDatePicker.value = false
-        selectedDate.value = LocalDate.now()
+    fun cleanDialog() {
+        _uiState.value = _uiState.value.copy(
+            dialogDeposit = false,
+            dialogChoice = false,
+            showDeposit = true,
+            showDatePicker = false,
+            selectedDate = LocalDate.now()
+        )
         cleanPayment()
     }
-    // endregion
-    init { getPendingSales() }
 }

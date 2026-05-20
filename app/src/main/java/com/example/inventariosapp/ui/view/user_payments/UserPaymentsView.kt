@@ -43,7 +43,7 @@ import com.example.inventariosapp.util.CustomEnums
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserPaymentsView(
-    data: MutableState<List<NewPayModel>>,
+    data: List<NewPayModel>,
     onClickBack: () -> Unit,
     onClickMenu: () -> Unit,
     onClickUpdate: () -> Unit,
@@ -78,7 +78,7 @@ fun UserPaymentsView(
                     elevation = CardDefaults.cardElevation(4.dp)
                 ){
                     LazyColumn(modifier = Modifier.fillMaxSize()) {
-                        items(data.value) { pay ->
+                        items(data) { pay ->
                             HorizontalDivider(thickness = PADDING_4, color = Color.Transparent, )
                             CardPenndingPayCmp(
                                 modifier = Modifier,
@@ -119,7 +119,7 @@ fun UserPaymentsView(
 @Composable
 fun UserPaymentsViewPreview(){
     UserPaymentsView(
-        data = remember { mutableStateOf(arrayListOf()) },
+        data = arrayListOf(),
         onClickBack = {},
         onClickMenu = {},
         onClickUpdate = {}

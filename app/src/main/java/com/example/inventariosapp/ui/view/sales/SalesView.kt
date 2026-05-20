@@ -6,13 +6,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Card
@@ -27,7 +26,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -49,15 +47,16 @@ import com.example.inventariosapp.ui.theme.UI_Backround_Top
 import com.example.inventariosapp.ui.theme.UI_Divier
 import com.example.inventariosapp.ui.theme.UI_List_Row_1
 import com.example.inventariosapp.ui.theme.UI_List_Row_2
+import com.example.inventariosapp.ui.animations.AnimatedLazyColumn
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SalesView(
-    search: MutableState<TextFieldValue>,
+    search: TextFieldValue,
     dateStart: String,
     dateEnd: String,
-    data: MutableState<ArrayList<SalesModel>>,
-    dialogChoice: MutableState<Boolean>,
+    data: ArrayList<SalesModel>,
+    changueDialogChoice: (Boolean) -> Unit,
     onSearchChangue: (TextFieldValue) -> Unit,
     onClickBack: () -> Unit,
     onClickMenu: () -> Unit,
@@ -118,7 +117,7 @@ fun SalesView(
                         InputWithTitleLabelCmp(
                             modifier = Modifier.weight(1f),
                             textFieldModifier = Modifier.clickable{
-                                dialogChoice.value = false
+                                changueDialogChoice(false)
                                 onClickDate()
                             },
                             labelText = "Fecha Inicio",
@@ -148,7 +147,7 @@ fun SalesView(
                         InputWithTitleLabelCmp(
                             modifier = Modifier.weight(1f),
                             textFieldModifier = Modifier.clickable{
-                                dialogChoice.value = true
+                                changueDialogChoice(true)
                                 onClickDate()
                             },
                             labelText = "Fecha Fin",
@@ -177,25 +176,33 @@ fun SalesView(
                     modifier = Modifier.padding(PADDING_8),
                     elevation = CardDefaults.cardElevation(4.dp)
                 ) {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize()
-                    ) {
+                    AnimatedLazyColumn(
+                        items = data,
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        animationDurationMillis = 500,
+                        initialOffsetX = (-48).dp,
+                        initialBlurRadius = 12.dp,
+                        staggerEnabled = true,
+                        animateOnScroll = true,
+                        key = { it },
+                    ){ client ->
                         var switchColor = true
-                        items(data.value) { client ->
-                            var colorRow = if (switchColor) UI_List_Row_1 else UI_List_Row_2
-                            CardSaleCmp(
-                                modifier = Modifier.clickable { onclickRow(client) },
-                                nameClient = client.nombreCliente.toString(),
-                                folio = client.folio!!,
-                                payLimitDate = client.fechaLimitePago.toString().take(10),
-                                montoPagado = client.montoPagado.toString(),
-                                montoPagar = client.montoPorPagar.toString(),
-                                saleDate = client.fechaVenta.toString().take(10),
-                                backgroundColor = colorRow
-                            )
-                            HorizontalDivider(thickness = 1.dp, color = UI_Divier, )
-                            switchColor = !switchColor
-                        }
+                        var colorRow = if (switchColor) UI_List_Row_1 else UI_List_Row_2
+                        CardSaleCmp(
+                            modifier = Modifier.clickable { onclickRow(client) },
+                            nameClient = client.nombreCliente.toString(),
+                            folio = client.folio!!,
+                            payLimitDate = client.fechaLimitePago.toString().take(10),
+                            montoPagado = client.montoPagado.toString(),
+                            montoPagar = client.montoPorPagar.toString(),
+                            saleDate = client.fechaVenta.toString().take(10),
+                            backgroundColor = Color.Transparent
+                        )
+                        //HorizontalDivider(thickness = 1.dp, color = UI_Divier, )
+                        switchColor = !switchColor
+
                     }
                 }
 
@@ -234,16 +241,16 @@ fun SalesViewPreview(){
     opcions.value.add("PArametro numero 4")
     opcions.value.add("PArametro numero 5")
     SalesView(
-        search = mutableStateOf(TextFieldValue("dfdfd")),
+        search = TextFieldValue("dfdfd"),
         dateEnd = "",
         dateStart = "",
-        dialogChoice = remember { mutableStateOf(false) },
         onClickBack = {},
         onClickMenu = {},
         onClickDate = {},
         onclickRow = {},
         onClickAdd = {},
-        data = mutableStateOf(arrayListOf()),
-        onSearchChangue = {}
+        data = arrayListOf(),
+        onSearchChangue = {},
+        changueDialogChoice = {}
     )
 }

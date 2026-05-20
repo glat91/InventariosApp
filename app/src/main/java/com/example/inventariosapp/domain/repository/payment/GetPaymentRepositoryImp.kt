@@ -1,31 +1,28 @@
 package com.example.inventariosapp.domain.repository.payment
 
+import com.example.inventariosapp.MainActivity
 import com.example.inventariosapp.api.ApiService
 import com.example.inventariosapp.local.dao.PayDao
 import com.example.inventariosapp.local.entity.toDB
 import com.example.inventariosapp.domain.model.error.ErrorModel
 import com.example.inventariosapp.domain.model.payment.PayModel
 import com.example.inventariosapp.domain.model.payment.toDB
+import com.example.inventariosapp.domain.model.product.ProductsResponseModel
+import com.example.inventariosapp.util.NetworkMonitor
 import com.google.gson.Gson
 import javax.inject.Inject
 
 class GetPaymentRepositoryImp @Inject constructor(
     private val payDao: PayDao,
     private val apiService: ApiService,
+    private val networkMonitor: NetworkMonitor
 ) {
-    suspend operator fun invoke(ventaID: String, internetUse: Boolean): Pair<List<PayModel>?, String?>{
-        return getPayments(ventaID, internetUse = internetUse)
+    suspend operator fun invoke(ventaID: String): Pair<List<PayModel>?, String?>{
+        return if (networkMonitor.isConnected.value && MainActivity.internetBtn.value ) { fetchFromNetwork(ventaID) }
+        else { fetchFromLocal(ventaID) }
     }
 
-    suspend fun getPayments(
-        ventaID: String,
-        internetUse: Boolean
-    ): Pair<List<PayModel>?, String?>{
-        return if (internetUse) { fetchFromApi(ventaID) }
-        else { fetchFromDb(ventaID) }
-    }
-
-    private suspend fun fetchFromApi(ventaID: String): Pair<List<PayModel>?, String?>{
+    private suspend fun fetchFromNetwork(ventaID: String): Pair<List<PayModel>?, String?>{
         return try {
             val response = apiService.getPayment(ventaID)
 
@@ -44,7 +41,7 @@ class GetPaymentRepositoryImp @Inject constructor(
         catch (e: Exception) { Pair(null, e.message?: "Error desconocido") }
     }
 
-    private suspend fun fetchFromDb(ventaID: String): Pair<List<PayModel>?, String?>{
+    private suspend fun fetchFromLocal(ventaID: String): Pair<List<PayModel>?, String?>{
         return try {
             val pay = payDao.getPaymentsByVentaId(ventaID.toInt())
             Pair(pay.map { it.toDB() }, null)

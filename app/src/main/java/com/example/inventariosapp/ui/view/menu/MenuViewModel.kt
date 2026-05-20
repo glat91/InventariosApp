@@ -9,6 +9,7 @@ import com.example.inventariosapp.BaseViewModel
 import com.example.inventariosapp.MainActivity
 import com.example.inventariosapp.domain.use_case.client.GetClientsUseCase
 import com.example.inventariosapp.domain.use_case.payment.GetPaymentUseCase
+import com.example.inventariosapp.domain.use_case.product.GetInventarioUseCase
 import com.example.inventariosapp.domain.use_case.product.GetProductsUseCase
 import com.example.inventariosapp.domain.use_case.sales.GetPendingSalesUseCase
 import com.example.inventariosapp.util.Constants
@@ -27,7 +28,7 @@ class MenuViewModel @Inject constructor(
     private val getProductsUseCase: GetProductsUseCase,
     private val getClientsUseCase: GetClientsUseCase,
     private val getPendingSalesUseCase: GetPendingSalesUseCase,
-    private val getPaymentUseCase: GetPaymentUseCase,
+    private val getInventarioUseCase: GetInventarioUseCase,
     private val monitor: NetworkMonitor,
     val baseViewModel: BaseViewModel,
     @ApplicationContext val cnx: Context
@@ -89,9 +90,9 @@ class MenuViewModel @Inject constructor(
         viewModelScope.launch{
             val internetUse = monitor.isConnected.value
             if (internetUse){
-                val r = getPendingSalesUseCase("1",Helpers.get6Months(), Helpers.getDate(),true)
+                val r = getPendingSalesUseCase("1",Helpers.get6Months(), Helpers.getDate())
                 if (r.first != null){
-                    val r = getPendingSalesUseCase("2",Helpers.get6Months(), Helpers.getDate(),true)
+                    val r = getPendingSalesUseCase("2",Helpers.get6Months(), Helpers.getDate())
                     if (r.first != null){
                         MainActivity.mainDialogMsg.value = "Update correcto"
                         MainActivity.lastUpdateSells.value = Helpers.getDateTime()
@@ -111,24 +112,14 @@ class MenuViewModel @Inject constructor(
             baseViewModel.hideLoader()
         }
     }
-    fun updatePayment(){
+    fun updateInventory(){
         baseViewModel.showLoader()
         viewModelScope.launch {
-            val sales = getPendingSalesUseCase("2",Helpers.get6Months(), Helpers.getDate(),true)
-            if (sales.first != null){
-                for (s in sales.first!!){
-                    var r = getPaymentUseCase(s.ventaId.toString(), true)
-                    if (r.first != null){
-                        MainActivity.mainDialogMsg.value = "Update correcto"
-                        MainActivity.lastUpdatePayments.value = Helpers.getDateTime()
-                        saveSincroTime(
-                            cnx,
-                            Constants.SINCRO_PAY,
-                            Helpers.getDateTime()
-                        )
-
-                    }
-                }
+            val r = getInventarioUseCase()
+            if (r.first != null){
+                MainActivity.mainDialogMsg.value = "Update correcto"
+                MainActivity.lastUpdateInventory.value = Helpers.getDateTime()
+                saveSincroTime(cnx, Constants.SINCRO_INVENTORY, Helpers.getDateTime())
             }
             MainActivity.mainDialog.value = true
             baseViewModel.hideLoader()
@@ -141,19 +132,9 @@ class MenuViewModel @Inject constructor(
             cnx.savePersistData(key = key, data = data)
         }
     }
-    fun clearSincroTime(cnx: Context, key: String){
-        viewModelScope.launch {
-            cnx.deletePersistKey(key)
-        }
-    }
     fun saveBoolean(cnx: Context, key: String, data: Boolean){
         viewModelScope.launch {
             cnx.savePersistData(key = key, data = data)
-        }
-    }
-    fun getUserId(cnx: Context){
-        viewModelScope.launch {
-            val a = cnx.readPersistData(Constants.PERFIL_ID, 0)
         }
     }
     // endregion
@@ -162,7 +143,6 @@ class MenuViewModel @Inject constructor(
             MainActivity.lastUpdateClient.value = cnx.readPersistData(Constants.SINCRO_CLIENTS, "")
             MainActivity.lastUpdateProducts.value = cnx.readPersistData(Constants.SINCRO_PRODUCTS, "")
             MainActivity.lastUpdateSells.value = cnx.readPersistData(Constants.SINCRO_SALES, "")
-            MainActivity.lastUpdatePayments.value = cnx.readPersistData(Constants.SINCRO_PAY, "")
             MainActivity.lastUpdateInventory.value = cnx.readPersistData(Constants.SINCRO_INVENTORY, "")
             MainActivity.internetBtn.value = cnx.readPersistData(Constants.INTERNET, true)
             userName.value = cnx.readPersistData(Constants.NOMBRE, "")

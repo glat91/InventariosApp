@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,6 +34,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.inventariosapp.domain.model.sales.SalesModel
+import com.example.inventariosapp.ui.animations.AnimatedLazyColumn
 import com.example.inventariosapp.ui.component.cards.CardSaleCmp
 import com.example.inventariosapp.ui.component.HeaderCmp
 import com.example.inventariosapp.ui.component.InputWithTitleLabelCmp
@@ -45,26 +47,26 @@ import com.example.inventariosapp.ui.theme.UI_List_Row_1
 import com.example.inventariosapp.ui.theme.UI_List_Row_2
 import java.time.LocalDate
 
-
-// TODO mostrar inmediato el tipo de pago de credito o contado
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PaymentsView(
-    search: MutableState<TextFieldValue>,
+    search: TextFieldValue,
     dateStart: String,
     dateEnd: String,
     data: List<SalesModel>,
-    clickDate: MutableState<Boolean>,
     onClickBack: () -> Unit,
     onClickMenu: () -> Unit,
     onClickDate: () -> Unit,
     onClickRow: (SalesModel) -> Unit,
-    onClickAdd: () -> Unit,
+    onChangueSearchBarTxt: (TextFieldValue) -> Unit,
+    changueDialogChoice: (Boolean) -> Unit,
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
-                modifier = Modifier.padding(0.dp).background(UI_Backround_Top),
+                modifier = Modifier
+                    .padding(0.dp)
+                    .background(UI_Backround_Top),
                 title = {
                     HeaderCmp(
                         title = "Pagos",
@@ -75,7 +77,7 @@ fun PaymentsView(
                 },
                 windowInsets = TopAppBarDefaults.windowInsets,
                 colors = TopAppBarDefaults.topAppBarColors (
-                    containerColor = UI_Backround_Top,     // Morado
+                    containerColor = UI_Backround_Top,
                     titleContentColor = Color.White
                 )
             )
@@ -97,7 +99,7 @@ fun PaymentsView(
                     SearchBarCmp(
                         state = search,
                         opcionContent = {},
-                        onChangeText ={txt -> search.value = txt },
+                        onChangeText ={ txt -> onChangueSearchBarTxt(txt) },
                         labelText = "Nombre cliente"
                     )
                 }
@@ -114,8 +116,9 @@ fun PaymentsView(
                         InputWithTitleLabelCmp(
                             modifier = Modifier.fillMaxWidth(.5f),
                             textFieldModifier = Modifier.clickable{
-                                clickDate.value = false
-                                onClickDate() },
+                                changueDialogChoice(false)
+                                onClickDate()
+                            },
                             labelText = "Fecha",
                             textValue = dateStart,
                             onValueChange ={ it },
@@ -143,8 +146,9 @@ fun PaymentsView(
                         InputWithTitleLabelCmp(
                             modifier = Modifier,
                             textFieldModifier = Modifier.clickable{
-                                clickDate.value = true
-                                onClickDate() },
+                                changueDialogChoice(true)
+                                onClickDate()
+                            },
                             labelText = "Fecha",
                             textValue = dateEnd,
                             onValueChange ={ it },
@@ -171,11 +175,19 @@ fun PaymentsView(
                     modifier = Modifier.padding(PADDING_8),
                     elevation = CardDefaults.cardElevation(6.dp)
                 ) {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        var switchColor = true
-                        items(data) { client ->
+                    AnimatedLazyColumn(
+                        items = data,
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        animationDurationMillis = 500,
+                        initialOffsetX = (-48).dp,
+                        initialBlurRadius = 12.dp,
+                        staggerEnabled = true,
+                        animateOnScroll = true,
+                        key = { it },
+                    ){ client ->
+                            var switchColor = true
                             var colorRow = if (switchColor) UI_List_Row_1 else UI_List_Row_2
                             CardSaleCmp(
                                 modifier = Modifier.clickable { onClickRow(client) },
@@ -189,10 +201,9 @@ fun PaymentsView(
                             )
                             HorizontalDivider(thickness = 1.dp, color = UI_Divier, )
                             switchColor = !switchColor
-                        }
+
                     }
                 }
-
             }
         }
     )
@@ -203,17 +214,16 @@ fun PaymentsView(
 @Preview(showBackground = true)
 @Composable
 fun SellViewPrevie(){
-    var selectedDate by remember { mutableStateOf(LocalDate.now()) }
     PaymentsView(
         dateStart = "2025-06-07",
         dateEnd = "2025-06-07",
-        clickDate = remember { mutableStateOf(false) },
-        search = remember { mutableStateOf(TextFieldValue("")) },
+        search = TextFieldValue(""),
         onClickDate = {},
         onClickBack = {},
         onClickMenu = {},
         data = arrayListOf(),
         onClickRow = {},
-        onClickAdd = {}
+        onChangueSearchBarTxt = {},
+        changueDialogChoice = {  }
     )
 }

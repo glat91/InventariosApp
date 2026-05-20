@@ -2,6 +2,7 @@ package com.example.inventariosapp.ui.view.new_sale
 
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
+import com.example.inventariosapp.domain.model.product.InventarioRseponeModel
 import com.example.inventariosapp.domain.model.product.ProductsResponseModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,7 +13,8 @@ import javax.inject.Inject
 data class AddProductUiState(
     val state: TextFieldValue = TextFieldValue(""),
     val quantity: String = "",
-    val product: ProductsResponseModel? = null,
+    val onlineProduct: ProductsResponseModel? = null,
+    val offlineProduct: InventarioRseponeModel? = null,
     val comentarios: String = "",
     val expanded: Boolean = false,
     val precio1: Boolean = false,
@@ -53,7 +55,7 @@ class AddProductDialogViewModel @Inject constructor() : ViewModel( ){
     }
 
     fun setProduct(product: ProductsResponseModel) {
-        _uiState.update { it.copy(product = product) }
+        _uiState.update { it.copy(onlineProduct = product) }
     }
 
     fun resetData() {

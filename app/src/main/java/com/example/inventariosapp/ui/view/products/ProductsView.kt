@@ -1,9 +1,9 @@
 package com.example.inventariosapp.ui.view.products
-
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -30,6 +30,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.inventariosapp.domain.model.product.ProductsResponseModel
+import com.example.inventariosapp.ui.animations.AnimatedLazyColumn
 import com.example.inventariosapp.ui.component.cards.CardInventoryCmp
 import com.example.inventariosapp.ui.component.HeaderCmp
 import com.example.inventariosapp.ui.component.SearchBarCmp
@@ -100,11 +101,19 @@ fun InventoryView(
                     modifier = Modifier.padding(PADDING_8),
                     elevation = CardDefaults.cardElevation(4.dp)
                 ) {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        var switchColor = true
-                        items(data.value) { product ->
+                    AnimatedLazyColumn(
+                        items = data.value,
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        animationDurationMillis = 500,
+                        initialOffsetX = (-48).dp,
+                        initialBlurRadius = 12.dp,
+                        staggerEnabled = true,
+                        animateOnScroll = true,
+                        key = { it.productoId ?: it.codigo ?: it.hashCode() },
+                    ) {product ->
+                            var switchColor = true
                             var colorRow = if (switchColor) UI_List_Row_1 else UI_List_Row_2
                             product.costo
                             CardInventoryCmp(
@@ -119,19 +128,8 @@ fun InventoryView(
                             )
                             HorizontalDivider(thickness = 1.dp, color = UI_Divier, )
                             switchColor = !switchColor
-                        }
                     }
-                    /*
-                    InventoryListCmp(
-                        titleColumn = arrayListOf("Codigo", "Descripcion", "Precio 1", "Precio 2"),
-                        dbData = data,
-                        onClickRow = {
-                            Log.i("DataRow___", it.toString())
-                        })
-
-                     */
                 }
-
             }
         }
     )

@@ -28,6 +28,7 @@ fun TextCmp(
     fontWeight: FontWeight = FontWeight.Normal,
     overflow: TextOverflow = TextOverflow.Clip,
     maxLine: Int = 1,
+    letterSpacing: TextUnit = TextUnit.Unspecified
 ) {
     Text(
         modifier = modifier,
@@ -40,7 +41,8 @@ fun TextCmp(
         textDecoration = textDecoration,
         textAlign = textAlign,
         overflow = overflow,
-        maxLines = maxLine
+        maxLines = maxLine,
+        letterSpacing = letterSpacing
     )
 }
 

@@ -15,6 +15,7 @@ import com.example.inventariosapp.domain.use_case.sales.EditSaleUseCase
 import com.example.inventariosapp.domain.use_case.sales.GetSalesByIdUseCase
 import com.example.inventariosapp.domain.use_case.sales.PostSaleUseCase
 import com.example.inventariosapp.domain.model.client.ClientResponseModel
+import com.example.inventariosapp.domain.model.product.InventarioRseponeModel
 import com.example.inventariosapp.domain.model.product.ProductIdResponseModel
 import com.example.inventariosapp.domain.model.product.ProductsResponseModel
 import com.example.inventariosapp.domain.model.sales.GetSalesByIdResponse
@@ -22,6 +23,7 @@ import com.example.inventariosapp.domain.model.sales.PostSaleProductModel
 import com.example.inventariosapp.domain.model.sales.PostSalesModel
 import com.example.inventariosapp.domain.model.sales.SaleProductModel
 import com.example.inventariosapp.domain.model.sales.SalesModel
+import com.example.inventariosapp.domain.use_case.product.GetInventarioUseCase
 import com.example.inventariosapp.util.Helpers
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -62,6 +64,7 @@ data class NewSaleUiState(
     val product: ProductEntity? = null,
     val totalInventory: ProductIdResponseModel = ProductIdResponseModel(),
     val selectedProduct: ProductsResponseModel? = null,
+    val inventoryOffline: InventarioRseponeModel? = null,
 
     val serverPostSale: Boolean = false,
     val newSale: ArrayList<PostSalesModel> = arrayListOf(),
@@ -77,6 +80,7 @@ class NewSaleViewModel @Inject constructor(
     private val getProductsUseCase: GetProductsUseCase,
     private val getClientsUseCase: GetClientsUseCase,
     private val getInventarioProductoUseCase: GetInventarioProductoRepositoryImp,
+    private val getInventarioUseCase: GetInventarioUseCase,
     val baseViewModel: BaseViewModel,
     @ApplicationContext private val cnx: android.content.Context
 ) : ViewModel() {
@@ -262,10 +266,19 @@ class NewSaleViewModel @Inject constructor(
         baseViewModel.showLoader()
         viewModelScope.launch {
             val internetUse = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
-            _uiState.update { it.copy(internetUse = internetUse) }
-            val r = getInventarioProductoUseCase(productId, internetUse)
-            if (r.first != null) {
-                _uiState.update { it.copy(totalInventory = r.first!!) }
+            if (internetUse){
+                val r = getInventarioProductoUseCase(productId, true)
+                if (r.first != null) {
+                    _uiState.update { it.copy(totalInventory = r.first!!) }
+                }
+            }
+            else{
+                val r2 = getInventarioUseCase()
+                if (r2.first != null) {
+                    val filtro = r2.first!!.first { it.productoId == productId }
+                    Log.i("Filtro___", filtro.toString())
+                    _uiState.update { it.copy(inventoryOffline = filtro) }
+                }
             }
             _uiState.update { it.copy(expandenSearchBarD = true, serchProductId = productId) }
             baseViewModel.hideLoader()
@@ -312,7 +325,8 @@ class NewSaleViewModel @Inject constructor(
                     total = totalSale,
                     usuarioSesionId = usuarioSesionId,
                     ventaProductos = saleProducts as ArrayList<PostSaleProductModel>,
-                    tipoConexionId = if (internetUse) 1 else 2
+                    tipoConexionId = if (internetUse) 1 else 2,
+                    origenId = 2
                 )
                 val r = postSaleUseCase(listOf(sale), internetUse)
 
@@ -337,17 +351,42 @@ class NewSaleViewModel @Inject constructor(
     // endregion
 
     // region Update UiState
-    fun updateSale(sale: SalesModel) = _uiState.update { it.copy(sale = sale) }
-    fun updateComentarios(comentarios: String) = _uiState.update { it.copy(comentarios = comentarios) }
-    fun updateClient(client: TextFieldValue) = _uiState.update { it.copy(client = client) }
-    fun updateDialogProduct(dialogProduct: Boolean) = _uiState.update { it.copy(dialogProduct = dialogProduct) }
-    fun updateSearch(search: TextFieldValue) = _uiState.update { it.copy(search = search) }
-    fun updatePrice(price: Double) = _uiState.update { it.copy(price = price) }
-    fun updateQuantity(quantity: String) = _uiState.update { it.copy(quantity = quantity) }
-    fun updateSelectedProduct(selectedProduct: ProductsResponseModel?) = _uiState.update { it.copy(selectedProduct = selectedProduct) }
-    fun updateNewClient(newClient: ClientResponseModel?) = _uiState.update { it.copy(newClient = newClient) }
-    fun updateExpandenSearchBarS(expandenSearchBarS: Boolean) = _uiState.update { it.copy(expandenSearchBarS = expandenSearchBarS) }
-    fun updateExpandenSearchBarD(expandenSearchBarD: Boolean) = _uiState.update { it.copy(expandenSearchBarD = expandenSearchBarD) }
+    fun updateSale(sale: SalesModel){
+        _uiState.update { it.copy(sale = sale) }
+    }
+    fun updateComentarios(comentarios: String){
+        _uiState.update { it.copy(comentarios = comentarios) }
+    }
+    fun updateClient(client: TextFieldValue){
+        _uiState.update { it.copy(client = client) }
+    }
+    fun updateDialogProduct(dialogProduct: Boolean){
+        _uiState.update { it.copy(dialogProduct = dialogProduct) }
+    }
+    fun updateSearch(search: TextFieldValue){
+        _uiState.update { it.copy(search = search) }
+    }
+    fun updatePrice(price: Double){
+        _uiState.update { it.copy(price = price) }
+    }
+    fun updateQuantity(quantity: String){
+        _uiState.update { it.copy(quantity = quantity) }
+    }
+    fun updateSelectedProduct(selectedProduct: ProductsResponseModel?){
+        _uiState.update { it.copy(selectedProduct = selectedProduct) }
+    }
+    fun updateNewClient(newClient: ClientResponseModel?){
+        _uiState.update { it.copy(newClient = newClient) }
+    }
+    fun updateExpandenSearchBarS(expandenSearchBarS: Boolean){
+        _uiState.update { it.copy(expandenSearchBarS = expandenSearchBarS) }
+    }
+    fun updateExpandenSearchBarD(expandenSearchBarD: Boolean){
+        _uiState.update { it.copy(expandenSearchBarD = expandenSearchBarD) }
+    }
+    fun updateInventoryOffline(inventoryOffline: InventarioRseponeModel?){
+        _uiState.update { it.copy(inventoryOffline = inventoryOffline) }
+    }
     // endregion
 
     // region Clean

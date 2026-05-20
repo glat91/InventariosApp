@@ -5,9 +5,9 @@ import com.example.inventariosapp.domain.model.payment.PayModel
 import javax.inject.Inject
 
 class GetPaymentUseCase @Inject constructor(
-    private val getPaymentUseCase: GetPaymentRepositoryImp
+    private val getPaymentRepositoryImp: GetPaymentRepositoryImp
 ) {
     suspend operator fun invoke(ventaID: String, internetUse: Boolean): Pair<List<PayModel>?, String?> {
-        return getPaymentUseCase.getPayments(internetUse = internetUse, ventaID = ventaID)
+        return getPaymentRepositoryImp(ventaID = ventaID)
     }
 }

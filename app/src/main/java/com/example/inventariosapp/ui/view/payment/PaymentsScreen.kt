@@ -1,9 +1,11 @@
 package com.example.inventariosapp.ui.view.payment
 
+import android.Manifest
 import android.bluetooth.BluetoothClass
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresPermission
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -35,8 +37,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,6 +51,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -80,6 +81,7 @@ import com.example.inventariosapp.ui.view.login.LoginViewModel
 import com.example.inventariosapp.util.Helpers
 import kotlinx.coroutines.launch
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PaymentsScreen(navController: NavHostController) {
@@ -90,25 +92,27 @@ fun PaymentsScreen(navController: NavHostController) {
     @OptIn(ExperimentalMaterial3Api::class)
     var datePickerState = rememberDatePickerState()
 
-    val showDeposit = remember { mutableStateOf(true) }
-
-    val uiState by lviewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
+    val luiState by lviewModel.uiState.collectAsState()
 
     PaymentsView(
-        data = viewModel.filterPayments().value,
-        dateStart = viewModel.startDate.value,
-        dateEnd = viewModel.endDate.value,
-        clickDate = viewModel.dialogChoice,
-        search = viewModel.search,
+        data = viewModel.filterPayments(),
+        dateStart = uiState.startDate,
+        dateEnd = uiState.endDate,
+        search = uiState.search,
         onClickBack = { navController.popBackStack() },
         onClickMenu = { viewModel.baseViewModel.openMenu() },
-        onClickAdd = { viewModel.dialogDeposit.value = true},
-        onClickDate = { viewModel.showDatePicker.value = true },
+        onClickDate = { viewModel.updateShowDatePicker(true) },
         onClickRow = {
-            viewModel.select.value = it
+            viewModel.updateSelect(it)
             viewModel.getPayment(it.folio.toString())
+        },
+        onChangueSearchBarTxt = { viewModel.updateSearch(it) },
+        changueDialogChoice = {
+            viewModel.updateDialogChoice(it)
         }
     )
+
     // region BT
     LaunchedEffect(Unit) {
         //viewModel.hasPermissions = viewModel.hasPermissions(cnx)
@@ -117,47 +121,44 @@ fun PaymentsScreen(navController: NavHostController) {
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { result ->
-        viewModel.hasPermissions = result.values.all { it }
-        if (viewModel.hasPermissions) {
-            viewModel.dialogBT = true
-        }
+        viewModel.updateHasPermissions(result.values.all { it })
+        if (uiState.hasPermissions) { viewModel.updateDialogBT(true) }
     }
-    if (viewModel.dialogBT && viewModel.hasPermissions){
+    if (uiState.dialogBT && uiState.hasPermissions) {
         BasicDialogCmp(
             color = UI_BT,
             content = {
                 Column(modifier = Modifier) {
-                    if (!viewModel.hasPermissions) {
+                    if (!uiState.hasPermissions) {
                         Text("Se necesitan permisos Bluetooth", modifier = Modifier)
                         return@Column
                     }
 
-                    val isEnabled = viewModel.bluetoothAdapter?.isEnabled == true
+                    val isEnabled = uiState.bluetoothAdapter.isEnabled
                     if (!isEnabled) {
                         Text("Activa el Bluetooth e intenta de nuevo")
                         return@Column
                     }
 
                     // Cargar dispositivos emparejados
-                    LaunchedEffect(Unit) @androidx.annotation.RequiresPermission(android.Manifest.permission.BLUETOOTH_CONNECT) {
-                        viewModel.bondedDevices.clear()
-                        viewModel.bluetoothAdapter.bondedDevices?.forEach { device ->
+                    LaunchedEffect(Unit) @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT) {
+                        uiState.bondedDevices.clear()
+                        uiState.bluetoothAdapter.bondedDevices?.forEach { device ->
 
                             val hasPrinterUUID = device.uuids?.any {
-                                it.uuid == viewModel.printerUUID
+                                it.uuid == uiState.printerUUID
                             } == true
 
                             val isImagingDevice =
-                                device.bluetoothClass?.majorDeviceClass ==
-                                        BluetoothClass.Device.Major.IMAGING
+                                device.bluetoothClass?.majorDeviceClass == BluetoothClass.Device.Major.IMAGING
 
                             if (hasPrinterUUID || isImagingDevice) {
-                                viewModel.bondedDevices.add(device)
+                                uiState.bondedDevices.add(device)
                             }
                         }
                     }
 
-                    if (viewModel.bondedDevices.isEmpty()) {
+                    if (uiState.bondedDevices.isEmpty()) {
                         Text("No hay dispositivos emparejados")
                     } else {
                         Text(
@@ -169,14 +170,14 @@ fun PaymentsScreen(navController: NavHostController) {
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            items(viewModel.bondedDevices) { device ->
+                            items(uiState.bondedDevices) { device ->
                                 Log.i("Items___", device.toString())
                                 Row(
                                     modifier = Modifier
                                         .padding(PADDING_4)
                                         .clip(RoundedCornerShape(10.dp))
                                         .background(UI_BACKGROUND_BT)
-                                        .clickable{
+                                        .clickable {
                                             scope.launch {
                                                 viewModel.connectAndPrint(
                                                     context = cnx,
@@ -187,7 +188,7 @@ fun PaymentsScreen(navController: NavHostController) {
                                     horizontalArrangement = Arrangement.Center,
                                     verticalAlignment = Alignment.CenterVertically,
 
-                                ) {
+                                    ) {
                                     VerticalDivider(color = Color.Gray, thickness = PADDING_4)
                                     Text(
                                         color = Color.White,
@@ -200,25 +201,25 @@ fun PaymentsScreen(navController: NavHostController) {
                     }
                 }
             },
-            onDismiss = { viewModel.dialogBT = false}
+            onDismiss = { viewModel.updateDialogBT(false) }
         )
     }
     // endregion
     // region Dialog Date
-    if (viewModel.showDatePicker.value) {
+    if (uiState.showDatePicker) {
         DatePickerDialog(
-            onDismissRequest = { viewModel.showDatePicker.value = false },
+            onDismissRequest = { viewModel.updateShowDatePicker(false) },
             confirmButton = {
                 TextButton(onClick = {
                     viewModel.updateDateInput(datePickerState)
-                    viewModel.showDatePicker.value = false
+                    viewModel.updateShowDatePicker(false)
                     viewModel.getPendingSales()
                 }) {
                     TextCmp("OK")
                 }
             },
             dismissButton = {
-                TextButton(onClick = { viewModel.showDatePicker.value = false }) {
+                TextButton(onClick = { viewModel.updateShowDatePicker(false) }) {
                     TextCmp("Cancelar")
                 }
             }
@@ -226,7 +227,7 @@ fun PaymentsScreen(navController: NavHostController) {
     }
     // endregion
     // region Dialog Deposit
-    if (viewModel.dialogDeposit.value){
+    if (uiState.dialogDeposit) {
         BasicDialogCmp(
             color = UI_Backround_Top,
             content = {
@@ -236,7 +237,9 @@ fun PaymentsScreen(navController: NavHostController) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Card(
-                        modifier = Modifier.fillMaxWidth().padding(top = PADDING_16)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = PADDING_16)
                             .border(
                                 2.dp,
                                 Color.Gray,
@@ -256,73 +259,22 @@ fun PaymentsScreen(navController: NavHostController) {
                         ),
                     ) {
                         Column(
-                            modifier = Modifier.padding(PADDING_4),
-                            verticalArrangement = Arrangement.Center,
-                        ){
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceAround
-                            ) {
-                                TextCmp(
-                                    text = "Total:",
-                                    modifier = Modifier.padding(PADDING_4),
-                                    color = Color.Black,
-                                    fontSize = 24.sp,
-                                    fontStyle = FontStyle.Normal,
-                                    fontFamily = FontFamily.Serif,
-                                    textDecoration = TextDecoration.None,
-                                    textAlign = TextAlign.Left,
-                                    fontWeight = FontWeight.Bold,
-                                    overflow = TextOverflow.Visible,
-                                    maxLine = 1
-                                )
-                                TextCmp(
-                                    text = "${viewModel.select.value?.total}",
-                                    modifier = Modifier.padding(PADDING_4).fillMaxWidth(),
-                                    color = Color.Black,
-                                    fontSize = 24.sp,
-                                    fontStyle = FontStyle.Normal,
-                                    fontFamily = FontFamily.Serif,
-                                    textDecoration = TextDecoration.None,
-                                    textAlign = TextAlign.Right,
-                                    fontWeight = FontWeight.Normal,
-                                    overflow = TextOverflow.Visible,
-                                    maxLine = 1
-                                )
-                            }
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceAround
-                            ) {
-                                TextCmp(
-                                    text = "Adeudo:",
-                                    modifier = Modifier.padding(PADDING_4),
-                                    color = Color.Black,
-                                    fontSize = 24.sp,
-                                    fontStyle = FontStyle.Normal,
-                                    fontFamily = FontFamily.Serif,
-                                    textDecoration = TextDecoration.None,
-                                    textAlign = TextAlign.Left,
-                                    fontWeight = FontWeight.Bold,
-                                    overflow = TextOverflow.Visible,
-                                    maxLine = 1
-                                )
-                                TextCmp(
-                                    text = "${viewModel.select.value?.montoPorPagar}",
-                                    modifier = Modifier.padding(PADDING_4).fillMaxWidth(),
-                                    color = Color.Black,
-                                    fontSize = 24.sp,
-                                    fontStyle = FontStyle.Normal,
-                                    fontFamily = FontFamily.Serif,
-                                    textDecoration = TextDecoration.None,
-                                    textAlign = TextAlign.Right,
-                                    fontWeight = FontWeight.Normal,
-                                    overflow = TextOverflow.Visible,
-                                    maxLine = 1
-                                )
-                            }
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(Color.White)
+                                .border(0.5.dp, Color.Black.copy(alpha = 0.1f), RoundedCornerShape(16.dp))
+                        ) {
+                            TotalRow(
+                                label = "TOTAL",
+                                value = "${uiState.select?.total}"
+                            )
+                            HorizontalDivider(thickness = 0.5.dp, color = Color.Black.copy(alpha = 0.07f))
+                            TotalRow(
+                                label = "ADEUDO",
+                                value = "${uiState.select?.montoPorPagar}",
+                                valueColor = Color(0xFFE24B4A)
+                            )
                         }
-
                         Card(
                             modifier = Modifier.padding(PADDING_4),
                             elevation = CardDefaults.cardElevation(
@@ -337,24 +289,24 @@ fun PaymentsScreen(navController: NavHostController) {
                                 containerColor = UI_Backround_Btn_Green,
                                 contentColor = Color.White
                             )
-                        ){}
+                        ){ }
                     }
                     HorizontalDivider(thickness = PADDING_16, color = Color.Transparent)
-                    if (showDeposit.value){
+                    if (uiState.showDeposit) {
                         AnimatedVisibility(
                             visible = true,
-                            enter = slideInVertically(initialOffsetY = {it}),
-                            exit = slideOutVertically(targetOffsetY = {-it})
-                        ){
+                            enter = slideInVertically(initialOffsetY = { it }),
+                            exit = slideOutVertically(targetOffsetY = { -it })
+                        ) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.Center
                             ) {
                                 ButtonWithImgCmp(
                                     text = "Agregar pago",
-                                    backGroundColor = UI_Backround_Btn_Yellow,
+                                    backgroundColor = UI_Backround_Btn_Yellow,
                                     icon = Icons.Filled.Add,
-                                    onClick = { showDeposit.value = false }
+                                    onClick = { viewModel.updateShowDeposit(false) }
                                 )
                             }
                         }
@@ -372,19 +324,19 @@ fun PaymentsScreen(navController: NavHostController) {
                     )
                     HorizontalDivider(thickness = PADDING_8, color = Color.Transparent)
                     HorizontalDivider(thickness = 2.dp, color = Color.Black)
-                    if (showDeposit.value){
+                    if (uiState.showDeposit) {
                         AnimatedVisibility(
-                            visible = showDeposit.value,
-                            enter = slideInVertically(initialOffsetY = {it}),
-                            exit = slideOutVertically(targetOffsetY = {-it})
-                        ){
+                            visible = uiState.showDeposit,
+                            enter = slideInVertically(initialOffsetY = { it }),
+                            exit = slideOutVertically(targetOffsetY = { -it })
+                        ) {
                             Column {
-                                HorizontalDivider(thickness = 1.dp, color = UI_Divier, )
+                                HorizontalDivider(thickness = 1.dp, color = UI_Divier)
                                 LazyColumn(
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
                                     var switchColor = true
-                                    items(viewModel.payments.value) { deposit ->
+                                    items(uiState.payments) { deposit ->
                                         var colorRow = if (switchColor) UI_List_Row_1 else UI_List_Row_2
                                         CardDepositCmp(
                                             date = deposit.fecha.toString(),
@@ -398,8 +350,8 @@ fun PaymentsScreen(navController: NavHostController) {
                                                 permissionLauncher.launch(viewModel.permissions)
                                             }
                                         )
-                                        HorizontalDivider(thickness = PADDING_4, color = Color.Transparent, )
-                                        HorizontalDivider(thickness = 1.dp, color = UI_Divier, )
+                                        HorizontalDivider(thickness = PADDING_4, color = Color.Transparent)
+                                        HorizontalDivider(thickness = 1.dp, color = UI_Divier)
                                         switchColor = !switchColor
                                     }
                                 }
@@ -407,20 +359,20 @@ fun PaymentsScreen(navController: NavHostController) {
 
                         }
                     }
-                    else{
+                    else {
                         AnimatedVisibility(
-                            visible = !showDeposit.value,
-                            enter = slideInVertically(initialOffsetY = {it}),
-                            exit = slideOutVertically(targetOffsetY = {-it})
-                        ){
+                            visible = !uiState.showDeposit,
+                            enter = slideInVertically(initialOffsetY = { it }),
+                            exit = slideOutVertically(targetOffsetY = { -it })
+                        ) {
 
                             Column {
                                 InputWithTitleLabelCmp(
                                     modifier = Modifier,
                                     labelText = "Fecha",
                                     keyboardType = KeyboardType.Number,
-                                    textValue = viewModel.payActualDate,
-                                    onValueChange = {  },
+                                    textValue = uiState.payActualDate,
+                                    onValueChange = { },
                                     textAlign = TextAlign.Left,
                                     disableTextColor = Color.Gray,
                                     readOnly = true,
@@ -429,8 +381,8 @@ fun PaymentsScreen(navController: NavHostController) {
                                     modifier = Modifier,
                                     labelText = "Importe",
                                     keyboardType = KeyboardType.Number,
-                                    textValue = viewModel.payTotalPayment.value,
-                                    onValueChange = { viewModel.payTotalPayment.value = it },
+                                    textValue = uiState.payTotalPayment,
+                                    onValueChange = { viewModel.updatePayTotalPayment(it) },
                                     textAlign = TextAlign.Left,
                                     disableTextColor = Color.Gray,
                                     enabled = true,
@@ -439,20 +391,22 @@ fun PaymentsScreen(navController: NavHostController) {
                                     modifier = Modifier,
                                     labelText = "Observaciones",
                                     keyboardType = KeyboardType.Text,
-                                    textValue = viewModel.payObservation.value,
-                                    onValueChange = { if (it.length <= 50) viewModel.payObservation.value = it },
+                                    textValue = uiState.payObservation,
+                                    onValueChange = { if (it.length <= 50) viewModel.updatePayObservation(it) },
                                     textAlign = TextAlign.Left,
                                     disableTextColor = Color.Gray,
                                     enabled = true,
                                 )
                                 Row(
-                                    modifier = Modifier.fillMaxWidth().padding(top = PADDING_16),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = PADDING_16),
                                     horizontalArrangement = Arrangement.SpaceAround
                                 ) {
                                     ButtonCmp(
                                         modifier = Modifier,
                                         text = "Cancelar",
-                                        onClick = { showDeposit.value = true },
+                                        onClick = { viewModel.updateShowDeposit(true) },
                                         enable = true,
                                         shape = RoundedCornerShape(10.dp),
                                         txtColor = Color.White,
@@ -466,30 +420,28 @@ fun PaymentsScreen(navController: NavHostController) {
                                         modifier = Modifier,
                                         text = "Agregar",
                                         onClick = {
-                                            val monto = viewModel.payTotalPayment.value.toDoubleOrNull() ?: 0.0
-                                            if (monto > 0.01 && monto <= viewModel.select.value?.montoPorPagar!!){
+                                            val monto = uiState.payTotalPayment.toDoubleOrNull() ?: 0.0
+                                            if (monto > 0.01 && monto <= uiState.select?.montoPorPagar!!) {
                                                 viewModel.setPayment(
-                                                    ventaId = viewModel.select.value!!.ventaId!!,
+                                                    ventaId = uiState.select!!.ventaId!!,
                                                     montoPago = monto,
-                                                    observaciones = viewModel.payObservation.value,
+                                                    observaciones = uiState.payObservation,
                                                     onSuccess = {
                                                         permissionLauncher.launch(viewModel.permissions)
                                                     }
                                                 )
-                                                showDeposit.value = true
-                                            }
-                                            else {
-                                                if (monto > viewModel.select.value?.montoPorPagar!!){
+                                                viewModel.updateShowDeposit(true)
+                                            } else {
+                                                if (monto > uiState.select?.montoPorPagar!!) {
                                                     MainActivity.mainDialogMsg.value = "El monto debe ser menor al adeudo"
-                                                }
-                                                else{
+                                                } else {
                                                     MainActivity.mainDialogMsg.value = "El monto debe ser mayor a .01 centavo"
                                                 }
                                                 viewModel.cleanPayment()
-                                                MainActivity.mainDialog .value = true
+                                                MainActivity.mainDialog.value = true
                                             }
                                         },
-                                        enable = !viewModel.payTotalPayment.value.isEmpty(),
+                                        enable = !uiState.payTotalPayment.isEmpty(),
                                         shape = RoundedCornerShape(10.dp),
                                         txtColor = Color.White,
                                         maxLines = 1,
@@ -508,12 +460,12 @@ fun PaymentsScreen(navController: NavHostController) {
     }
     // endregion
     // region Dialog Login
-    if (viewModel.baseViewModel.dialogLogin.value){
+    if (viewModel.baseViewModel.dialogLogin.value) {
         LoginDialogCmp(
-            uiState = uiState,
+            uiState = luiState,
             onClickEnter = {
                 val internetUse = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
-                if (!uiState.rememberUser) lviewModel.clearUser()
+                if (!luiState.rememberUser) lviewModel.clearUser()
                 else lviewModel.saveUserLogin()
                 lviewModel.validateUserLogin(internetUse)
             },
@@ -524,4 +476,35 @@ fun PaymentsScreen(navController: NavHostController) {
     }
     // endregion
     Loader(viewModel.baseViewModel.getLoader())
+}
+
+
+@Composable
+private fun TotalRow(
+    label: String,
+    value: String,
+    valueColor: Color = Color(0xFF1A1A1A)
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = label,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Medium,
+            letterSpacing = 0.07.em,
+            color = Color.Black.copy(alpha = 0.38f)
+        )
+        Text(
+            text = value,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Medium,
+            color = valueColor,
+            maxLines = 1
+        )
+    }
 }

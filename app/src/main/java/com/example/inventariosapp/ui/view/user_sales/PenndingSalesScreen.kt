@@ -3,8 +3,6 @@ package com.example.inventariosapp.ui.view.user_sales
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -22,13 +20,14 @@ fun PenndingSalesScreen(navController: NavHostController) {
     val viewModel: PenndingSalesViewModel = hiltViewModel()
     val lviewModel: LoginViewModel = hiltViewModel()
     val cnx = LocalContext.current
-    val uiState by lviewModel.uiState.collectAsState()
+    val luiState by lviewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
     PenndingSalesView(
-        data = viewModel.penndingSales,
+        data = uiState.penndingSales,
         onclickRow = {
-            viewModel.selectedPenndigSale.value = it
-            viewModel.dialogProduct.value = true
+            viewModel.updateSelectedPenndigSale(it)
+            viewModel.updateDialogProduct(true)
         },
         onClickUpdate = { viewModel.updateSales()},
         onClickMenu = { viewModel.baseViewModel.openMenu() },
@@ -38,10 +37,10 @@ fun PenndingSalesScreen(navController: NavHostController) {
     // region dialog
     if (viewModel.baseViewModel.dialogLogin.value){
         LoginDialogCmp(
-            uiState = uiState,
+            uiState = luiState,
             onClickEnter = {
                 val internetUse = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
-                if (!uiState.rememberUser) lviewModel.clearUser()
+                if (!luiState.rememberUser) lviewModel.clearUser()
                 else lviewModel.saveUserLogin()
                 lviewModel.validateUserLogin(internetUse)
             },
@@ -52,11 +51,11 @@ fun PenndingSalesScreen(navController: NavHostController) {
     }
     // endregion
 
-    if (viewModel.dialogProduct.value){
+    if (uiState.dialogProduct){
         PenddingSaleDialogCmp(
             content = {
-                if (viewModel.selectedPenndigSale.value != null){
-                    for (product in viewModel.selectedPenndigSale.value!!.productos){
+                if (uiState.selectedPenndigSale != null){
+                    for (product in uiState.selectedPenndigSale!!.productos){
                         CardPenndingProductCmp(
                             backgroundColor = Color.Transparent,
                             producto = product.nombreProducto,
@@ -67,7 +66,7 @@ fun PenndingSalesScreen(navController: NavHostController) {
 
                 }
             },
-            onDismiss = { viewModel.dialogProduct.value = false}
+            onDismiss = { viewModel.updateDialogProduct(false) }
         )
 
     }

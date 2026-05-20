@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    id("kotlin-parcelize")
 }
 
 android {
@@ -15,7 +16,7 @@ android {
         minSdk = 26
         targetSdk = 36
         versionCode = 1
-        versionName = "1.QA10"
+        versionName = "1.QA13"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         
     }
@@ -47,6 +48,14 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.compose.ui.text)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.compose.animation.core)
+    implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.ui.geometry)
+    implementation(libs.androidx.compose.animation)
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.foundation.layout)
+    implementation(libs.androidx.ui.text)
 
     debugImplementation(platform(libs.androidx.compose.bom))
     debugImplementation(libs.androidx.ui.tooling)
@@ -63,6 +72,7 @@ dependencies {
     // Room (KSP)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
+    debugImplementation(libs.androidx.compose.ui.tooling)
     ksp(libs.room.compiler)
 
     // Hilt (KSP)

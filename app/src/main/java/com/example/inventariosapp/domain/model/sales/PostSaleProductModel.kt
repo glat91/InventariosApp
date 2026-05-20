@@ -12,8 +12,8 @@ data class PostSaleProductModel(
     @SerializedName("costo") var costo: Double? = null,
     @SerializedName("CantidadSolicitada") var cantidadSolicitada: Int = 0,
     @SerializedName("VentaIdInterno") var ventaIdInterno: Int? = 0,
-    @SerializedName("nombreProducto") var nombreProducto: String = "",
-    @SerializedName("comentarios") var comentarios: String = "",
+    @SerializedName("nombreProducto") var nombreProducto: String? = "",
+    @SerializedName("comentarios") var comentarios: String? = "",
     )
 
 fun PostSaleProductModel.toDB(id: String) =
@@ -28,6 +28,6 @@ fun PostSaleProductModel.toDB(id: String) =
         ventaProductoId = ventaProductoId,
         cantidadSolicitada = cantidadSolicitada,
         ventaIdInterno = ventaIdInterno,
-        nombreProducto = nombreProducto,
-        comentarios = comentarios
+        nombreProducto = nombreProducto ?: "",
+        comentarios = comentarios ?: ""
     )
