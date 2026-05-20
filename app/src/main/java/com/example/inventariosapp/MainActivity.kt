@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavDestination
 import androidx.navigation.compose.rememberNavController
 import com.example.appgeneric.ui.component.TextCmp
 import com.example.inventariosapp.navigation.SetupNavGraph
@@ -59,6 +60,7 @@ class MainActivity : ComponentActivity() {
         val startDate = mutableStateOf("")
         val endDate = mutableStateOf("")
         // endregion
+        var currentRoute: MutableState<String?> = mutableStateOf(null)
     }
 
     @RequiresApi(Build.VERSION_CODES.S)

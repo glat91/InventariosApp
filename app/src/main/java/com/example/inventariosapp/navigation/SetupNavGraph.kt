@@ -8,6 +8,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.inventariosapp.MainActivity
 import com.example.inventariosapp.ui.animations.animatedComposable
 import com.example.inventariosapp.ui.view.BluetoothPrinterScreen.BluetoothPrinterScreen
 import com.example.inventariosapp.ui.view.login.LoginScreen
@@ -42,6 +43,7 @@ fun NavGraphBuilder.loginScreen(navController: NavHostController){
         route = Destinations.LoginScreen.ruta,
         durationMillis = 600,
     ){
+        MainActivity.currentRoute.value = Destinations.LoginScreen.ruta
         LoginScreen(navController)
     }
 }
@@ -50,6 +52,7 @@ fun NavGraphBuilder.salesScreen(navController: NavHostController){
          route = Destinations.SalesScreen.ruta,
          durationMillis = 600,
      ) {
+        MainActivity.currentRoute.value = Destinations.SalesScreen.ruta
         SalesScreen(navController)
      }
 
@@ -60,6 +63,7 @@ fun NavGraphBuilder.paymentScreen(navController: NavHostController){
         route = Destinations.PaymentScreen.ruta,
         durationMillis = 600,
     ){
+        MainActivity.currentRoute.value = Destinations.PaymentScreen.ruta
         PaymentsScreen(navController)
     }
 }
@@ -68,6 +72,7 @@ fun NavGraphBuilder.productsScreen(navController: NavHostController){
         route = Destinations.ProductsScreen.ruta,
         durationMillis = 600,
     ){
+        MainActivity.currentRoute.value = Destinations.ProductsScreen.ruta
         ProductsScreen(navController)
     }
 }
@@ -76,6 +81,7 @@ fun NavGraphBuilder.newSaleScreen(navController: NavHostController){
         route = Destinations.NewSaleScreen.ruta,
         durationMillis = 600,
     ){
+        MainActivity.currentRoute.value = Destinations.NewSaleScreen.ruta
         NewSaleScreen(navController)
     }
 }
@@ -84,6 +90,7 @@ fun NavGraphBuilder.penndingSaleScreen(navController: NavHostController){
         route = Destinations.PenndingSaleScreen.ruta,
         durationMillis = 600,
     ){
+        MainActivity.currentRoute.value = Destinations.PenndingSaleScreen.ruta
         PenndingSalesScreen(navController)
     }
 }
@@ -92,6 +99,7 @@ fun NavGraphBuilder.penndingPaymentsScreen(navController: NavHostController){
         route = Destinations.PenndingPaymentsScreen.ruta,
         durationMillis = 600,
     ){
+        MainActivity.currentRoute.value = Destinations.PenndingPaymentsScreen.ruta
         UserPaymentsScreen(navController)
     }
 }
@@ -101,6 +109,7 @@ fun NavGraphBuilder.bluetoothPrinterScreen(navController: NavHostController){
         route = Destinations.PrintScreen.ruta,
         durationMillis = 600,
     ){
+        MainActivity.currentRoute.value = Destinations.PrintScreen.ruta
         BluetoothPrinterScreen(navController)
     }
 }
