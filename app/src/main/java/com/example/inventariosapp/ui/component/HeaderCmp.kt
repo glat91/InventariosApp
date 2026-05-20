@@ -35,13 +35,11 @@ fun HeaderCmp(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(UI_Backround_Top)
             .padding(16.dp),
     ) {
         Box(
             modifier = modifier
                 .fillMaxWidth()
-                .background(UI_Backround_Top)
                 .padding()
         ) {
 

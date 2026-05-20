@@ -195,7 +195,7 @@ class PaymentsViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            val r = getPendingSalesUseCase("2", _uiState.value.startDate, _uiState.value.endDate)
+            val r = getPendingSalesUseCase("2", _uiState.value.startDate, _uiState.value.endDate, MainActivity.internetBtn.value)
             if (r.first != null) {
                 Log.i("Sales___", r.first!!.toString())
                 _uiState.value = _uiState.value.copy(sales = r.first!!)

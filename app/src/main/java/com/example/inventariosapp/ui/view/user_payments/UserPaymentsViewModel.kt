@@ -1,6 +1,7 @@
 package com.example.inventariosapp.ui.view.user_payments
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.appgeneric.model.payment.NewPayModel
@@ -81,6 +82,7 @@ class UserPaymentsViewModel @Inject constructor(
     fun getPenndingPayments() {
         viewModelScope.launch {
             val payments = getPenndingPaymentUseCase()
+            Log.i("Payments___", "$payments")
             updatePenndingPayments(payments)
         }
     }

@@ -5,4 +5,9 @@ class CustomEnums {
         ERROR,
         PENDING
     }
+
+    enum class OrderStatus {
+        ERROR,
+        PENDIENTE
+    }
 }

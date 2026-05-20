@@ -8,13 +8,11 @@ import androidx.lifecycle.viewModelScope
 import com.example.inventariosapp.BaseViewModel
 import com.example.inventariosapp.MainActivity
 import com.example.inventariosapp.domain.use_case.client.GetClientsUseCase
-import com.example.inventariosapp.domain.use_case.payment.GetPaymentUseCase
 import com.example.inventariosapp.domain.use_case.product.GetInventarioUseCase
 import com.example.inventariosapp.domain.use_case.product.GetProductsUseCase
 import com.example.inventariosapp.domain.use_case.sales.GetPendingSalesUseCase
 import com.example.inventariosapp.util.Constants
 import com.example.inventariosapp.util.Helpers
-import com.example.inventariosapp.util.Helpers.Companion.deletePersistKey
 import com.example.inventariosapp.util.Helpers.Companion.readPersistData
 import com.example.inventariosapp.util.Helpers.Companion.savePersistData
 import com.example.inventariosapp.util.NetworkMonitor
@@ -90,9 +88,9 @@ class MenuViewModel @Inject constructor(
         viewModelScope.launch{
             val internetUse = monitor.isConnected.value
             if (internetUse){
-                val r = getPendingSalesUseCase("1",Helpers.get6Months(), Helpers.getDate())
+                val r = getPendingSalesUseCase("1",Helpers.get6Months(), Helpers.getDate(), true)
                 if (r.first != null){
-                    val r = getPendingSalesUseCase("2",Helpers.get6Months(), Helpers.getDate())
+                    val r = getPendingSalesUseCase("2",Helpers.get6Months(), Helpers.getDate(), true)
                     if (r.first != null){
                         MainActivity.mainDialogMsg.value = "Update correcto"
                         MainActivity.lastUpdateSells.value = Helpers.getDateTime()
@@ -115,7 +113,7 @@ class MenuViewModel @Inject constructor(
     fun updateInventory(){
         baseViewModel.showLoader()
         viewModelScope.launch {
-            val r = getInventarioUseCase()
+            val r = getInventarioUseCase(true)
             if (r.first != null){
                 MainActivity.mainDialogMsg.value = "Update correcto"
                 MainActivity.lastUpdateInventory.value = Helpers.getDateTime()

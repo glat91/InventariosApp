@@ -273,7 +273,7 @@ class NewSaleViewModel @Inject constructor(
                 }
             }
             else{
-                val r2 = getInventarioUseCase()
+                val r2 = getInventarioUseCase(MainActivity.internetBtn.value)
                 if (r2.first != null) {
                     val filtro = r2.first!!.first { it.productoId == productId }
                     Log.i("Filtro___", filtro.toString())
@@ -328,7 +328,7 @@ class NewSaleViewModel @Inject constructor(
                     tipoConexionId = if (internetUse) 1 else 2,
                     origenId = 2
                 )
-                val r = postSaleUseCase(listOf(sale), internetUse)
+                val r = postSaleUseCase(listOf(sale), MainActivity.internetBtn.value)
 
                 if (r.first != null) {
                     _uiState.update {

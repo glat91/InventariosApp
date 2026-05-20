@@ -1,7 +1,6 @@
 package com.example.inventariosapp.ui.view.sales
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,11 +10,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -28,13 +26,11 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.inventariosapp.R
 import com.example.inventariosapp.domain.model.sales.SalesModel
 import com.example.inventariosapp.ui.component.cards.CardSaleCmp
 import com.example.inventariosapp.ui.component.HeaderCmp
@@ -42,12 +38,11 @@ import com.example.inventariosapp.ui.component.InputWithTitleLabelCmp
 import com.example.inventariosapp.ui.component.SearchBarCmp
 import com.example.inventariosapp.ui.theme.PADDING_16
 import com.example.inventariosapp.ui.theme.PADDING_8
-import com.example.inventariosapp.ui.theme.UI_Backround_Btn_Yellow
 import com.example.inventariosapp.ui.theme.UI_Backround_Top
-import com.example.inventariosapp.ui.theme.UI_Divier
 import com.example.inventariosapp.ui.theme.UI_List_Row_1
 import com.example.inventariosapp.ui.theme.UI_List_Row_2
 import com.example.inventariosapp.ui.animations.AnimatedLazyColumn
+import com.example.inventariosapp.ui.component.GlassButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,7 +62,17 @@ fun SalesView(
     Scaffold(
         topBar = {
             TopAppBar(
-                modifier = Modifier.padding(0.dp).background(UI_Backround_Top),
+                modifier = Modifier
+                    .padding(0.dp)
+                    .background(
+                        brush = Brush.horizontalGradient(
+                            colors = listOf(
+                                Color(0xFF0F2027), // Izquierda
+                                Color(0xFF203A43), // Centro
+                                Color(0xFF2C5364)  // Derecha
+                            )
+                        )
+                    ),
                 title = {
                     HeaderCmp(
                         title = "Ventas",
@@ -77,7 +82,8 @@ fun SalesView(
                 },
                 windowInsets = TopAppBarDefaults.windowInsets,
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = UI_Backround_Top,
+                    // Transparente para que se vea el gradient del modifier
+                    containerColor = Color.Transparent,
                     titleContentColor = Color.White
                 )
             )
@@ -198,7 +204,6 @@ fun SalesView(
                             montoPagado = client.montoPagado.toString(),
                             montoPagar = client.montoPorPagar.toString(),
                             saleDate = client.fechaVenta.toString().take(10),
-                            backgroundColor = Color.Transparent
                         )
                         //HorizontalDivider(thickness = 1.dp, color = UI_Divier, )
                         switchColor = !switchColor
@@ -209,23 +214,12 @@ fun SalesView(
             }
         },
         floatingActionButton = {
-            Card(
-                modifier = Modifier.clickable{ onClickAdd() },
-                elevation = CardDefaults.elevatedCardElevation(4.dp),
-                colors = CardColors(
-                    containerColor = UI_Backround_Btn_Yellow,
-                    contentColor = Color.Transparent,
-                    disabledContentColor = Color.Transparent,
-                    disabledContainerColor = Color.Transparent
-                )
-            ){
-                Image(
-                    painter = painterResource(id = R.drawable.ic_add_white),
-                    contentDescription = "Logo de la app",
-                    modifier = Modifier.size(50.dp),
-                    contentScale = ContentScale.Fit
-                )
-            }
+            GlassButton(
+                icon = Icons.Filled.Add,
+                onClick = { onClickAdd() },
+                width = 60.dp,
+                height = 60.dp
+            )
         }
     )
 }

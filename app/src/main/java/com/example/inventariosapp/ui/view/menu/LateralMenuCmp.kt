@@ -42,7 +42,6 @@ import com.example.inventariosapp.R
 import com.example.inventariosapp.navigation.Destinations
 import com.example.inventariosapp.ui.component.Loader
 import com.example.inventariosapp.util.Constants
-import com.example.inventariosapp.util.Helpers.Companion.readPersistData
 import kotlinx.coroutines.launch
 @Composable
 fun LateralMenuCmp(

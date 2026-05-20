@@ -41,6 +41,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
@@ -113,18 +114,28 @@ fun NewSaleView(
     Scaffold(
         topBar = {
             TopAppBar(
-                modifier = Modifier.padding(0.dp).background(UI_Backround_Top),
+                modifier = Modifier
+                    .padding(0.dp)
+                    .background(
+                        brush = Brush.horizontalGradient(
+                            colors = listOf(
+                                Color(0xFF0F2027), // Izquierda
+                                Color(0xFF203A43), // Centro
+                                Color(0xFF2C5364)  // Derecha
+                            )
+                        )
+                    ),
                 title = {
                     HeaderCmp(
                         title = if (sale.folio.isNullOrEmpty()) "Nueva venta" else "Editar Venta",
-                        backActivate = true,
                         onClickBack = onClickBack,
                         onClickMenu = onClickMenu
                     )
                 },
                 windowInsets = TopAppBarDefaults.windowInsets,
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = UI_Backround_Top,
+                    // Transparente para que se vea el gradient del modifier
+                    containerColor = Color.Transparent,
                     titleContentColor = Color.White
                 )
             )

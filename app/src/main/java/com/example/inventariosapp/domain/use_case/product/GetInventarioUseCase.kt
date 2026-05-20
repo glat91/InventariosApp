@@ -8,7 +8,7 @@ import javax.inject.Inject
 class GetInventarioUseCase @Inject constructor(
     private val getInventarioRepositoryImp: GetInventarioRepositoryImp
 ){
-    suspend operator fun invoke(): Pair<List<InventarioRseponeModel>?, ErrorModel?>{
-        return getInventarioRepositoryImp()
+    suspend operator fun invoke(refresh: Boolean): Pair<List<InventarioRseponeModel>?, ErrorModel?>{
+        return getInventarioRepositoryImp(refresh)
     }
 }

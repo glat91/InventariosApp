@@ -1,5 +1,6 @@
 package com.example.appgeneric.ui.component
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -18,8 +19,7 @@ import androidx.compose.ui.unit.sp
 fun TextCmp(
     text: String,
     modifier: Modifier = Modifier,
-    color: Color =
-        Color.Black,
+    color: Color = Color.Black,
     fontSize: TextUnit = 15.sp,
     fontStyle: FontStyle? = null,
     fontFamily: FontFamily? = null,
@@ -28,7 +28,8 @@ fun TextCmp(
     fontWeight: FontWeight = FontWeight.Normal,
     overflow: TextOverflow = TextOverflow.Clip,
     maxLine: Int = 1,
-    letterSpacing: TextUnit = TextUnit.Unspecified
+    letterSpacing: TextUnit = TextUnit.Unspecified,
+    style: androidx.compose.ui.text.TextStyle = MaterialTheme.typography.titleMedium,
 ) {
     Text(
         modifier = modifier,
@@ -42,7 +43,8 @@ fun TextCmp(
         textAlign = textAlign,
         overflow = overflow,
         maxLines = maxLine,
-        letterSpacing = letterSpacing
+        letterSpacing = letterSpacing,
+        style = style,
     )
 }
 

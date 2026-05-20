@@ -118,6 +118,7 @@ fun NewSaleScreen(navController: NavHostController) {
             opcions = saleUiState.filterInventory,
             expanded = saleUiState.expandenSearchBarD,
             onlineProduct = saleUiState.selectedProduct,
+            offlineProduct = saleUiState.inventoryOffline,
             onDismiss = {
                 viewModel.clearDialog()
                 addProductViewModel.resetData()

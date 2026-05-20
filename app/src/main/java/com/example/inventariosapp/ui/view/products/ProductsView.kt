@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -54,21 +55,29 @@ fun InventoryView(
     Scaffold(
         topBar = {
             TopAppBar(
-                modifier = Modifier.padding(0.dp).background(UI_Backround_Top),
+                modifier = Modifier
+                    .padding(0.dp)
+                    .background(
+                        brush = Brush.horizontalGradient(
+                            colors = listOf(
+                                Color(0xFF0F2027), // Izquierda
+                                Color(0xFF203A43), // Centro
+                                Color(0xFF2C5364)  // Derecha
+                            )
+                        )
+                    ),
                 title = {
                     HeaderCmp(
-                        title = "Busqueda",
+                        title = "Productos",
                         onClickBack = onClickBack,
                         onClickMenu = onClickMenu
                     )
                 },
                 windowInsets = TopAppBarDefaults.windowInsets,
-                colors = TopAppBarColors(
-                    containerColor = UI_List_Row_2,
-                    scrolledContainerColor = UI_List_Row_2,
-                    navigationIconContentColor = UI_List_Row_2,
-                    titleContentColor = UI_List_Row_2,
-                    actionIconContentColor =UI_List_Row_2,
+                colors = TopAppBarDefaults.topAppBarColors(
+                    // Transparente para que se vea el gradient del modifier
+                    containerColor = Color.Transparent,
+                    titleContentColor = Color.White
                 )
             )
         },

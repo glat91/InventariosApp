@@ -114,6 +114,8 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             baseViewModel.showLoader()
             val session = baseViewModel.isSessionValid()
+            val user = cnx.readPersistData(Constants.USUARIO_ID, 0)
+            baseViewModel.setUsarId(user)
             if (session) {
                 _uiState.value = _uiState.value.copy(serverValidateUser = true)
             } else {

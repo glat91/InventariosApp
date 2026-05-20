@@ -100,7 +100,7 @@ class SalesViewModel @Inject constructor(
                 if (MainActivity.endDate.value.isBlank()) { MainActivity.endDate.value = Helpers.getTomrrow() }
             }
             try {
-                val r = getPendingSalesUseCase("1",MainActivity.startDate.value, MainActivity.endDate.value)
+                val r = getPendingSalesUseCase("1",MainActivity.startDate.value, MainActivity.endDate.value, MainActivity.internetBtn.value)
                 if (r.first != null){ updateSales(r.first!! as ArrayList<SalesModel>) }
             } catch (e: Exception){
                 MainActivity.mainDialogMsg.value = e.toString()

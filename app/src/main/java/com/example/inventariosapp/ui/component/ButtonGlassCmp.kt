@@ -155,10 +155,9 @@ fun GlassButton(
             Icon(
                 imageVector = icon,
                 contentDescription = "",
-                tint = Color.White.copy(alpha = textAlpha),
+                tint = Color.White,
                 modifier = Modifier
                     .padding(horizontal = 8.dp)
-                    .clickable {  }
             )
         }
         if (label != null){

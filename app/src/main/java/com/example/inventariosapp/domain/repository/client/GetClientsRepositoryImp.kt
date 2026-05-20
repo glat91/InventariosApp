@@ -21,7 +21,7 @@ class GetClientsRepositoryImp @Inject constructor(
     private val networkMonitor: NetworkMonitor
 ) {
     suspend operator fun invoke(internetUse: Boolean): Pair<List<ClientResponseModel>?, String?>{
-        return if (networkMonitor.isConnected.value && MainActivity.internetBtn.value ) { fetchFromNetwork() }
+        return if (networkMonitor.isConnected.value && internetUse) { fetchFromNetwork() }
         else { fetchFromLocal() }
     }
 

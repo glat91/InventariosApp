@@ -29,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -66,18 +67,26 @@ fun PaymentsView(
             TopAppBar(
                 modifier = Modifier
                     .padding(0.dp)
-                    .background(UI_Backround_Top),
+                    .background(
+                        brush = Brush.horizontalGradient(
+                            colors = listOf(
+                                Color(0xFF0F2027), // Izquierda
+                                Color(0xFF203A43), // Centro
+                                Color(0xFF2C5364)  // Derecha
+                            )
+                        )
+                    ),
                 title = {
                     HeaderCmp(
                         title = "Pagos",
-                        backActivate = true,
                         onClickBack = onClickBack,
                         onClickMenu = onClickMenu
                     )
                 },
                 windowInsets = TopAppBarDefaults.windowInsets,
-                colors = TopAppBarDefaults.topAppBarColors (
-                    containerColor = UI_Backround_Top,
+                colors = TopAppBarDefaults.topAppBarColors(
+                    // Transparente para que se vea el gradient del modifier
+                    containerColor = Color.Transparent,
                     titleContentColor = Color.White
                 )
             )
@@ -187,21 +196,15 @@ fun PaymentsView(
                         animateOnScroll = true,
                         key = { it },
                     ){ client ->
-                            var switchColor = true
-                            var colorRow = if (switchColor) UI_List_Row_1 else UI_List_Row_2
-                            CardSaleCmp(
-                                modifier = Modifier.clickable { onClickRow(client) },
-                                nameClient = client.nombreCliente.toString(),
-                                folio = client.folio.toString(),
-                                payLimitDate = client.fechaLimitePago.toString().take(10),
-                                montoPagado = client.montoPagado.toString(),
-                                montoPagar = client.montoPorPagar.toString(),
-                                saleDate = client.fechaVenta.toString().take(10),
-                                backgroundColor = colorRow
-                            )
-                            HorizontalDivider(thickness = 1.dp, color = UI_Divier, )
-                            switchColor = !switchColor
 
+                        CardSaleCmp(
+                            modifier = Modifier.clickable { onClickRow(client) },
+                            nameClient = client.nombreCliente.toString(),
+                            folio = client.folio.toString(),
+                            payLimitDate = client.fechaLimitePago.toString().take(10),
+                            montoPagado = client.montoPagado.toString(),
+                            montoPagar = client.montoPorPagar.toString(),
+                            saleDate = client.fechaVenta.toString().take(10),)
                     }
                 }
             }

@@ -117,6 +117,7 @@ fun AddProductDialogCmp(
     opcions: ArrayList<ProductsResponseModel>,
     expanded: Boolean,
     onlineProduct: ProductsResponseModel?,
+    offlineProduct:InventarioRseponeModel?,
     inventario: ProductIdResponseModel,
     onDismiss: () -> Unit,
     onChangeText: (TextFieldValue) -> Unit,
@@ -263,7 +264,7 @@ fun AddProductDialogCmp(
                             CantidadSectionCmp(
                                 uiState = uiState,
                                 inventario = inventario,
-                                offlineProduct = null,
+                                offlineProduct = offlineProduct,
                                 onUpdateState = { onUpdateState(it) }
                             )
                         }
@@ -533,6 +534,7 @@ fun AddProductDialogCmpPreview(){
         search = TextFieldValue(""),
         opcions = products,
         onlineProduct = ProductsResponseModel(precioVenta1 = 10.0),
+        offlineProduct = null,
         onDismiss = {},
         onChangeText = {},
         onClickOpcion = { Log.i("Opcion___", it.toString()) },

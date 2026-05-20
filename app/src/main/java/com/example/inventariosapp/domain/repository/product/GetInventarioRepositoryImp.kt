@@ -19,8 +19,8 @@ class GetInventarioRepositoryImp @Inject constructor(
     private val inventoryDao: InventoryDao,
     private val networkMonitor: NetworkMonitor
 ) {
-    suspend operator fun invoke(): Pair<List<InventarioRseponeModel>?, ErrorModel?> {
-        return if (networkMonitor.isConnected.value && MainActivity.internetBtn.value ) { fetchFromNetwork() }
+    suspend operator fun invoke(refresh: Boolean): Pair<List<InventarioRseponeModel>?, ErrorModel?> {
+        return if (networkMonitor.isConnected.value && refresh ) { fetchFromNetwork() }
         else { fetchFromLocal() }
     }
     private suspend fun fetchFromLocal(): Pair<List<InventarioRseponeModel>?, ErrorModel?> {

@@ -1,18 +1,17 @@
 package com.example.inventariosapp.ui.view.user_sales
 
 import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowCircleUp
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -20,22 +19,17 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.inventariosapp.R
 import com.example.inventariosapp.local.entity.PostSaleWithProducts
+import com.example.inventariosapp.ui.component.GlassButton
 import com.example.inventariosapp.ui.component.HeaderCmp
 import com.example.inventariosapp.ui.component.cards.CardPenndingSaleCmp
 import com.example.inventariosapp.ui.theme.PADDING_8
-import com.example.inventariosapp.ui.theme.UI_Backround_Btn_Yellow
 import com.example.inventariosapp.ui.theme.UI_Backround_Top
 import com.example.inventariosapp.ui.theme.UI_Divier
 import com.example.inventariosapp.util.CustomEnums
@@ -53,7 +47,17 @@ fun PenndingSalesView(
     Scaffold(
         topBar = {
             TopAppBar(
-                modifier = Modifier.padding(0.dp).background(UI_Backround_Top),
+                modifier = Modifier
+                    .padding(0.dp)
+                    .background(
+                        brush = Brush.horizontalGradient(
+                            colors = listOf(
+                                Color(0xFF0F2027), // Izquierda
+                                Color(0xFF203A43), // Centro
+                                Color(0xFF2C5364)  // Derecha
+                            )
+                        )
+                    ),
                 title = {
                     HeaderCmp(
                         title = "Ventas pendientes",
@@ -63,7 +67,8 @@ fun PenndingSalesView(
                 },
                 windowInsets = TopAppBarDefaults.windowInsets,
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = UI_Backround_Top,
+                    // Transparente para que se vea el gradient del modifier
+                    containerColor = Color.Transparent,
                     titleContentColor = Color.White
                 )
             )
@@ -93,8 +98,8 @@ fun PenndingSalesView(
                                     onclickRow(sale)
                                 },
                                data = sale,
-                                status = c,
                                 onClick = { onclickRow(it) }
+                                ,orderStatus = CustomEnums.OrderStatus.PENDIENTE
                             )
                             HorizontalDivider(thickness = 1.dp, color = UI_Divier, )
                             switchColor = !switchColor
@@ -104,23 +109,12 @@ fun PenndingSalesView(
             }
         },
         floatingActionButton = {
-            Card(
-                modifier = Modifier.clickable{ onClickUpdate() },
-                elevation = CardDefaults.elevatedCardElevation(4.dp),
-                colors = CardColors(
-                    containerColor = UI_Backround_Btn_Yellow,
-                    contentColor = Color.Transparent,
-                    disabledContentColor = Color.Transparent,
-                    disabledContainerColor = Color.Transparent
-                )
-            ){
-                Image(
-                    painter = painterResource(id = R.drawable.ic_upload),
-                    contentDescription = "Logo de la app",
-                    modifier = Modifier.size(50.dp),
-                    contentScale = ContentScale.Fit
-                )
-            }
+            GlassButton(
+                icon = Icons.Filled.ArrowCircleUp,
+                onClick = { onClickUpdate() },
+                width = 60.dp,
+                height = 60.dp
+            )
         }
     )
 }

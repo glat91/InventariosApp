@@ -6,7 +6,8 @@ import com.example.appgeneric.model.payment.NewPayModel
 
 @Entity
 data class NewPayEntity(
-    @PrimaryKey var ventaId: Int = 0,
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val ventaId: Int = 0, // ventaId clave primaria back
     var montoPago: Double = 0.0,
     var fecha: String = "",
     var observaciones: String = "",

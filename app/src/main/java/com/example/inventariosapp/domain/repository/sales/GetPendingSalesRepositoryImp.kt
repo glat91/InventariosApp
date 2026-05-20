@@ -19,16 +19,9 @@ class GetPendingSalesRepositoryImp @Inject constructor(
     private val salesDao: SalesDao,
     private val networkMonitor: NetworkMonitor,
 ) {
-    suspend operator fun invoke(
-        estatusVentaIds: String,
-        startDate: String,
-        endDate: String,
-    ): Pair<List<SalesModel>?, String?> {
-        return if (networkMonitor.isConnected.value) {
-            if (MainActivity.internetBtn.value) fetchFromNetwork(estatusVentaIds, startDate, endDate)
-            else {
-                fetchFromLocal(estatusVentaIds, startDate, endDate)
-            }
+    suspend operator fun invoke(estatusVentaIds: String, startDate: String, endDate: String, refresh: Boolean): Pair<List<SalesModel>?, String?> {
+        return if (networkMonitor.isConnected.value && refresh) {
+            fetchFromNetwork(estatusVentaIds, startDate, endDate)
         }
         else { fetchFromLocal(estatusVentaIds, startDate, endDate) }
     }
