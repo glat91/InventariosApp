@@ -2,14 +2,12 @@ package com.example.inventariosapp.ui.view.login
 
 import android.content.Context
 import android.util.Log
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.inventariosapp.BaseViewModel
 import com.example.inventariosapp.MainActivity
 import com.example.inventariosapp.domain.use_case.login.ValitdateUserUseCase
 import com.example.inventariosapp.util.Constants
-import com.example.inventariosapp.util.Helpers
 import com.example.inventariosapp.util.Helpers.Companion.deletePersistKey
 import com.example.inventariosapp.util.Helpers.Companion.readPersistData
 import com.example.inventariosapp.util.Helpers.Companion.savePersistData
@@ -19,7 +17,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import androidx.compose.runtime.Immutable
 
 
 data class LoginUiState(

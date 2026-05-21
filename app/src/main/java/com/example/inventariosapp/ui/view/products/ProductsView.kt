@@ -36,6 +36,7 @@ import com.example.inventariosapp.ui.component.cards.CardInventoryCmp
 import com.example.inventariosapp.ui.component.HeaderCmp
 import com.example.inventariosapp.ui.component.SearchBarCmp
 import com.example.inventariosapp.ui.theme.PADDING_16
+import com.example.inventariosapp.ui.theme.PADDING_4
 import com.example.inventariosapp.ui.theme.PADDING_8
 import com.example.inventariosapp.ui.theme.UI_Backround_Btn_Cancel
 import com.example.inventariosapp.ui.theme.UI_Backround_Top
@@ -122,9 +123,6 @@ fun InventoryView(
                         animateOnScroll = true,
                         key = { it.productoId ?: it.codigo ?: it.hashCode() },
                     ) {product ->
-                            var switchColor = true
-                            var colorRow = if (switchColor) UI_List_Row_1 else UI_List_Row_2
-                            product.costo
                             CardInventoryCmp(
                                 producto = product.descripcionPresentacion!!,
                                 departamento = product.departamento!!,
@@ -133,10 +131,8 @@ fun InventoryView(
                                 precio2 = if (product.precioVenta2 != null && product.precioVenta2 > 0) product.precioVenta2.toString() else null,
                                 precio3 = if (product.precioVenta3 != null && product.precioVenta3 > 0) product.precioVenta3.toString() else null,
                                 precio4 = if (product.precioVenta4 != null && product.precioVenta4 > 0) product.precioVenta4.toString() else null,
-                                backgroundColor = if (product.esActivo!!) colorRow else UI_Backround_Btn_Cancel
                             )
-                            HorizontalDivider(thickness = 1.dp, color = UI_Divier, )
-                            switchColor = !switchColor
+                            HorizontalDivider(thickness = PADDING_4, color = Color.Transparent, )
                     }
                 }
             }

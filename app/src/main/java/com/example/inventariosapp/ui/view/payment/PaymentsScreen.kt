@@ -43,13 +43,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
@@ -266,12 +263,12 @@ fun PaymentsScreen(navController: NavHostController) {
                         ) {
                             TotalRow(
                                 label = "TOTAL",
-                                value = "${uiState.select?.total}"
+                                value = "$${uiState.select?.total}"
                             )
                             HorizontalDivider(thickness = 0.5.dp, color = Color.Black.copy(alpha = 0.07f))
                             TotalRow(
                                 label = "ADEUDO",
-                                value = "${uiState.select?.montoPorPagar}",
+                                value = "$${uiState.select?.montoPorPagar}",
                                 valueColor = Color(0xFFE24B4A)
                             )
                         }
@@ -342,7 +339,6 @@ fun PaymentsScreen(navController: NavHostController) {
                                             date = deposit.fecha.toString(),
                                             totalAmount = deposit.montoPago.toString(),
                                             observations = deposit.observaciones.toString(),
-                                            backgroundColor = colorRow,
                                             onClickDelete = {
                                                 viewModel.deletePayment(deposit.ventaPagoId!!, deposit, cnx)
                                             },
@@ -351,7 +347,6 @@ fun PaymentsScreen(navController: NavHostController) {
                                             }
                                         )
                                         HorizontalDivider(thickness = PADDING_4, color = Color.Transparent)
-                                        HorizontalDivider(thickness = 1.dp, color = UI_Divier)
                                         switchColor = !switchColor
                                     }
                                 }

@@ -38,9 +38,6 @@ import com.example.inventariosapp.ui.component.InputWithTitleLabelCmp
 import com.example.inventariosapp.ui.component.SearchBarCmp
 import com.example.inventariosapp.ui.theme.PADDING_16
 import com.example.inventariosapp.ui.theme.PADDING_8
-import com.example.inventariosapp.ui.theme.UI_Backround_Top
-import com.example.inventariosapp.ui.theme.UI_List_Row_1
-import com.example.inventariosapp.ui.theme.UI_List_Row_2
 import com.example.inventariosapp.ui.animations.AnimatedLazyColumn
 import com.example.inventariosapp.ui.component.GlassButton
 
@@ -82,7 +79,6 @@ fun SalesView(
                 },
                 windowInsets = TopAppBarDefaults.windowInsets,
                 colors = TopAppBarDefaults.topAppBarColors(
-                    // Transparente para que se vea el gradient del modifier
                     containerColor = Color.Transparent,
                     titleContentColor = Color.White
                 )
@@ -194,8 +190,6 @@ fun SalesView(
                         animateOnScroll = true,
                         key = { it },
                     ){ client ->
-                        var switchColor = true
-                        var colorRow = if (switchColor) UI_List_Row_1 else UI_List_Row_2
                         CardSaleCmp(
                             modifier = Modifier.clickable { onclickRow(client) },
                             nameClient = client.nombreCliente.toString(),
@@ -205,9 +199,6 @@ fun SalesView(
                             montoPagar = client.montoPorPagar.toString(),
                             saleDate = client.fechaVenta.toString().take(10),
                         )
-                        //HorizontalDivider(thickness = 1.dp, color = UI_Divier, )
-                        switchColor = !switchColor
-
                     }
                 }
 

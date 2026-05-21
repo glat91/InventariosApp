@@ -29,6 +29,7 @@ fun TextCmp(
     overflow: TextOverflow = TextOverflow.Clip,
     maxLine: Int = 1,
     letterSpacing: TextUnit = TextUnit.Unspecified,
+    lineHeight: TextUnit = TextUnit.Unspecified,
     style: androidx.compose.ui.text.TextStyle = MaterialTheme.typography.titleMedium,
 ) {
     Text(
@@ -45,6 +46,7 @@ fun TextCmp(
         maxLines = maxLine,
         letterSpacing = letterSpacing,
         style = style,
+        lineHeight = lineHeight
     )
 }
 

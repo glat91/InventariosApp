@@ -29,9 +29,8 @@ import com.example.inventariosapp.local.entity.PostSaleWithProducts
 import com.example.inventariosapp.ui.component.GlassButton
 import com.example.inventariosapp.ui.component.HeaderCmp
 import com.example.inventariosapp.ui.component.cards.CardPenndingSaleCmp
+import com.example.inventariosapp.ui.theme.PADDING_4
 import com.example.inventariosapp.ui.theme.PADDING_8
-import com.example.inventariosapp.ui.theme.UI_Backround_Top
-import com.example.inventariosapp.ui.theme.UI_Divier
 import com.example.inventariosapp.util.CustomEnums
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -91,8 +90,6 @@ fun PenndingSalesView(
                     ) {
                         var switchColor = true
                         items(data) { sale ->
-                            val c = if (sale.sale.esActivo) CustomEnums.StatusType.PENDING
-                            else CustomEnums.StatusType.ERROR
                             CardPenndingSaleCmp(
                                 modifier = Modifier.clickable {
                                     onclickRow(sale)
@@ -101,7 +98,7 @@ fun PenndingSalesView(
                                 onClick = { onclickRow(it) }
                                 ,orderStatus = CustomEnums.OrderStatus.PENDIENTE
                             )
-                            HorizontalDivider(thickness = 1.dp, color = UI_Divier, )
+                            HorizontalDivider(thickness = PADDING_4, color = Color.Transparent, )
                             switchColor = !switchColor
                         }
                     }

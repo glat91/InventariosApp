@@ -16,14 +16,12 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
 import javax.inject.Inject
 
-// uiState data class encapsulating all mutable states
 data class UiState(
     val selectedDate: LocalDate = LocalDate.now(),
     val dialogChoice: Boolean = false,

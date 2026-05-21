@@ -6,7 +6,6 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,7 +27,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.HourglassTop
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.material.icons.outlined.Payments
 import androidx.compose.material.icons.outlined.People
@@ -41,8 +38,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.RadioButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -64,7 +59,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import com.example.appgeneric.ui.component.TextCmp
 import com.example.inventariosapp.MainActivity
@@ -205,13 +199,25 @@ fun LateralMenuCmp(
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         Box(
-                            modifier = Modifier.size(28.dp).clip(RoundedCornerShape(7.dp))
+                            modifier = Modifier
+                                .size(28.dp)
+                                .clip(RoundedCornerShape(7.dp))
                                 .background(Color(0xFFE24B4A).copy(alpha = 0.08f)),
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(Icons.Outlined.Close, contentDescription = null, tint = Color(0xFFE24B4A), modifier = Modifier.size(16.dp))
+                            Icon(
+                                Icons.Outlined.Close,
+                                contentDescription = null,
+                                tint = Color(0xFFE24B4A),
+                                modifier = Modifier.size(16.dp)
+                            )
                         }
-                        TextCmp("Cerrar sesión", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = Color(0xFFE24B4A))
+                        TextCmp(
+                            "Cerrar sesión",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = Color(0xFFE24B4A)
+                        )
                     }
                     // endregion
                 }
@@ -242,12 +248,32 @@ private fun DrawerHeader(userName: String, version: String) {
             modifier = Modifier.size(40.dp).clip(RoundedCornerShape(12.dp)).background(Color(0xFF1A1A1A)),
             contentAlignment = Alignment.Center
         ) {
-            TextCmp(initials.ifEmpty { "U" }, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
+            TextCmp(
+                initials.ifEmpty { "U" },
+                fontSize = 15.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color.White
+            )
         }
         Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
-            TextCmp("Hola, $userName", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF1A1A1A), maxLine = 1, overflow = TextOverflow.Ellipsis)
-            TextCmp("v$version", fontSize = 10.sp, fontWeight = FontWeight.Medium, color = Color.Black.copy(0.38f),
-                modifier = Modifier.clip(RoundedCornerShape(5.dp)).background(Color(0xFFF3F3F3)).padding(horizontal = 6.dp, vertical = 2.dp))
+            TextCmp(
+                "Hola, $userName",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color(0xFF1A1A1A),
+                maxLine = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            TextCmp(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(5.dp))
+                    .background(Color(0xFFF3F3F3))
+                    .padding(horizontal = 6.dp, vertical = 2.dp),
+                text = "v$version",
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color.Black.copy(0.38f)
+            )
         }
     }
     HorizontalDivider(thickness = 0.5.dp, color = Color.Black.copy(alpha = 0.07f))

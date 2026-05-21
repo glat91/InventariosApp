@@ -29,7 +29,6 @@ import com.example.inventariosapp.ui.component.HeaderCmp
 import com.example.inventariosapp.ui.component.cards.CardPenndingPayCmp
 import com.example.inventariosapp.ui.theme.PADDING_4
 import com.example.inventariosapp.ui.theme.PADDING_8
-import com.example.inventariosapp.ui.theme.UI_Backround_Top
 import com.example.inventariosapp.util.CustomEnums
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,7 +62,6 @@ fun UserPaymentsView(
                 },
                 windowInsets = TopAppBarDefaults.windowInsets,
                 colors = TopAppBarDefaults.topAppBarColors(
-                    // Transparente para que se vea el gradient del modifier
                     containerColor = Color.Transparent,
                     titleContentColor = Color.White
                 )

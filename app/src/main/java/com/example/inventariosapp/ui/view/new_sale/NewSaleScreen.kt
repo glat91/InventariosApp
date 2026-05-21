@@ -88,6 +88,17 @@ fun NewSaleScreen(navController: NavHostController) {
                 if (viewModel.products.isNotEmpty() && saleUiState.newClient != null) {
                     viewModel.createSale()
                 }
+                else {
+                    if (viewModel.products.isNotEmpty()){
+                        MainActivity.mainDialogMsg.value = "No hay productos para guardar"
+                        MainActivity.mainDialog.value = true
+                    }
+                    if (saleUiState.newClient != null){
+                        MainActivity.mainDialogMsg.value = "No hay cliente para guardar"
+                        MainActivity.mainDialog.value = true
+                    }
+
+                }
             } else {
                 if (MainActivity.internetBtn.value) {
                     if (viewModel.products.isNotEmpty()) { viewModel.editSale() }
