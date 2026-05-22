@@ -3,13 +3,12 @@ package com.example.inventariosapp.ui.view.user_sales
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.inventariosapp.MainActivity
 import com.example.inventariosapp.ui.component.Loader
-import com.example.inventariosapp.ui.component.cards.CardPenndingProductCmp
+import com.example.inventariosapp.ui.component.cards.CardSellProductCmp
 import com.example.inventariosapp.ui.dialog.LoginDialogCmp
 import com.example.inventariosapp.ui.dialog.PenddingSaleDialogCmp
 import com.example.inventariosapp.ui.view.login.LoginViewModel
@@ -56,11 +55,12 @@ fun PenndingSalesScreen(navController: NavHostController) {
             content = {
                 if (uiState.selectedPenndigSale != null){
                     for (product in uiState.selectedPenndigSale!!.productos){
-                        CardPenndingProductCmp(
-                            backgroundColor = Color.Transparent,
+                        CardSellProductCmp(
                             producto = product.nombreProducto,
                             quantity = product.cantidad.toString(),
                             sellPrice = product.precioVenta.toString(),
+                            deleteIcon = false,
+                            onClickDelete = {}
                         )
                     }
 
@@ -68,8 +68,6 @@ fun PenndingSalesScreen(navController: NavHostController) {
             },
             onDismiss = { viewModel.updateDialogProduct(false) }
         )
-
     }
-
     Loader(viewModel.baseViewModel.getLoader())
 }

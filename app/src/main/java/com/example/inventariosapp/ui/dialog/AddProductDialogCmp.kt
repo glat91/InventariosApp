@@ -9,7 +9,6 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -45,11 +44,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,18 +57,13 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
@@ -83,31 +75,12 @@ import com.example.inventariosapp.domain.model.product.ProductIdResponseModel
 import com.example.inventariosapp.domain.model.product.ProductsResponseModel
 import com.example.inventariosapp.ui.component.ButtonWithImgCmp
 import com.example.inventariosapp.ui.component.cards.CardProductCmp
-import com.example.inventariosapp.ui.component.InputWithTitleLabelCmp
 import com.example.inventariosapp.ui.component.SearchBarCmp
 import com.example.inventariosapp.ui.component.SelecPriceCmp
 import com.example.inventariosapp.ui.theme.PADDING_8
 import com.example.inventariosapp.ui.theme.UI_Backround_Btn_Green
 import com.example.inventariosapp.ui.theme.UI_Backround_Btn_Red
 import com.example.inventariosapp.ui.view.new_sale.AddProductUiState
-
-@Composable
-fun rememberAvailableHeight(): Dp {
-    val density = LocalDensity.current
-    val configuration = LocalConfiguration.current
-    val imeInsets = WindowInsets.ime
-
-    return remember(configuration, density, imeInsets) {
-        derivedStateOf {
-            val screenHeight = configuration.screenHeightDp.dp
-            val imeHeight = with(density) {
-                imeInsets.getBottom(this).toDp()
-            }
-            screenHeight - imeHeight - 300.dp
-        }
-    }.value
-}
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -150,9 +123,8 @@ fun AddProductDialogCmp(
                             expanded = expanded && opcions.isNotEmpty(),
                             onDismissRequest = { onUpdateState(uiState.copy(expanded = false)) },
                             modifier = Modifier
-                                .padding(top = PADDING_8)
                                 .fillMaxWidth(.7f)
-                                .heightIn(max = 240.dp)          // ← altura máxima fija
+                                .heightIn(max = 240.dp)
                                 .windowInsetsPadding(WindowInsets.ime),
                             properties = PopupProperties(focusable = false)
                         ) {
@@ -166,7 +138,6 @@ fun AddProductDialogCmp(
                                                 onClickOpcion(option)
                                             },
                                         product = option.descripcionPresentacion.orEmpty(),
-                                        backgroundColor = Color.White
                                     )
                                 }
                             }

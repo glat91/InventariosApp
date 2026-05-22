@@ -58,8 +58,6 @@ import com.example.inventariosapp.ui.theme.PADDING_24
 import com.example.inventariosapp.ui.theme.PADDING_4
 import com.example.inventariosapp.ui.theme.PADDING_8
 import com.example.inventariosapp.ui.theme.UI_Divier
-import com.example.inventariosapp.ui.theme.UI_List_Row_1
-import com.example.inventariosapp.ui.theme.UI_List_Row_2
 
 @Composable
 fun rememberAvailableHeight(): Dp {
@@ -218,14 +216,6 @@ fun NewSaleView(
                         onClick = onClickSave
                     )
                 }
-                /*
-                ButtonWithImgCmp(
-                    text = "Salir",
-                    backGroundColor = UI_Backround_Btn_Yellow,
-                    icon = Icons.Default.Clear,
-                    onClick = onClickBack
-                )
-                 */
                 HorizontalDivider(thickness = 15.dp, color = Color.Transparent)
                 Card(
                     colors = CardDefaults.cardColors(
@@ -246,17 +236,12 @@ fun NewSaleView(
                         animateOnScroll = true,
                         key = { it },
                     ){ prod ->
-                            var switchColor = true
-                            var colorRow = if (switchColor) UI_List_Row_1 else UI_List_Row_2
                             CardSellProductCmp(
                                 producto = prod.nombreProducto ?: "",
                                 quantity = prod.Cantidad.toString(),
                                 sellPrice = prod.PrecioVenta.toString(),
-                                backgroundColor = colorRow,
                                 onClickDelete = { onClickDelete(prod) },
                             )
-                         switchColor = !switchColor
-
                     }
                 }
             }
@@ -270,48 +255,52 @@ fun NewSaleView(
                 ,
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
-                TextCmp(
-                    text = "SUBTOTAL:",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = Color.White
-                )
+                if (sale.subtotal != null){
+                    TextCmp(
+                        text = "SUBTOTAL:",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color.White
+                    )
 
-                TextCmp(
-                    text = if (sale.subtotal == null) "0.00" else sale.subtotal.toString(),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Normal,
-                    color = Color.White
-                )
+                    TextCmp(
+                        text = if (sale.subtotal == null) "$0.00" else "$${sale.subtotal}",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Normal,
+                        color = Color.White
+                    )
+                }
 
-                TextCmp(
-                    text = "IVA",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = Color.White
-                )
+                if (sale.iva != null){
+                    TextCmp(
+                        text = "IVA",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color.White
+                    )
 
-                TextCmp(
-                    text = if (sale.iva == null) "0.00" else sale.iva.toString(),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Normal,
-                    color = Color.White
-                )
+                    TextCmp(
+                        text = if (sale.iva == null) "$0.00" else "$${sale.iva}",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Normal,
+                        color = Color.White
+                    )
+                }
 
-
-                TextCmp(
-                    text = "TOTAL",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = Color.White
-                )
-
-                TextCmp(
-                    text = if (sale.total == null) "0.00" else sale.total.toString(),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Normal,
-                    color = Color.White
-                )
+                if(sale.total != null){
+                    TextCmp(
+                        text = "TOTAL",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color.White
+                    )
+                    TextCmp(
+                        text = if (sale.total == null) "$0.00" else "$${sale.total}",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Normal,
+                        color = Color.White
+                    )
+                }
             }
         }
     )

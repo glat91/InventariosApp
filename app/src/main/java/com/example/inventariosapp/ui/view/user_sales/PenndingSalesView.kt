@@ -1,6 +1,5 @@
 package com.example.inventariosapp.ui.view.user_sales
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -42,7 +41,6 @@ fun PenndingSalesView(
     onclickRow: (PostSaleWithProducts) -> Unit,
     onClickUpdate: () -> Unit,
 ) {
-    Log.i("PenndingSalesView___", "data: ${data}")
     Scaffold(
         topBar = {
             TopAppBar(
@@ -88,7 +86,6 @@ fun PenndingSalesView(
                     LazyColumn(
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        var switchColor = true
                         items(data) { sale ->
                             CardPenndingSaleCmp(
                                 modifier = Modifier.clickable {
@@ -99,7 +96,6 @@ fun PenndingSalesView(
                                 ,orderStatus = CustomEnums.OrderStatus.PENDIENTE
                             )
                             HorizontalDivider(thickness = PADDING_4, color = Color.Transparent, )
-                            switchColor = !switchColor
                         }
                     }
                 }

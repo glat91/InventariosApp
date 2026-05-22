@@ -95,7 +95,6 @@ fun CardSaleCmp(
 
         HorizontalDivider(thickness = 0.5.dp, color = Color.Black.copy(alpha = 0.07f))
 
-        // — Parte inferior: montos
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -122,16 +121,37 @@ private fun DateChip(icon: ImageVector, label: String, date: String) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        Icon(icon, contentDescription = null, tint = Color.Black.copy(0.3f), modifier = Modifier.size(12.dp))
-        TextCmp(text = label.uppercase(), fontSize = 10.sp, fontWeight = FontWeight.Medium, letterSpacing = 0.05.em, color = Color.Black.copy(0.35f))
-        TextCmp(text = date, fontSize = 12.sp, color = Color(0xFF1A1A1A))
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = Color.Black.copy(0.3f),
+            modifier = Modifier.size(12.dp)
+        )
+        TextCmp(
+            text = label.uppercase(),
+            fontSize = 10.sp,
+            fontWeight = FontWeight.Medium,
+            letterSpacing = 0.05.em,
+            color = Color.Black.copy(0.35f)
+        )
+        TextCmp(
+            text = date,
+            fontSize = 12.sp,
+            color = Color(0xFF1A1A1A)
+        )
     }
 }
 
 @Composable
 private fun MoneyGroup(label: String, value: String, highlight: Boolean) {
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-        TextCmp(text = label.uppercase(), fontSize = 10.sp, fontWeight = FontWeight.Medium, letterSpacing = 0.07.em, color = Color.Black.copy(0.35f))
+        TextCmp(
+            text = label.uppercase(),
+            fontSize = 10.sp,
+            fontWeight = FontWeight.Medium,
+            letterSpacing = 0.07.em,
+            color = Color.Black.copy(0.35f)
+        )
         TextCmp(
             text = value,
             fontSize = 15.sp,

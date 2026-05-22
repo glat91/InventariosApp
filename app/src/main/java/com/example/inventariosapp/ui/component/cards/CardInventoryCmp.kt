@@ -9,9 +9,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,17 +18,12 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.appgeneric.ui.component.TextCmp
-import com.example.inventariosapp.ui.theme.PADDING_4
-import com.example.inventariosapp.ui.theme.PADDING_8
-import com.example.inventariosapp.ui.theme.UI_Backround_Btn_Cancel
 
 @Composable
 fun CardInventoryCmp(
@@ -58,12 +50,10 @@ fun CardInventoryCmp(
             .background(Color.White)
             .border(0.5.dp, Color.Black.copy(alpha = 0.09f), RoundedCornerShape(14.dp))
     ) {
-        // ── Cuerpo ───────────────────────────────────────
         Column(
             modifier = Modifier.padding(14.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            // Nombre producto
             TextCmp(
                 text = producto,
                 fontSize = 13.sp,
@@ -78,7 +68,6 @@ fun CardInventoryCmp(
 
             HorizontalDivider(thickness = 0.5.dp, color = Color.Black.copy(alpha = 0.07f))
 
-            // Grid de precios
             val columns = 2
             prices.chunked(columns).forEach { rowItems ->
                 Row(
@@ -92,7 +81,6 @@ fun CardInventoryCmp(
                             modifier = Modifier.weight(1f)
                         )
                     }
-                    // Relleno si la fila tiene un solo item
                     if (rowItems.size < columns) {
                         Spacer(modifier = Modifier.weight(1f))
                     }
@@ -100,7 +88,6 @@ fun CardInventoryCmp(
             }
         }
 
-        // ── Footer ───────────────────────────────────────
         HorizontalDivider(thickness = 0.5.dp, color = Color.Black.copy(alpha = 0.07f))
         Row(
             modifier = Modifier
@@ -111,8 +98,19 @@ fun CardInventoryCmp(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                TextCmp(text = "COSTO", fontSize = 10.sp, fontWeight = FontWeight.Medium, letterSpacing = 0.07.em, color = Color.Black.copy(0.35f))
-                TextCmp(text = "$$costo", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = Color(0xFF1A1A1A))
+                TextCmp(
+                    text = "COSTO",
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Medium,
+                    letterSpacing = 0.07.em,
+                    color = Color.Black.copy(0.35f)
+                )
+                TextCmp(
+                    text = "$$costo",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color(0xFF1A1A1A)
+                )
             }
             TextCmp(
                 text = departamento,
@@ -132,8 +130,21 @@ fun CardInventoryCmp(
 @Composable
 private fun PriceMetaItem(label: String, value: String, modifier: Modifier = Modifier) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(2.dp)) {
-        TextCmp(text = label.uppercase(), fontSize = 10.sp, fontWeight = FontWeight.Medium, letterSpacing = 0.07.em, color = Color.Black.copy(0.35f))
-        TextCmp(text = value, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = Color(0xFF1A1A1A), maxLine = 1, overflow = TextOverflow.Ellipsis)
+        TextCmp(
+            text = label.uppercase(),
+            fontSize = 10.sp,
+            fontWeight = FontWeight.Medium,
+            letterSpacing = 0.07.em,
+            color = Color.Black.copy(0.35f)
+        )
+        TextCmp(
+            text = value,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Medium,
+            color = Color(0xFF1A1A1A),
+            maxLine = 1,
+            overflow = TextOverflow.Ellipsis
+        )
     }
 }
 

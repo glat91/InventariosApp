@@ -47,7 +47,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -245,7 +247,16 @@ private fun DrawerHeader(userName: String, version: String) {
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Box(
-            modifier = Modifier.size(40.dp).clip(RoundedCornerShape(12.dp)).background(Color(0xFF1A1A1A)),
+            modifier = Modifier
+                .size(40.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(brush = Brush.horizontalGradient(
+                    colors = listOf(
+                        Color(0xFF0F2027), // Izquierda
+                        Color(0xFF203A43), // Centro
+                        Color(0xFF2C5364)  // Derecha
+                    )
+                )),
             contentAlignment = Alignment.Center
         ) {
             TextCmp(
@@ -302,16 +313,39 @@ private fun DrawerNavItem(icon: ImageVector, label: String, selected: Boolean, o
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
-            .background(bg)
+            .background(
+                brush = if (selected)
+                    Brush.horizontalGradient(
+                        colors = listOf(
+                            Color(0xFF0F2027), // Izquierda
+                            Color(0xFF203A43), // Centro
+                            Color(0xFF2C5364)  // Derecha
+                        )
+                    )else SolidColor(Color.Transparent)
+            )
             .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null, onClick = onClick)
             .padding(horizontal = 12.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Box(modifier = Modifier.size(32.dp).clip(RoundedCornerShape(8.dp)).background(iconBg), contentAlignment = Alignment.Center) {
-            Icon(icon, contentDescription = null, tint = iconTint, modifier = Modifier.size(18.dp))
+        Box(
+            modifier = Modifier
+                .size(32.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(iconBg),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                icon,
+                contentDescription = null,
+                tint = iconTint,
+                modifier = Modifier.size(18.dp))
         }
-        TextCmp(label, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = contentColor)
+        TextCmp(
+            text = label,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Medium,
+            color = contentColor)
     }
 }
 
@@ -326,12 +360,28 @@ private fun DrawerSyncItem(label: String, date: String, onClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Box(modifier = Modifier.size(28.dp).clip(RoundedCornerShape(7.dp)).background(Color(0xFFF3F3F3)), contentAlignment = Alignment.Center) {
-            Icon(Icons.Outlined.Refresh, contentDescription = null, tint = Color.Black.copy(0.4f), modifier = Modifier.size(15.dp))
+        Box(
+            modifier = Modifier
+                .size(28.dp)
+                .clip(RoundedCornerShape(7.dp))
+                .background(Color(0xFFF3F3F3)), contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                Icons.Outlined.Refresh,
+                contentDescription = null,
+                tint = Color.Black.copy(0.4f),
+                modifier = Modifier.size(15.dp)
+            )
         }
-        TextCmp(label, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = Color(0xFF1A1A1A), modifier = Modifier.weight(1f))
         TextCmp(
-            text = if (date.isBlank()) "Sin actualizar" else date,
+            label,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Medium,
+            color = Color(0xFF1A1A1A),
+            modifier = Modifier.weight(1f)
+        )
+        TextCmp(
+            text = date.ifBlank { "Sin actualizar" },
             fontSize = 9.sp,
             color = Color.Black.copy(alpha = 0.3f)
         )
@@ -340,8 +390,12 @@ private fun DrawerSyncItem(label: String, date: String, onClick: () -> Unit) {
 
 @Composable
 private fun DrawerToggleItem(isOnline: Boolean, onToggle: () -> Unit) {
-    val thumbOffset by animateDpAsState(if (isOnline) 18.dp else 2.dp, spring(dampingRatio = Spring.DampingRatioMediumBouncy), label = "thumb")
-    val trackColor by animateColorAsState(if (isOnline) Color(0xFF1A1A1A) else Color(0xFFD5D5D5), tween(200), label = "track")
+    val thumbOffset by animateDpAsState(
+        if (isOnline) 18.dp
+            else 2.dp, spring(dampingRatio = Spring.DampingRatioMediumBouncy), label = "thumb")
+    val trackColor by animateColorAsState(
+        if (isOnline) Color(0xFF1A1A1A)
+            else Color(0xFFD5D5D5), tween(200), label = "track")
 
     Row(
         modifier = Modifier
@@ -352,10 +406,26 @@ private fun DrawerToggleItem(isOnline: Boolean, onToggle: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Box(modifier = Modifier.size(28.dp).clip(RoundedCornerShape(7.dp)).background(Color(0xFFF3F3F3)), contentAlignment = Alignment.Center) {
-            Icon(if (isOnline) Icons.Outlined.Wifi else Icons.Outlined.WifiOff, contentDescription = null, tint = Color.Black.copy(0.4f), modifier = Modifier.size(15.dp))
+        Box(
+            modifier = Modifier
+                .size(28.dp)
+                .clip(RoundedCornerShape(7.dp))
+                .background(Color(0xFFF3F3F3)), contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                modifier = Modifier.size(15.dp),
+                imageVector = if (isOnline) Icons.Outlined.Wifi else Icons.Outlined.WifiOff,
+                contentDescription = null,
+                tint = Color.Black.copy(0.4f),
+            )
         }
-        TextCmp(if (isOnline) "Modo Online" else "Modo Offline", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = Color(0xFF1A1A1A), modifier = Modifier.weight(1f))
+        TextCmp(
+            modifier = Modifier.weight(1f),
+            text = if (isOnline) "Modo Online" else "Modo Offline",
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Medium,
+            color = Color(0xFF1A1A1A),
+        )
         // Switch custom
         Box(
             modifier = Modifier

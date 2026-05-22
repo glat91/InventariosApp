@@ -134,7 +134,7 @@ fun CardPenndingSaleCmp(
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     TextCmp(
-                        text = data.sale.total.toString(),
+                        text = "$${data.sale.total}",
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.titleMedium,
                         color = Color.Black

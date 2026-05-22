@@ -1,71 +1,113 @@
 package com.example.inventariosapp.ui.component.cards
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.outlined.Inventory2
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.appgeneric.ui.component.TextCmp
-import com.example.inventariosapp.ui.theme.PADDING_4
-import com.example.inventariosapp.ui.theme.PADDING_8
-import com.example.inventariosapp.ui.theme.UI_Backround_Btn_Cancel
 
 @Composable
 fun CardProductCmp(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     product: String,
-    backgroundColor: Color,
+    isSelected: Boolean = false,
+    onClick: () -> Unit = {}
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        colors = CardColors(
-            containerColor = backgroundColor,
-            contentColor = Color.White,
-            disabledContainerColor = Color.White,
-            disabledContentColor = Color.White
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp, pressedElevation = 0.dp),
-    ){
-        Column(
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val bgColor by animateColorAsState(
+        targetValue = when {
+            isPressed -> Color(0xFFEDEDED)
+            isSelected -> Color(0xFFF0F0F0)
+            else -> Color.White
+        },
+        animationSpec = tween(130),
+        label = "itemBg"
+    )
+    val checkAlpha by animateFloatAsState(
+        targetValue = if (isSelected) 1f else 0f,
+        animationSpec = tween(150),
+        label = "check"
+    )
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(bgColor)
+            .clickable(interactionSource = interactionSource, indication = null, onClick = onClick)
+            .padding(horizontal = 14.dp, vertical = 11.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(10.dp))
-                .background(backgroundColor)
-                .padding(PADDING_8),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ){
-            TextCmp(
-                text = product,
-                modifier = Modifier.fillMaxWidth(),
-                fontWeight = FontWeight.Bold,
-                fontSize = 14.sp,
-                textAlign = TextAlign.Center,
-                color = Color.Black,
-                maxLine = 2
+                .size(28.dp)
+                .clip(RoundedCornerShape(7.dp))
+                .background(Color(0xFFF3F3F3)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Inventory2,
+                contentDescription = null,
+                tint = Color.Black.copy(alpha = 0.35f),
+                modifier = Modifier.size(15.dp)
             )
         }
+        // Nombre
+        TextCmp(
+            text = product,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Medium,
+            color = Color(0xFF1A1A1A),
+            lineHeight = 18.sp,
+            maxLine = 2,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f)
+        )
+        // Check seleccionado
+        Icon(
+            imageVector = Icons.Default.Check,
+            contentDescription = null,
+            tint = Color(0xFF1A1A1A),
+            modifier = Modifier
+                .size(16.dp)
+                .alpha(checkAlpha)
+        )
     }
-}
 
-@Preview(showBackground = true)
+}
+@Preview(showBackground = false)
 @Composable
 fun CartProductCmpPreview(){
     CardProductCmp(
         modifier = Modifier,
-        backgroundColor = Color.Transparent,
         product = "DEO AE NIVEA FRESH OCEAN CABALLERO 4/150ML",
     )
 }

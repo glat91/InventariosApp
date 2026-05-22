@@ -58,10 +58,10 @@ fun CardPenndingPayCmp(
 ) {
     val isError = status == CustomEnums.StatusType.ERROR
 
-    val bgColor        = if (isError) Color(0xFFFFF5F5) else Color(0xFFF9F9F9)
-    val accentColor    = if (isError) Color(0xFFE24B4A) else Color(0xFFBDBDBD)
-    val badgeLabel     = if (isError) "Error" else "Pendiente"
-    val badgeBg        = if (isError) Color(0xFFE24B4A).copy(alpha = 0.1f) else Color.Black.copy(alpha = 0.07f)
+    val bgColor = if (isError) Color(0xFFFFF5F5) else Color(0xFFF9F9F9)
+    val accentColor = if (isError) Color(0xFFE24B4A) else Color(0xFFBDBDBD)
+    val badgeLabel = if (isError) "Error" else "Pendiente"
+    val badgeBg = if (isError) Color(0xFFE24B4A).copy(alpha = 0.1f) else Color.Black.copy(alpha = 0.07f)
     val badgeTextColor = if (isError) Color(0xFFE24B4A) else Color.Black.copy(alpha = 0.5f)
 
     val interactionSource = remember { MutableInteractionSource() }
@@ -95,7 +95,6 @@ fun CardPenndingPayCmp(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            // Venta ID + badge status
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -109,7 +108,10 @@ fun CardPenndingPayCmp(
                                 color = Color(0xFF1A1A1A)
                             )
                         ) { append("Venta ") }
-                        withStyle(SpanStyle(fontWeight = FontWeight.Normal, color = Color.Black.copy(0.45f))) { append("#${data.ventaId}") }
+                        withStyle(SpanStyle(
+                            fontWeight = FontWeight.Normal,
+                            color = Color.Black.copy(0.45f)))
+                        { append("#${data.ventaId}") }
                     },
                     fontSize = 13.sp
                 )
@@ -134,16 +136,22 @@ fun CardPenndingPayCmp(
 
             HorizontalDivider(thickness = 0.5.dp, color = Color.Black.copy(alpha = 0.07f))
 
-            // Monto + Fecha
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                MetaItem(label = "Monto", value = "$${data.montoPago}", modifier = Modifier.weight(1f))
-                MetaItem(label = "Fecha", value = data.fecha, modifier = Modifier.weight(1f))
+                MetaItem(
+                    label = "Monto",
+                    value = "$${data.montoPago}",
+                    modifier = Modifier.weight(1f)
+                )
+                MetaItem(
+                    label = "Fecha",
+                    value = data.fecha,
+                    modifier = Modifier.weight(1f)
+                )
             }
 
-            // Observaciones
             if (!data.observaciones.isNullOrBlank()) {
                 Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     TextCmp(
@@ -169,8 +177,20 @@ fun CardPenndingPayCmp(
 @Composable
 private fun MetaItem(label: String, value: String, modifier: Modifier = Modifier) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(2.dp)) {
-        Text(text = label.uppercase(), fontSize = 10.sp, fontWeight = FontWeight.Medium, letterSpacing = 0.07.em, color = Color.Black.copy(0.35f))
-        Text(text = value, fontSize = 14.sp, fontWeight = FontWeight.Medium, color = Color(0xFF1A1A1A), maxLines = 1)
+        TextCmp(
+            text = label.uppercase(),
+            fontSize = 10.sp,
+            fontWeight = FontWeight.Medium,
+            letterSpacing = 0.07.em,
+            color = Color.Black.copy(0.35f)
+        )
+        TextCmp(
+            text = value,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Medium,
+            color = Color(0xFF1A1A1A),
+            maxLine = 1
+        )
     }
 }
 

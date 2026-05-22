@@ -37,17 +37,15 @@ fun BasicDialogCmp(
             contentAlignment = Alignment.TopCenter,
             modifier = Modifier.fillMaxWidth()
         ) {
-            // Card del contenido principal
             Card(
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 40.dp), // espacio para que entre el icono
+                    .padding(top = 40.dp),
                 colors = CardDefaults.cardColors(containerColor = backGroundColor)
             ) {
                 content()
             }
-            // Icono flotante arriba del Card
             Box(
                 modifier = Modifier
                     .size(64.dp)

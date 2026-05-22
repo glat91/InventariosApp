@@ -3,7 +3,6 @@ package com.example.inventariosapp.ui.component.cards
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -18,13 +17,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -41,20 +36,14 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.appgeneric.ui.component.TextCmp
 import com.example.inventariosapp.R
-import com.example.inventariosapp.ui.theme.PADDING_16
-import com.example.inventariosapp.ui.theme.PADDING_4
-import com.example.inventariosapp.ui.theme.PADDING_48
-import com.example.inventariosapp.ui.theme.PADDING_8
 
 @Composable
 fun CardDepositCmp(
@@ -82,8 +71,17 @@ fun CardDepositCmp(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                DepositMetaItem(label = "Fecha", value = date.take(10))
-                DepositMetaItem(label = "Monto", value = "$$totalAmount", valueSize = 16.sp, bold = true, align = Alignment.End)
+                DepositMetaItem(
+                    label = "Fecha",
+                    value = date.take(10)
+                )
+                DepositMetaItem(
+                    label = "Monto",
+                    value = "$$totalAmount",
+                    valueSize = 16.sp,
+                    bold = true,
+                    align = Alignment.End
+                )
             }
 
             HorizontalDivider(thickness = 0.5.dp, color = Color.Black.copy(alpha = 0.07f))
@@ -150,9 +148,21 @@ private fun DepositMetaItem(
     align: Alignment.Horizontal = Alignment.Start
 ) {
     Column(horizontalAlignment = align) {
-        Text(text = label.uppercase(), fontSize = 10.sp, fontWeight = FontWeight.Medium, letterSpacing = 0.07.em, color = Color.Black.copy(0.35f))
+        TextCmp(
+            text = label.uppercase(),
+            fontSize = 10.sp,
+            fontWeight = FontWeight.Medium,
+            letterSpacing = 0.07.em,
+            color = Color.Black.copy(0.35f)
+        )
         Spacer(Modifier.height(2.dp))
-        Text(text = value, fontSize = valueSize, fontWeight = if (bold) FontWeight.SemiBold else FontWeight.Medium, color = Color(0xFF1A1A1A), maxLines = 1)
+        TextCmp(
+            text = value,
+            fontSize = valueSize,
+            fontWeight = if (bold) FontWeight.SemiBold else FontWeight.Medium,
+            color = Color(0xFF1A1A1A),
+            maxLine = 1
+        )
     }
 }
 
@@ -184,8 +194,18 @@ private fun DepositActionButton(
         contentAlignment = Alignment.Center
     ) {
         when {
-            imageVector != null -> Icon(imageVector, contentDescription = contentDescription, tint = tint, modifier = Modifier.size(16.dp))
-            icon != null        -> Icon(icon, contentDescription = contentDescription, tint = tint, modifier = Modifier.size(16.dp))
+            imageVector != null -> Icon(
+                imageVector,
+                contentDescription = contentDescription,
+                tint = tint,
+                modifier = Modifier.size(16.dp)
+            )
+            icon != null -> Icon(
+                modifier = Modifier.size(16.dp),
+                painter = icon,
+                contentDescription = contentDescription,
+                tint = tint,
+            )
         }
     }
 }
