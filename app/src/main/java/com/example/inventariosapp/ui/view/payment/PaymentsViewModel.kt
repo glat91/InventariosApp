@@ -232,13 +232,12 @@ class PaymentsViewModel @Inject constructor(
                     tipoConexionId = if (internetUse) 1 else 2,
                     usuarioSesionId = userSessionId
                 )
-                onSuccess()
                 var r = postPaymentUseCase(internetUse = internetUse, newPay = listOf(createPostSale))
                 if (r.isSuccess) {
+                    onSuccess()
                     MainActivity.mainDialogMsg.value = if (internetUse) "Pago realizado con exito" else "Pago guardado en modo offline"
                     MainActivity.mainDialog.value = true
                 }
-                cleanDialog()
                 getPendingSales()
             } else {
                 baseViewModel.dialogLogin.value = true
@@ -276,7 +275,9 @@ class PaymentsViewModel @Inject constructor(
         baseViewModel.showLoader()
         _uiState.value = _uiState.value.copy(dialogBT = false, dialogDeposit = false)
         withContext(Dispatchers.IO) {
+            val internetUse = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
             try {
+                Log.i("Printer___",  "Saldo Restante: ${_uiState.value.select?.montoPorPagar!!} - ${_uiState.value.payTotalPayment.toDouble()} = $${_uiState.value.select?.montoPorPagar!! -_uiState.value.payTotalPayment.toDouble()}\n")
                 val PRINTER_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb")
                 val vendedor = context.readPersistData(Constants.NOMBRE, "")
                 var socket: BluetoothSocket? = null
@@ -308,7 +309,7 @@ class PaymentsViewModel @Inject constructor(
                             "Folio: ${_uiState.value.select?.folio}  Total: $${_uiState.value.select?.total}\n" +
                             "--------------------------------\n" +
                             "Fecha de pago: ${_uiState.value.select?.fechaVenta}\n" +
-                            "Saldo Restante: $${_uiState.value.select?.montoPorPagar!! - _uiState.value.select?.total!!}\n" +
+                            "Saldo Restante: $${_uiState.value.select?.montoPorPagar!! -_uiState.value.payTotalPayment.toDouble()}\n" +
                             "Vendedor: $vendedor \n" +
                             "\n" +
                             "              FIRMA\n" +
@@ -329,15 +330,91 @@ class PaymentsViewModel @Inject constructor(
                 _uiState.value = _uiState.value.copy(dialogBT = false)
                 showToastOnMain(context, "Impresión enviada correctamente")
                 cleanDialog()
+                MainActivity.mainDialogMsg.value = if (internetUse) "Pago realizado con exito" else "Pago guardado en modo offline"
+                MainActivity.mainDialog.value = true
             } catch (e: Exception) {
                 baseViewModel.hideLoader()
                 _uiState.value = _uiState.value.copy(dialogBT = false)
                 cleanDialog()
+                MainActivity.mainDialogMsg.value = if (internetUse) "Pago realizado con exito" else "Pago guardado en modo offline"
+                MainActivity.mainDialog.value = true
                 showToastOnMain(context, "Error al imprimir: ${e.message}")
             }
         }
     }
 
+    suspend fun connectAndReprint(
+        context: Context,
+        device: BluetoothDevice
+    ) {
+        baseViewModel.showLoader()
+        _uiState.value = _uiState.value.copy(dialogBT = false, dialogDeposit = false)
+        withContext(Dispatchers.IO) {
+            val internetUse = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
+            try {
+                Log.i("Printer1___",  "Saldo Restante: $${_uiState.value.select?.montoPorPagar}\n")
+                val PRINTER_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb")
+                val vendedor = context.readPersistData(Constants.NOMBRE, "")
+                var socket: BluetoothSocket? = null
+                try {
+                    socket = device.createRfcommSocketToServiceRecord(PRINTER_UUID)
+                    socket.connect()
+                } catch (e: IOException) {
+                    Log.e("Printer", "Fallo conexión normal, intentando fallback", e)
+                    try {
+                        val m: Method = device.javaClass.getMethod("createRfcommSocket", Int::class.javaPrimitiveType)
+                        socket = m.invoke(device, 1) as BluetoothSocket
+                        socket.connect()
+                    } catch (e2: Exception) {
+                        Log.e("Printer", "Fallo fallback", e2)
+                        showToastOnMain(context, "No se pudo conectar con ${device.name}")
+                        return@withContext
+                    }
+                }
+
+                showToastOnMain(context, "Conectado a ${device.name}")
+
+                val output = socket!!.outputStream
+                printBitmap(context, output, R.drawable.casajordan)
+                val recivo = ("--------------------------------\n" +
+                        "        Recibo de impresion\n" +
+                        "Cliente: ${_uiState.value.select?.nombreCliente!!}\n" +
+                        "Direccion: ${_uiState.value.select?.direccion!!}\n" +
+                        "Folio: ${_uiState.value.select?.folio}  Total: $${_uiState.value.select?.total}\n" +
+                        "--------------------------------\n" +
+                        "Fecha de pago: ${_uiState.value.select?.fechaVenta}\n" +
+                        "Saldo Restante: $${_uiState.value.select?.montoPorPagar!!}\n" +
+                        "Vendedor: $vendedor \n" +
+                        "\n" +
+                        "              FIRMA\n" +
+                        "\n" +
+                        "\n" +
+                        " ____________________________\n" +
+                        "\n" +
+                        "\n" +
+                        "\n").toByteArray()
+
+                output.write(recivo)
+                output.flush()
+                Thread.sleep(1100)
+
+                socket.close()
+                baseViewModel.hideLoader()
+                _uiState.value = _uiState.value.copy(dialogBT = false)
+                showToastOnMain(context, "Impresión enviada correctamente")
+                cleanDialog()
+                MainActivity.mainDialogMsg.value = if (internetUse) "Pago realizado con exito" else "Pago guardado en modo offline"
+                MainActivity.mainDialog.value = true
+            } catch (e: Exception) {
+                baseViewModel.hideLoader()
+                _uiState.value = _uiState.value.copy(dialogBT = false)
+                cleanDialog()
+                showToastOnMain(context, "Error al imprimir: ${e.message}")
+                MainActivity.mainDialogMsg.value = if (internetUse) "Pago realizado con exito" else "Pago guardado en modo offline"
+                MainActivity.mainDialog.value = true
+            }
+        }
+    }
     suspend fun showToastOnMain(context: Context, message: String) {
         withContext(Dispatchers.Main) {
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()

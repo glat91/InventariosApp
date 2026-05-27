@@ -72,8 +72,6 @@ import com.example.inventariosapp.ui.theme.UI_Backround_Btn_Green
 import com.example.inventariosapp.ui.theme.UI_Backround_Btn_Yellow
 import com.example.inventariosapp.ui.theme.UI_Backround_Top
 import com.example.inventariosapp.ui.theme.UI_Divier
-import com.example.inventariosapp.ui.theme.UI_List_Row_1
-import com.example.inventariosapp.ui.theme.UI_List_Row_2
 import com.example.inventariosapp.ui.view.login.LoginViewModel
 import com.example.inventariosapp.util.Helpers
 import kotlinx.coroutines.launch
@@ -168,18 +166,30 @@ fun PaymentsScreen(navController: NavHostController) {
                             verticalArrangement = Arrangement.Center
                         ) {
                             items(uiState.bondedDevices) { device ->
-                                Log.i("Items___", device.toString())
                                 Row(
                                     modifier = Modifier
                                         .padding(PADDING_4)
                                         .clip(RoundedCornerShape(10.dp))
                                         .background(UI_BACKGROUND_BT)
                                         .clickable {
-                                            scope.launch {
-                                                viewModel.connectAndPrint(
-                                                    context = cnx,
-                                                    device = device,
-                                                )
+                                            if (uiState.payTotalPayment.isEmpty()){
+                                                Log.i("print___", "printy")
+                                                scope.launch {
+                                                    viewModel.connectAndReprint(
+                                                        context = cnx,
+                                                        device = device,
+                                                    )
+                                                }
+                                                viewModel.cleanDialog()
+                                            }
+                                            else{
+                                                Log.i("print___", "Reprinty")
+                                                scope.launch {
+                                                    viewModel.connectAndPrint(
+                                                        context = cnx,
+                                                        device = device,
+                                                    )
+                                                }
                                             }
                                         },
                                     horizontalArrangement = Arrangement.Center,
@@ -332,9 +342,7 @@ fun PaymentsScreen(navController: NavHostController) {
                                 LazyColumn(
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
-                                    var switchColor = true
                                     items(uiState.payments) { deposit ->
-                                        var colorRow = if (switchColor) UI_List_Row_1 else UI_List_Row_2
                                         CardDepositCmp(
                                             date = deposit.fecha.toString(),
                                             totalAmount = deposit.montoPago.toString(),
@@ -343,11 +351,11 @@ fun PaymentsScreen(navController: NavHostController) {
                                                 viewModel.deletePayment(deposit.ventaPagoId!!, deposit, cnx)
                                             },
                                             onClickPrint = {
+                                                Log.i("Print___", deposit.toString())
                                                 permissionLauncher.launch(viewModel.permissions)
                                             }
                                         )
                                         HorizontalDivider(thickness = PADDING_4, color = Color.Transparent)
-                                        switchColor = !switchColor
                                     }
                                 }
                             }
