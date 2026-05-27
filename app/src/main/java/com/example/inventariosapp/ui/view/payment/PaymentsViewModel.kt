@@ -48,7 +48,16 @@ import java.time.ZoneId
 import java.util.UUID
 import javax.inject.Inject
 import kotlinx.coroutines.flow.update
+import java.time.format.DateTimeFormatter
 
+fun String.toMexicanDate(): String {
+    return try {
+        LocalDate.parse(this)
+            .format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+    } catch (e: Exception) {
+        this
+    }
+}
 data class PaymentsUiState(
     val search: TextFieldValue = TextFieldValue(""),
     val selectedDate: LocalDate = LocalDate.now(),
@@ -277,7 +286,7 @@ class PaymentsViewModel @Inject constructor(
         withContext(Dispatchers.IO) {
             val internetUse = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
             try {
-                Log.i("Printer___",  "Saldo Restante: ${_uiState.value.select?.montoPorPagar!!} - ${_uiState.value.payTotalPayment.toDouble()} = $${_uiState.value.select?.montoPorPagar!! -_uiState.value.payTotalPayment.toDouble()}\n")
+                Log.i("Printer___",  _uiState.value.select?.fechaVenta!!.split("T")[0].toMexicanDate())
                 val PRINTER_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb")
                 val vendedor = context.readPersistData(Constants.NOMBRE, "")
                 var socket: BluetoothSocket? = null
@@ -308,7 +317,8 @@ class PaymentsViewModel @Inject constructor(
                             "Direccion: ${_uiState.value.select?.direccion!!}\n" +
                             "Folio: ${_uiState.value.select?.folio}  Total: $${_uiState.value.select?.total}\n" +
                             "--------------------------------\n" +
-                            "Fecha de pago: ${_uiState.value.select?.fechaVenta}\n" +
+                            "Fecha de pago: ${_uiState.value.select?.fechaVenta!!.split("T")[0].toMexicanDate()}\n" +
+                            "Monto pagado: ${_uiState.value.payTotalPayment}\n" +
                             "Saldo Restante: $${_uiState.value.select?.montoPorPagar!! -_uiState.value.payTotalPayment.toDouble()}\n" +
                             "Vendedor: $vendedor \n" +
                             "\n" +
@@ -352,7 +362,11 @@ class PaymentsViewModel @Inject constructor(
         withContext(Dispatchers.IO) {
             val internetUse = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
             try {
-                Log.i("Printer1___",  "Saldo Restante: $${_uiState.value.select?.montoPorPagar}\n")
+                Log.i("Printer1___",  "Saldo Restante: $${_uiState.value.select?.montoPorPagar}\n ${
+                    _uiState.value.select?.fechaVenta!!.split(
+                        "T"
+                    )[0]
+                }")
                 val PRINTER_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb")
                 val vendedor = context.readPersistData(Constants.NOMBRE, "")
                 var socket: BluetoothSocket? = null
@@ -382,7 +396,8 @@ class PaymentsViewModel @Inject constructor(
                         "Direccion: ${_uiState.value.select?.direccion!!}\n" +
                         "Folio: ${_uiState.value.select?.folio}  Total: $${_uiState.value.select?.total}\n" +
                         "--------------------------------\n" +
-                        "Fecha de pago: ${_uiState.value.select?.fechaVenta}\n" +
+                        "Fecha de pago: ${_uiState.value.select?.fechaVenta!!.split("T")[0].toMexicanDate()}\n" +
+                        "Monto pagado: ${_uiState.value.select?.montoPagado}\n" +
                         "Saldo Restante: $${_uiState.value.select?.montoPorPagar!!}\n" +
                         "Vendedor: $vendedor \n" +
                         "\n" +

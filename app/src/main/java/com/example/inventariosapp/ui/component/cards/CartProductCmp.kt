@@ -38,7 +38,6 @@ fun CardProductCmp(
     modifier: Modifier = Modifier,
     product: String,
     isSelected: Boolean = false,
-    onClick: () -> Unit = {}
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
@@ -61,7 +60,6 @@ fun CardProductCmp(
         modifier = modifier
             .fillMaxWidth()
             .background(bgColor)
-            .clickable(interactionSource = interactionSource, indication = null, onClick = onClick)
             .padding(horizontal = 14.dp, vertical = 11.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp)
