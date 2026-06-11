@@ -20,7 +20,7 @@ class SessionManager @Inject constructor(
         private const val KEY_LOGIN_ELAPSED = "key_login_elapsed"
         private const val KEY_LOGIN_WALL = "key_login_wall"
         private const val KEY_SESSION_ACTIVE = "key_session_active"
-        private const val SESSION_DURATION = 8 * 60 * 60 * 1000L
+        private const val SESSION_DURATION = 5000 * 60 * 60 * 1000L
     }
     val dialogLogin = mutableStateOf(false)
 

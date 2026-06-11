@@ -186,9 +186,23 @@ fun NewSaleView(
                                                     onClickOpcion(option)
                                                 },
                                             textAlign = TextAlign.Center,
-                                            maxLine = 1
+                                            maxLine = 1,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 16.sp
                                         )
-
+                                        TextCmp(
+                                            option.direccion.toString(),
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .clickable {
+                                                    onDissmissSearchBar()
+                                                    onClickOpcion(option)
+                                                },
+                                            textAlign = TextAlign.Center,
+                                            maxLine = 2,
+                                            fontWeight = FontWeight.Normal,
+                                            fontSize = 14.sp
+                                        )
                                     }
                                 }
                                 HorizontalDivider(thickness = 1.dp, color = UI_Divier, )
@@ -234,7 +248,6 @@ fun NewSaleView(
                         initialBlurRadius = 12.dp,
                         staggerEnabled = true,
                         animateOnScroll = true,
-                        key = { it },
                     ){ prod ->
                             CardSellProductCmp(
                                 producto = prod.nombreProducto ?: "",

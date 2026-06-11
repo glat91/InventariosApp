@@ -42,6 +42,13 @@ class Helpers {
             val date = yesterday.format(formatter)
             return date
         }
+        fun getToday(): String {
+            val now = java.time.LocalDateTime.now()
+            val formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+            val date = now.format(formatter)
+            return date
+        }
         fun get6Months(): String{
             val now = java.time.LocalDateTime.now()
             val yesterday = now.minusMonths(6)

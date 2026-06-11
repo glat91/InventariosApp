@@ -231,7 +231,7 @@ class NewSaleViewModel @Inject constructor(
     fun getFilter(filter: TextFieldValue){
         _uiState.update { it.copy(search = filter) }
         updateExpandenSearchBarD(true)
-        Log.i("Filtro___", _uiState.value.expandenSearchBarD.toString())
+        Log.i("Filtro___", _uiState.value.search.text.trim())
         val data = _uiState.value.inventory ?: arrayListOf()
         val query = _uiState.value.search.text.trim()
         val filterInventory =
@@ -240,7 +240,7 @@ class NewSaleViewModel @Inject constructor(
                 ArrayList(data)
             } else {
                 _uiState.update {
-                    it.copy(expandenSearchBarD = query.length < 8)
+                    it.copy(expandenSearchBarD = query.length < 10)
                 }
                 ArrayList(data.filter {
                     it.descripcion?.contains(query, ignoreCase = true) == true
@@ -275,7 +275,7 @@ class NewSaleViewModel @Inject constructor(
             else{
                 val r2 = getInventarioUseCase(MainActivity.internetBtn.value)
                 if (r2.first != null) {
-                    val filtro = r2.first!!.first { it.productoId == productId }
+                    val filtro = r2.first!!.firstOrNull { it.productoId == productId }
                     Log.i("Filtro___", filtro.toString())
                     _uiState.update { it.copy(inventoryOffline = filtro) }
                 }

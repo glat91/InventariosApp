@@ -91,11 +91,11 @@ class SalesViewModel @Inject constructor(
         baseViewModel.showLoader()
         viewModelScope.launch{
             if (MainActivity.startDate.value.isBlank() && MainActivity.endDate.value.isBlank()) {
-                MainActivity.startDate.value = Helpers.getYesterday()
-                MainActivity.endDate.value = Helpers.getTomrrow()
+                MainActivity.startDate.value = Helpers.getToday()
+                MainActivity.endDate.value = Helpers.getToday()
             } else {
-                if (MainActivity.startDate.value.isBlank()) { MainActivity.startDate.value = Helpers.getDate() }
-                if (MainActivity.endDate.value.isBlank()) { MainActivity.endDate.value = Helpers.getTomrrow() }
+                if (MainActivity.startDate.value.isBlank()) { MainActivity.startDate.value = Helpers.getToday() }
+                if (MainActivity.endDate.value.isBlank()) { MainActivity.endDate.value = Helpers.getToday() }
             }
             try {
                 val r = getPendingSalesUseCase("1",MainActivity.startDate.value, MainActivity.endDate.value, MainActivity.internetBtn.value)

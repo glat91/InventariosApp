@@ -75,6 +75,8 @@ import com.example.inventariosapp.ui.theme.UI_Divier
 import com.example.inventariosapp.ui.view.login.LoginViewModel
 import com.example.inventariosapp.util.Helpers
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.ZoneId
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -214,6 +216,23 @@ fun PaymentsScreen(navController: NavHostController) {
     // endregion
     // region Dialog Date
     if (uiState.showDatePicker) {
+        val currentDate = if (uiState.dialogChoice)
+            uiState.endDate
+        else
+            uiState.startDate
+
+        val initialMillis = try {
+            LocalDate.parse(currentDate)
+                .atStartOfDay(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli()
+        } catch (_: Exception) {
+            null
+        }
+
+        val datePickerState = rememberDatePickerState(
+            initialSelectedDateMillis = initialMillis
+        )
         DatePickerDialog(
             onDismissRequest = { viewModel.updateShowDatePicker(false) },
             confirmButton = {

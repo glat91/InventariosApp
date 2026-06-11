@@ -48,6 +48,7 @@ import java.time.ZoneId
 import java.util.UUID
 import javax.inject.Inject
 import kotlinx.coroutines.flow.update
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 fun String.toMexicanDate(): String {
@@ -157,7 +158,7 @@ class PaymentsViewModel @Inject constructor(
         val millis = datePickerState.selectedDateMillis
         if (millis != null) {
             val selectedDate = Instant.ofEpochMilli(millis)
-                .atZone(ZoneId.systemDefault())
+                .atZone(ZoneOffset.UTC)
                 .toLocalDate()
             _uiState.value = _uiState.value.copy(selectedDate = selectedDate)
             if (_uiState.value.dialogChoice) {
@@ -194,13 +195,13 @@ class PaymentsViewModel @Inject constructor(
     fun getPendingSales() {
         baseViewModel.showLoader()
         if (_uiState.value.startDate.isBlank() && _uiState.value.endDate.isBlank()) {
-            _uiState.value = _uiState.value.copy(startDate = Helpers.getYesterday(), endDate = Helpers.getTomrrow())
+            _uiState.value = _uiState.value.copy(startDate = Helpers.getToday(), endDate = Helpers.getToday())
         } else {
             if (_uiState.value.startDate.isBlank()) {
-                _uiState.value = _uiState.value.copy(startDate = Helpers.getDate())
+                _uiState.value = _uiState.value.copy(startDate = Helpers.getToday())
             }
             if (_uiState.value.endDate.isBlank()) {
-                _uiState.value = _uiState.value.copy(endDate = Helpers.getTomrrow())
+                _uiState.value = _uiState.value.copy(endDate = Helpers.getToday())
             }
         }
         viewModelScope.launch {

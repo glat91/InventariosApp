@@ -124,12 +124,12 @@ fun AddProductDialogCmp(
                             onDismissRequest = { onUpdateState(uiState.copy(expanded = false)) },
                             modifier = Modifier
                                 .fillMaxWidth(.7f)
-                                .heightIn(max = 240.dp)
-                                .windowInsetsPadding(WindowInsets.ime),
+                                .heightIn(max = 240.dp),
                             properties = PopupProperties(focusable = false)
                         ) {
                             Column(modifier = Modifier) {
-                                opcions.forEach { option ->
+                                opcions.take(10).forEach { option ->
+                                    Log.i("Product___", option.toString())
                                     CardProductCmp(
                                         modifier = Modifier
                                             .fillMaxWidth()
