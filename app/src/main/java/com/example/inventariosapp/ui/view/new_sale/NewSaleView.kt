@@ -190,19 +190,21 @@ fun NewSaleView(
                                             fontWeight = FontWeight.Bold,
                                             fontSize = 16.sp
                                         )
-                                        TextCmp(
-                                            option.direccion.toString(),
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .clickable {
-                                                    onDissmissSearchBar()
-                                                    onClickOpcion(option)
-                                                },
-                                            textAlign = TextAlign.Center,
-                                            maxLine = 2,
-                                            fontWeight = FontWeight.Normal,
-                                            fontSize = 14.sp
-                                        )
+                                        if (option.direccion != null){
+                                            TextCmp(
+                                                option.direccion,
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .clickable {
+                                                        onDissmissSearchBar()
+                                                        onClickOpcion(option)
+                                                    },
+                                                textAlign = TextAlign.Center,
+                                                maxLine = 2,
+                                                fontWeight = FontWeight.Normal,
+                                                fontSize = 14.sp
+                                            )
+                                        }
                                     }
                                 }
                                 HorizontalDivider(thickness = 1.dp, color = UI_Divier, )

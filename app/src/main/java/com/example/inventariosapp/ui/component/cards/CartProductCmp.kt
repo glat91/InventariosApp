@@ -64,20 +64,6 @@ fun CardProductCmp(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .size(28.dp)
-                .clip(RoundedCornerShape(7.dp))
-                .background(Color(0xFFF3F3F3)),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.Inventory2,
-                contentDescription = null,
-                tint = Color.Black.copy(alpha = 0.35f),
-                modifier = Modifier.size(15.dp)
-            )
-        }
         // Nombre
         TextCmp(
             text = product,

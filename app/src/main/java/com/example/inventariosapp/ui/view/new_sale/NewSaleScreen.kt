@@ -141,7 +141,8 @@ fun NewSaleScreen(navController: NavHostController) {
                 viewModel.updateSelectedProduct(it)
                 viewModel.updateExpandenSearchBarD(false)
                 viewModel.getProductInventario(it.productoId!!)
-
+                addProductViewModel.resetData()
+                viewModel.updatePrice(0.0)
             },
             onClickPrice = { viewModel.updatePrice(it) },
             inventario = saleUiState.totalInventory,

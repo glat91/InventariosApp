@@ -115,10 +115,49 @@ class NewSaleViewModel @Inject constructor(
         }
     }
 
+    private fun validateProductsWithDb(): Boolean {
+        val inventoryList = _uiState.value.inventory
+        if (inventoryList.isNullOrEmpty()) {
+            MainActivity.mainDialogMsg.value = "Error: No se ha cargado la base de datos de productos para la validación."
+            MainActivity.mainDialog.value = true
+            return false
+        }
+        for (p in products) {
+            val dbProduct = inventoryList.find { 
+                it.productoId == p.ProductoId || it.descripcion.equals(p.nombreProducto, ignoreCase = true) 
+            }
+            if (dbProduct == null) {
+                MainActivity.mainDialogMsg.value = "Error: El producto '${p.nombreProducto}' no existe en la base de datos interna."
+                MainActivity.mainDialog.value = true
+                return false
+            }
+            
+            val dbPrices = listOfNotNull(
+                dbProduct.precioVenta1,
+                dbProduct.precioVenta2?.takeIf { it > 0.001 },
+                dbProduct.precioVenta3?.takeIf { it > 0.001 },
+                dbProduct.precioVenta4?.takeIf { it > 0.001 }
+            )
+            
+            val selectedPrice = p.PrecioVenta ?: 0.0
+            val hasMatchingPrice = dbPrices.any { Math.abs(it - selectedPrice) < 0.001 }
+            if (!hasMatchingPrice) {
+                MainActivity.mainDialogMsg.value = "Error: El precio ($${selectedPrice}) para el producto '${p.nombreProducto}' no coincide con ningún precio registrado."
+                MainActivity.mainDialog.value = true
+                return false
+            }
+        }
+        return true
+    }
+
     fun editSale() {
         _uiState.update { it.copy(canModifyClient = false) }
         baseViewModel.showLoader()
         viewModelScope.launch {
+            if (!validateProductsWithDb()) {
+                baseViewModel.hideLoader()
+                return@launch
+            }
             val internetUse = Helpers.isInternetAvailable(cnx)
             val updatedSaleData = _uiState.value.saleData.copy(
                 ventaProductos = java.util.ArrayList(products),
@@ -161,6 +200,21 @@ class NewSaleViewModel @Inject constructor(
     }
 
     fun addRow(data: ProductsResponseModel, comentarios: String, productState: AddProductUiState) {
+        val selectedPrice = _uiState.value.price
+        val dbPrices = listOfNotNull(
+            data.precioVenta1,
+            data.precioVenta2?.takeIf { it > 0.001 },
+            data.precioVenta3?.takeIf { it > 0.001 },
+            data.precioVenta4?.takeIf { it > 0.001 }
+        )
+
+        val hasMatchingPrice = dbPrices.any { Math.abs(it - selectedPrice) < 0.001 }
+        if (!hasMatchingPrice) {
+            MainActivity.mainDialogMsg.value = "Error: El precio seleccionado no coincide con ninguno de los precios registrados en la base de datos para este producto."
+            MainActivity.mainDialog.value = true
+            return
+        }
+
         var newTotal = BigDecimal(0.0)
         val p = if (_uiState.value.canModifyClient) data.productoId ?: 0 else 0
         Log.i("C___", productState.comentarios)
@@ -170,7 +224,7 @@ class NewSaleViewModel @Inject constructor(
                 VentaId = _uiState.value.sale.ventaId,
                 ProductoId = data.productoId,
                 Cantidad = productState.quantity.toInt(),
-                PrecioVenta = _uiState.value.price,
+                PrecioVenta = selectedPrice,
                 Costo = data.costo,
                 CantidadSolicitada = productState.quantity.toInt(),
                 VentaIdInterno = null,
@@ -179,9 +233,9 @@ class NewSaleViewModel @Inject constructor(
                 comentarios = productState.comentarios
             )
         )
-        for (p in products) {
-            newTotal += (p.PrecioVenta!! * p.Cantidad!!.toDouble()).toBigDecimal()
-            Log.i("Total_Product___", "${p.PrecioVenta} * ${p.Cantidad} = ${newTotal}")
+        for (prod in products) {
+            newTotal += (prod.PrecioVenta!! * prod.Cantidad!!.toDouble()).toBigDecimal()
+            Log.i("Total_Product___", "${prod.PrecioVenta} * ${prod.Cantidad} = ${newTotal}")
         }
         _uiState.update {
             it.copy(
@@ -290,6 +344,10 @@ class NewSaleViewModel @Inject constructor(
     fun createSale() {
         baseViewModel.showLoader()
         viewModelScope.launch {
+            if (!validateProductsWithDb()) {
+                baseViewModel.hideLoader()
+                return@launch
+            }
             val usuarioSesionId = baseViewModel.getUsiarioId()
             if (baseViewModel.isSessionValid()) {
                 val internetUse = Helpers.isInternetAvailable(cnx) && MainActivity.internetBtn.value
