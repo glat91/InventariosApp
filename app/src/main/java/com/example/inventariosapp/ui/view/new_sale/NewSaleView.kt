@@ -1,6 +1,7 @@
 package com.example.inventariosapp.ui.view.new_sale
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Create
@@ -32,6 +34,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
@@ -39,6 +43,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -176,34 +181,43 @@ fun NewSaleView(
                                             .fillMaxWidth()
                                             .padding(PADDING_4)
                                     ) {
-                                        HorizontalDivider(thickness = 1.dp, color = UI_Divier, )
-                                        TextCmp(
-                                            option.nombreCliente.toString(),
+                                        Column(
                                             modifier = Modifier
                                                 .fillMaxWidth()
+                                                .shadow(1.dp, RoundedCornerShape(14.dp), ambientColor = Color.Black.copy(0.05f))
+                                                .clip(RoundedCornerShape(14.dp))
+                                                .background(Color.White)
+                                                .border(0.5.dp, Color.Black.copy(alpha = 0.09f), RoundedCornerShape(14.dp))
                                                 .clickable {
                                                     onDissmissSearchBar()
                                                     onClickOpcion(option)
-                                                },
-                                            textAlign = TextAlign.Center,
-                                            maxLine = 1,
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 16.sp
-                                        )
-                                        if (option.direccion != null){
+                                                }
+                                                .padding(horizontal = 14.dp, vertical = 11.dp),
+                                            verticalArrangement = Arrangement.spacedBy(3.dp)
+                                        ) {
                                             TextCmp(
-                                                option.direccion,
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .clickable {
-                                                        onDissmissSearchBar()
-                                                        onClickOpcion(option)
-                                                    },
+                                                text = option.nombreCliente.toString(),
+                                                modifier = Modifier.fillMaxWidth(),
                                                 textAlign = TextAlign.Center,
-                                                maxLine = 2,
-                                                fontWeight = FontWeight.Normal,
-                                                fontSize = 14.sp
+                                                maxLine = 1,
+                                                overflow = TextOverflow.Ellipsis,
+                                                fontWeight = FontWeight.SemiBold,
+                                                fontSize = 16.sp,
+                                                color = Color(0xFF1A1A1A)
                                             )
+                                            if (option.direccion != null) {
+                                                TextCmp(
+                                                    text = option.direccion,
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    textAlign = TextAlign.Center,
+                                                    maxLine = 2,
+                                                    overflow = TextOverflow.Ellipsis,
+                                                    fontWeight = FontWeight.Normal,
+                                                    fontSize = 11.sp,
+                                                    color = Color.Black.copy(alpha = 0.45f),
+                                                    lineHeight = 15.sp
+                                                )
+                                            }
                                         }
                                     }
                                 }

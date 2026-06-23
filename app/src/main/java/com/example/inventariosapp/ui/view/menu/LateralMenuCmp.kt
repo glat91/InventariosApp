@@ -1,6 +1,7 @@
 package com.example.inventariosapp.ui.view.menu
 
 
+import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
@@ -81,7 +82,8 @@ fun LateralMenuCmp(
     val cnx = LocalContext.current
     val version = cnx.packageManager.getPackageInfo(cnx.packageName, 0).versionName
 
-    LaunchedEffect(true) {
+    LaunchedEffect(MainActivity.drawerState.isOpen) {
+        Log.d("LateralMenuCmp___", "Ejecutando LaunchedEffect")
         if (menuViewModel.userName.value.isBlank()) {
             menuViewModel.userName.value = menuViewModel.baseViewModel.getGetName()
         }

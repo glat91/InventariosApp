@@ -4,14 +4,14 @@ import com.example.inventariosapp.local.entity.ClientEntity
 import com.google.gson.annotations.SerializedName
 
 data class ClientResponseModel(
-    @SerializedName("clienteId") val clienteId: Int? = null,
+    @SerializedName("clienteId") var clienteId: Int? = null,
     @SerializedName("tipoPersonaId") val tipoPersonaId: Int? = null,
     @SerializedName("tipoPersona") val tipoPersona: String? = null,
     @SerializedName("tipoGiroId") val tipoGiroId: Int? = null,
     @SerializedName("tipoGiro") val tipoGiro: String? = null,
     @SerializedName("tipoPagoId") val tipoPagoId: Int? = null,
     @SerializedName("tipoPago") val tipoPago: String? = null,
-    @SerializedName("nombreCliente") val nombreCliente: String? = null,
+    @SerializedName("nombreCliente") var nombreCliente: String? = null,
     @SerializedName("razonSocial") val razonSocial: String? = null,
     @SerializedName("rfc") val rfc: String? = null,
     @SerializedName("curp") val curp: String? = null,

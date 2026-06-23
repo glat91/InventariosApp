@@ -4,15 +4,15 @@ import com.example.inventariosapp.local.entity.ProductEntity
 import com.google.gson.annotations.SerializedName
 
 data class ProductsResponseModel(
-    @SerializedName("productoId") val productoId: Int? = null,
+    @SerializedName("productoId") var productoId: Int? = null,
     @SerializedName("codigo") val codigo: String? = null,
     @SerializedName("departamento") val departamento: String? = null,
-    @SerializedName("descripcion") val descripcion: String? = null,
-    @SerializedName("descripcionPresentacion") val descripcionPresentacion: String? = null,
+    @SerializedName("descripcion") var descripcion: String? = null,
+    @SerializedName("descripcionPresentacion") var descripcionPresentacion: String? = null,
     @SerializedName("estatus") val estatus: String? = null,
     @SerializedName("esActivo") val esActivo: Boolean? = null,
-    @SerializedName("costo") val costo: Double? = null,
-    @SerializedName("precioVenta1") val precioVenta1: Double? = null,
+    @SerializedName("costo") var costo: Double? = null,
+    @SerializedName("precioVenta1") var precioVenta1: Double? = null,
     @SerializedName("precioVenta2") val precioVenta2: Double? = null,
     @SerializedName("precioVenta3") val precioVenta3: Double? = null,
     @SerializedName("precioVenta4") val precioVenta4: Double? = null,

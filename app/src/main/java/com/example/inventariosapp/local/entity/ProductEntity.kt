@@ -8,15 +8,15 @@ import com.example.inventariosapp.domain.model.product.ProductsResponseModel
 @Entity(tableName = "product_table")
 data class ProductEntity(
     @PrimaryKey
-    @ColumnInfo("productoId") val productoId: Int? = null,
+    @ColumnInfo("productoId") var productoId: Int? = null,
     @ColumnInfo("codigo") val codigo: String? = null,
     @ColumnInfo("departamento") val departamento: String? = null,
-    @ColumnInfo("descripcion") val descripcion: String? = null,
+    @ColumnInfo("descripcion") var descripcion: String? = null,
     @ColumnInfo("descripcionPresentacion") val descripcionPresentacion: String? = null,
     @ColumnInfo("estatus") val estatus: String? = null,
     @ColumnInfo("esActivo") val esActivo: Boolean? = null,
     @ColumnInfo("costo") val costo: Double? = null,
-    @ColumnInfo("precioVenta1") val precioVenta1: Double? = null,
+    @ColumnInfo("precioVenta1") var precioVenta1: Double? = null,
     @ColumnInfo("precioVenta2") val precioVenta2: Double? = null,
     @ColumnInfo("precioVenta3") val precioVenta3: Double? = null,
     @ColumnInfo("precioVenta4") val precioVenta4: Double? = null,

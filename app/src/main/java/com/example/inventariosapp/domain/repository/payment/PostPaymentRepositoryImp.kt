@@ -20,9 +20,9 @@ class PostPaymentRepositoryImp @Inject constructor(
                     val response = apiService.setPayment(payments = newPay)
                     if (response.isSuccessful) { Result.success(Unit) }
                     else {
-                        MainActivity.mainDialogMsg.value = "Error ${response.code()}: ${response.errorBody()?.string()}"
+                        MainActivity.mainDialogMsg.value = "Error en la respuesta del servidor"
                         MainActivity.mainDialog.value = true
-                        Result.failure(Exception("Error ${response.code()}: ${response.errorBody()?.string()}"))
+                        Result.failure(Exception("Error en la respuesta del servidor"))
                     }
                 }
                 else{

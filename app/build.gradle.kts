@@ -16,7 +16,7 @@ android {
         minSdk = 26
         targetSdk = 36
         versionCode = 1
-        versionName = "1.QA22"
+        versionName = "1.QA24"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         
     }
@@ -56,6 +56,9 @@ dependencies {
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.foundation.layout)
     implementation(libs.androidx.ui.text)
+    implementation(libs.core.ktx)
+    implementation(libs.androidx.ui.test.junit4)
+    implementation(libs.androidx.navigation.testing)
 
     debugImplementation(platform(libs.androidx.compose.bom))
     debugImplementation(libs.androidx.ui.tooling)
@@ -88,6 +91,11 @@ dependencies {
 
     // Testing
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+
+    // Arch Core Testing para InstantTaskExecutorRule
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso)

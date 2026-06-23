@@ -8,14 +8,14 @@ import com.example.inventariosapp.domain.model.client.ClientResponseModel
 @Entity(tableName = "client_table")
 data class ClientEntity(
     @PrimaryKey
-    @ColumnInfo("clienteId")val clienteId: Int,
+    @ColumnInfo("clienteId") var clienteId: Int,
     @ColumnInfo("tipoPersonaId") val tipoPersonaId: Int?,
     @ColumnInfo("tipoPersona") val tipoPersona: String?,
     @ColumnInfo("tipoGiroId") val tipoGiroId: Int?,
     @ColumnInfo("tipoGiro") val tipoGiro: String?,
     @ColumnInfo("tipoPagoId") val tipoPagoId: Int?,
     @ColumnInfo("tipoPago") val tipoPago: String?,
-    @ColumnInfo("nombreCliente") val nombreCliente: String?,
+    @ColumnInfo("nombreCliente") var nombreCliente: String?,
     @ColumnInfo("razonSocial") val razonSocial: String?,
     @ColumnInfo("rfc") val rfc: String?,
     @ColumnInfo("curp") val curp: String?,

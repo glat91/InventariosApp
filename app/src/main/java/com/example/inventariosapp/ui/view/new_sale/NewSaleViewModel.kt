@@ -118,13 +118,15 @@ class NewSaleViewModel @Inject constructor(
     private fun validateProductsWithDb(): Boolean {
         val inventoryList = _uiState.value.inventory
         if (inventoryList.isNullOrEmpty()) {
-            MainActivity.mainDialogMsg.value = "Error: No se ha cargado la base de datos de productos para la validación."
+            MainActivity.mainDialogMsg.value = "Error: venta corrupta favor reiniciar la app, y actualizar offline"
             MainActivity.mainDialog.value = true
             return false
         }
         for (p in products) {
             val dbProduct = inventoryList.find { 
-                it.productoId == p.ProductoId || it.descripcion.equals(p.nombreProducto, ignoreCase = true) 
+                it.productoId == p.ProductoId || 
+                it.descripcionPresentacion.equals(p.nombreProducto, ignoreCase = true) ||
+                it.descripcion.equals(p.nombreProducto, ignoreCase = true)
             }
             if (dbProduct == null) {
                 MainActivity.mainDialogMsg.value = "Error: El producto '${p.nombreProducto}' no existe en la base de datos interna."
@@ -229,7 +231,7 @@ class NewSaleViewModel @Inject constructor(
                 CantidadSolicitada = productState.quantity.toInt(),
                 VentaIdInterno = null,
                 Venta = null,
-                nombreProducto = data.descripcion ?: "",
+                nombreProducto = data.descripcionPresentacion ?: "",
                 comentarios = productState.comentarios
             )
         )
