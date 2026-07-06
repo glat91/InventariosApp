@@ -89,7 +89,7 @@ fun NewSaleScreen(navController: NavHostController) {
                     viewModel.createSale()
                 }
                 else {
-                    if (viewModel.products.isNotEmpty()){
+                    if (viewModel.products.isEmpty()){
                         MainActivity.mainDialogMsg.value = "No hay productos para guardar"
                         MainActivity.mainDialog.value = true
                     }

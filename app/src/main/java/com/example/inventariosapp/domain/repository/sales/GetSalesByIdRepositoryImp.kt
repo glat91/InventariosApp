@@ -21,18 +21,18 @@ class GetSalesByIdRepositoryImp @Inject constructor(
                 else {
                     val errorMsj = r.errorBody()?.string()
                     val error = Gson().fromJson(errorMsj, ErrorModel::class.java)
-                    MainActivity.mainDialogMsg.value = error.MsgError?.errors.toString()
+                    MainActivity.mainDialogMsg.value = "Error en la peticion favor de intentar mas tarde"
                     MainActivity.mainDialog.value = true
-                    Pair(null, error.MsgError?.errors.toString())
+                    Pair(null, "Error en la peticion favor de intentar mas tarde")
                 }
             }
             catch (e: IOException) {
-                MainActivity.mainDialogMsg.value = e.message.toString()
+                MainActivity.mainDialogMsg.value = "Error 1001001"
                 MainActivity.mainDialog.value = true
                 Pair(null, e.message.toString())
             }
             catch (e: Exception){
-                MainActivity.mainDialogMsg.value = e.toString()
+                MainActivity.mainDialogMsg.value = "Error 1001001"
                 MainActivity.mainDialog.value = true
                 Pair(null, null)
             }

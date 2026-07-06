@@ -20,9 +20,9 @@ class PostPaymentRepositoryImp @Inject constructor(
                     val response = apiService.setPayment(payments = newPay)
                     if (response.isSuccessful) { Result.success(Unit) }
                     else {
-                        MainActivity.mainDialogMsg.value = "Error en la respuesta del servidor"
+                        MainActivity.mainDialogMsg.value = "Error en la peticion favor de intentar mas tarde"
                         MainActivity.mainDialog.value = true
-                        Result.failure(Exception("Error en la respuesta del servidor"))
+                        Result.failure(Exception("Error en la peticion favor de intentar mas tarde"))
                     }
                 }
                 else{
@@ -35,7 +35,7 @@ class PostPaymentRepositoryImp @Inject constructor(
                 Result.success(Unit)
             }
         } catch (e: Exception) {
-            MainActivity.mainDialogMsg.value = e.message ?: "Error desconocido"
+            MainActivity.mainDialogMsg.value = "Error 1001001"
             MainActivity.mainDialog.value = true
             Result.failure(e)
         }

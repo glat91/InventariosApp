@@ -1,5 +1,6 @@
 package com.example.inventariosapp.domain.repository.payment
 
+import android.util.Log
 import com.example.inventariosapp.MainActivity
 import com.example.inventariosapp.api.ApiService
 import com.example.inventariosapp.local.dao.PayDao
@@ -35,10 +36,10 @@ class GetPaymentRepositoryImp @Inject constructor(
                 val error = response.errorBody()?.string()?.let {
                     Gson().fromJson(it, ErrorModel::class.java)
                 }
-                Pair(null, error?.MsgError?.errors.toString())
+                Pair(null, "Error en la peticion favor de intentar mas tarde")
             }
         }
-        catch (e: Exception) { Pair(null, e.message?: "Error desconocido") }
+        catch (e: Exception) { Pair(null, "Error 1001001") }
     }
 
     private suspend fun fetchFromLocal(ventaID: String): Pair<List<PayModel>?, String?>{

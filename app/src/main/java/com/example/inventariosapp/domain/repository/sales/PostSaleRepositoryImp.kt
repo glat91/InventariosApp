@@ -61,16 +61,16 @@ class PostSaleRepositoryImp @Inject constructor(
                     val error = errorJson?.let {
                         Gson().fromJson(it, ErrorModel::class.java)
                     } ?: ErrorModel(error("Error desconocido del servidor"))
-                    MainActivity.mainDialogMsg.value = error.MsgError?.errors.toString()
+                    MainActivity.mainDialogMsg.value = "Error en la peticion favor de intentar mas tarde"
                     MainActivity.mainDialog.value = true
 
-                    Pair(null, error.MsgError?.errors.toString())
+                    Pair(null, "Error en la peticion favor de intentar mas tarde")
                 }
             }
             catch (e: Exception) {
-                MainActivity.mainDialogMsg.value = e.toString()
+                MainActivity.mainDialogMsg.value ="Error 1001001"
                 MainActivity.mainDialog.value = true
-                Pair(null, e.message ?: "Error inesperado")
+                Pair(null, "Error 1001001")
             }
         }
         else {

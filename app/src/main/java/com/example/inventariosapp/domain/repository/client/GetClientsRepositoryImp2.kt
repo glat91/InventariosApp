@@ -37,7 +37,7 @@ class GetClientsRepositoryImp2 @Inject constructor(
                         var error: ErrorModel
                         val errorMsj = service.errorBody()?.string()
                         error = Gson().fromJson(errorMsj, ErrorModel::class.java)
-                        Pair(null, error.MsgError?.errors.toString())
+                        Pair(null, "Error en la peticion favor de intentar mas tarde")
                     }
                 } catch (e: Exception) {
                     Pair(null, e.message.toString())
@@ -51,7 +51,7 @@ class GetClientsRepositoryImp2 @Inject constructor(
                     val entity = clients.map { it.toModel() }
                     return Pair(entity, null)
                 } catch (e: Exception) {
-                    return Pair(null, e.message.toString())
+                    return Pair(null, "Error 1001001")
                 }
             }
         }

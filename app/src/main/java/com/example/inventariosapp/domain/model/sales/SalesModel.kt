@@ -11,7 +11,7 @@ data class SalesModel(
     @SerializedName("nombreCliente") var nombreCliente: String? = null,
     @SerializedName("folio") var folio: String? = null,
     @SerializedName("subtotal") var subtotal: Double? = null,
-    @SerializedName("descuento") var descuento: Int? = null,
+    @SerializedName("descuento") var descuento: Double? = null, // ✅ Corregido: Int → Double
     @SerializedName("iva") var iva: Double? = null,
     @SerializedName("total") var total: Double? = null,
     @SerializedName("montoPagado") var montoPagado: Double? = null,

@@ -1,5 +1,6 @@
 package com.example.inventariosapp.domain.repository.login
 
+import android.os.Build
 import com.example.inventariosapp.api.ApiService
 import com.example.inventariosapp.domain.model.login.LoginResponseModel
 import com.google.gson.Gson
@@ -11,6 +12,13 @@ class ValitdateUserRepositoryImp @Inject constructor(
 ) {
     suspend operator fun invoke(user: String, password: String): Pair<LoginResponseModel?, String?> {
         return try {
+            val manufacturer = Build.MANUFACTURER
+            val brand = Build.BRAND
+            val model = Build.MODEL
+            val device = Build.DEVICE
+            val product = Build.PRODUCT
+            val deviceInfo = "$manufacturer $model"
+
             val response = apiService.validateUser(user, password)
 
             if (response.isSuccessful) { Pair(response.body(), null) }

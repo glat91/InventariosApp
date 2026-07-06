@@ -22,7 +22,7 @@ class EditSaleRepositoryImp @Inject constructor(
                         var error: ErrorModel
                         val errorMsj = r.errorBody()?.string()
                         error = Gson().fromJson(errorMsj, ErrorModel::class.java)
-                        Pair(null, error.MsgError?.errors.toString())
+                        Pair(null, "Error en la peticion favor de intentar mas tarde")
                     }
                 }
                 catch (e: Exception){

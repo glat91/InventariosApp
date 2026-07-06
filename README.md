@@ -1,5 +1,69 @@
 # Inventarios App - Android Kotlin Jetpack Compose
 
+com.example.inventariosapp/
+├── api/
+│   └── ApiService.kt
+├── di/
+│   ├── NetworkModule.kt
+│   └── RoomModel.kt
+├── domain/
+│   ├── model/
+│   │   ├── client/
+│   │   ├── error/
+│   │   ├── login/
+│   │   ├── payment/
+│   │   ├── product/
+│   │   ├── sales/
+│   │   └── ClientModel.kt
+│   ├── repository/
+│   │   ├── client/
+│   │   ├── login/
+│   │   ├── payment/
+│   │   ├── product/
+│   │   └── sales/
+│   ├── use_case/
+│   │   ├── client/
+│   │   ├── login/
+│   │   ├── payment/
+│   │   ├── product/
+│   │   └── sales/
+│   ├── AppModeSelead.kt
+│   └── AppStateRepositoryImpl.kt
+├── local/
+│   ├── dao/
+│   ├── entity/
+│   ├── CompanyDatabase.kt
+│   └── PriceListConverter.kt
+├── navigation/
+│   ├── Destinations.kt
+│   └── SetupNavGraph.kt
+├── session/
+│   └── SessionManager.kt
+├── ui/
+│   ├── animations/
+│   ├── component/
+│   ├── dialog/
+│   ├── theme/
+│   └── view/
+│       ├── BluetoothPrinterScreen/
+│       ├── login/
+│       ├── menu/
+│       ├── new_sale/
+│       ├── payment/
+│       ├── products/
+│       ├── sales/
+│       ├── user_payments/
+│       └── user_sales/
+├── util/
+│   ├── Constants.kt
+│   ├── CustomEnums.kt
+│   ├── Helpers.kt
+│   └── NetworkMonitor.kt
+├── BaseApplication.kt
+├── BaseViewModel.kt
+└── MainActivity.kt
+
+
 ## 🏗️ Arquitectura General
 
 Esta es una aplicación móvil **Android** construida con:

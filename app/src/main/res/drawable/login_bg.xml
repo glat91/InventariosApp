@@ -1,23 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="360dp"
-    android:height="640dp"
-    android:viewportWidth="360"
-    android:viewportHeight="640">
+    android:width="390dp"
+    android:height="844dp"
+    android:viewportWidth="390"
+    android:viewportHeight="844">
 
-    <!-- Fondo base -->
+    <!-- Fondo base oscuro -->
     <path
-        android:fillColor="#FFDEE9"
-        android:pathData="M0,0h360v640h-360z" />
+        android:fillColor="#0B1220"
+        android:pathData="M0,0h390v844h-390z" />
 
-    <!-- Forma decorativa superior -->
+    <!-- Capa superior suave -->
     <path
-        android:fillColor="#B5FFFC"
-        android:pathData="M0,0 C80,100 280,100 360,0 L360,0 L0,0 Z" />
+        android:fillColor="#101A2E"
+        android:pathData="M0,0h390v260c-45,28 -88,35 -132,18c-54,-21 -93,-18 -142,12c-42,26 -83,21 -126,-6z" />
 
-    <!-- Forma decorativa inferior -->
+    <!-- Blob azul oscuro -->
     <path
-        android:fillColor="#D8B5FF"
-        android:pathData="M0,640 C100,540 260,540 360,640 L360,640 L0,640 Z" />
+        android:fillColor="#1D4ED8"
+        android:fillAlpha="0.22"
+        android:pathData="M326,-35c54,18 83,70 70,124c-13,55 -66,93 -123,88c-58,-5 -105,-50 -104,-104c1,-54 48,-126 157,-108z" />
+
+    <!-- Blob morado oscuro -->
+    <path
+        android:fillColor="#7C3AED"
+        android:fillAlpha="0.18"
+        android:pathData="M-42,108c36,-48 101,-59 151,-25c50,34 62,103 28,153c-34,50 -103,63 -153,29c-51,-35 -62,-109 -26,-157z" />
+
+    <!-- Círculo decorativo superior -->
+    <path
+        android:fillColor="#60A5FA"
+        android:fillAlpha="0.10"
+        android:pathData="M286,78a46,46 0,1 0,92 0a46,46 0,1 0,-92 0" />
+
+    <!-- Círculo pequeño -->
+    <path
+        android:fillColor="#38BDF8"
+        android:fillAlpha="0.18"
+        android:pathData="M48,84a18,18 0,1 0,36 0a18,18 0,1 0,-36 0" />
+
+    <!-- Línea decorativa 1 -->
+    <path
+        android:strokeColor="#60A5FA"
+        android:strokeAlpha="0.20"
+        android:strokeWidth="1.2"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M30,404c65,-42 128,-38 187,10c52,42 100,44 145,8" />
+
+    <!-- Línea decorativa 2 -->
+    <path
+        android:strokeColor="#A78BFA"
+        android:strokeAlpha="0.18"
+        android:strokeWidth="1.2"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M-20,512c78,-36 147,-30 207,18c55,44 113,47 190,4" />
+
+    <!-- Blob inferior izquierdo -->
+    <path
+        android:fillColor="#0EA5E9"
+        android:fillAlpha="0.14"
+        android:pathData="M-68,672c30,-64 101,-95 165,-71c64,24 98,91 79,155c-19,64 -83,105 -151,96c-68,-9 -123,-93 -93,-180z" />
+
+    <!-- Blob inferior derecho -->
+    <path
+        android:fillColor="#8B5CF6"
+        android:fillAlpha="0.16"
+        android:pathData="M270,686c42,-42 111,-41 153,1c42,43 42,111 -1,153c-43,42 -112,41 -153,-2c-42,-43 -42,-110 1,-152z" />
+
+    <!-- Círculo inferior derecho -->
+    <path
+        android:fillColor="#93C5FD"
+        android:fillAlpha="0.10"
+        android:pathData="M276,736a30,30 0,1 0,60 0a30,30 0,1 0,-60 0" />
+
+    <!-- Círculo inferior izquierdo -->
+    <path
+        android:fillColor="#67E8F9"
+        android:fillAlpha="0.12"
+        android:pathData="M72,700a24,24 0,1 0,48 0a24,24 0,1 0,-48 0" />
 
 </vector>

@@ -8,13 +8,14 @@ data class InventarioRseponeModel(
     @SerializedName("producto") var producto: String? = null,
     @SerializedName("almacen") var almacen: String? = null,
     @SerializedName("unidadMedida") var unidadMedida: String? = null,
-    @SerializedName("total") var total: Int? = null,
-    @SerializedName("stockMaximo") var stockMaximo: Int? = null,
-    @SerializedName("stockMinimo") var stockMinimo: Int? = null,
+    @SerializedName("total") var total: Double? = null,
+    @SerializedName("stockMaximo") var stockMaximo: Double? = null,
+    @SerializedName("stockMinimo") var stockMinimo: Double? = null,
     @SerializedName("msgStockMaximo") var msgStockMaximo: String? = null,
     @SerializedName("msgStockMinimo") var msgStockMinimo: String? = null,
     @SerializedName("msgCaducidad") var msgCaducidad: String? = null,
-    @SerializedName("porCaducar") var porCaducar: Int? = null
+    @SerializedName("porCaducar") var porCaducar: Double? = null,
+    @SerializedName("inventario") var inventario: Double? = null
 )
 
 fun InventarioRseponeModel.toDb() = InventoryEntity(
@@ -28,5 +29,6 @@ fun InventarioRseponeModel.toDb() = InventoryEntity(
     msgStockMaximo = msgStockMaximo,
     msgStockMinimo = msgStockMinimo,
     msgCaducidad = msgCaducidad,
-    porCaducar = porCaducar
+    porCaducar = porCaducar,
+    inventario = inventario
 )

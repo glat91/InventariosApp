@@ -29,7 +29,7 @@ import com.example.inventariosapp.local.entity.SalesEntity
     InventoryEntity::class,
     NewPayEntity::class,
 ],
-    version = 4,
+    version = 8,
     exportSchema = true)
 
 @TypeConverters(PriceListConverter::class)

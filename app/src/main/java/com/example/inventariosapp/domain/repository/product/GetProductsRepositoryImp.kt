@@ -29,9 +29,9 @@ class GetProductsRepositoryImp @Inject constructor(
             return Pair(entity, null)
         }
         catch (e: Exception){
-            MainActivity.mainDialogMsg.value = e.toString()
+            MainActivity.mainDialogMsg.value = "Error 1001001"
             MainActivity.mainDialog.value = true
-            return Pair(null, e.message ?: "Error desconocido")
+            return Pair(null, "Error 1001001")
         }
     }
 
@@ -51,13 +51,13 @@ class GetProductsRepositoryImp @Inject constructor(
                 error = Gson().fromJson(errorMsj, ErrorModel::class.java)
                 MainActivity.mainDialogMsg.value = error.MsgError?.errors.toString()
                 MainActivity.mainDialog.value = true
-                Pair(null, error.MsgError?.errors.toString())
+                Pair(null, "Error en la peticion favor de intentar mas tarde")
             }
         }
         catch (e: Exception) {
-            MainActivity.mainDialogMsg.value = e.toString()
+            MainActivity.mainDialogMsg.value = "Error 1001001"
             MainActivity.mainDialog.value = true
-            Pair(null, e.message.toString())
+            Pair(null, "Error 1001001")
         }
         return response
     }

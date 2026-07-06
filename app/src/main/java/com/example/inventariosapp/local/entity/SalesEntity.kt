@@ -11,7 +11,7 @@ data class SalesEntity(
     val nombreCliente: String?,
     val folio: String?,
     val subtotal: Double?,
-    val descuento: Int?,
+    val descuento: Double?,
     val iva: Double?,
     val total: Double?,
     val montoPagado: Double?,

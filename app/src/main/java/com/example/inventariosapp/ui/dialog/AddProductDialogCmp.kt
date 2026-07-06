@@ -345,10 +345,10 @@ fun CantidadSectionCmp(
     offlineProduct: InventarioRseponeModel?,
     onUpdateState: (AddProductUiState) -> Unit
 ) {
-    val stockLimit = inventario?.inventario ?: offlineProduct?.total
+    val stockLimit = (inventario?.inventario ?: offlineProduct?.total)?.toInt() ?: 0
     val currentQty = uiState.quantity.toIntOrNull() ?: 0
-    val atLimit = stockLimit != null && currentQty >= stockLimit
-    val progress = if (stockLimit != null && stockLimit > 0)
+    val atLimit = stockLimit > 0 && currentQty >= stockLimit
+    val progress = if (stockLimit > 0)
         (currentQty.toFloat() / stockLimit).coerceIn(0f, 1f) else 0f
 
     val limitBorderColor by animateColorAsState(
@@ -394,7 +394,7 @@ fun CantidadSectionCmp(
                         val sanitized = if (newValue.startsWith("0") && newValue.length > 1)
                             newValue.dropWhile { it == '0' } else newValue
                         val value = sanitized.toIntOrNull() ?: 0
-                        if (stockLimit == null || value <= stockLimit) {
+                        if (stockLimit <= 0 || value <= stockLimit) {
                             onUpdateState(uiState.copy(quantity = sanitized))
                         }
                     },
@@ -412,7 +412,7 @@ fun CantidadSectionCmp(
 
             QtyButton(icon = Icons.Default.Add) {
                 val v = currentQty + 1
-                if (stockLimit == null || v <= stockLimit) {
+                if (stockLimit <= 0 || v <= stockLimit) {
                     onUpdateState(uiState.copy(quantity = v.toString()))
                 }
             }
@@ -432,7 +432,7 @@ fun CantidadSectionCmp(
             )
         }
 
-        if (stockLimit != null) {
+        if (stockLimit > 0) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -510,7 +510,7 @@ fun AddProductDialogCmpPreview(){
         onChangeText = {},
         onClickOpcion = { Log.i("Opcion___", it.toString()) },
         expanded = true,
-        inventario = ProductIdResponseModel(inventario = 10),
+        inventario = ProductIdResponseModel(inventario = 10.00),
         onClickPrice = {},
         onClickCancel = {},
         onClickAccept = {},

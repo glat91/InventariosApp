@@ -25,7 +25,7 @@ class GetInventarioProductoRepositoryImp @Inject constructor(
                     Pair(null, error)
                 }
             } catch (e: Exception) {
-                MainActivity.mainDialogMsg.value = e.toString()
+                MainActivity.mainDialogMsg.value = "Error 1001001"
                 MainActivity.mainDialog.value = true
                 Pair(null, null)
             }

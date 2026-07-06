@@ -20,6 +20,7 @@ class GetPendingSalesRepositoryImp @Inject constructor(
     private val networkMonitor: NetworkMonitor,
 ) {
     suspend operator fun invoke(estatusVentaIds: String, startDate: String, endDate: String, refresh: Boolean): Pair<List<SalesModel>?, String?> {
+        networkMonitor.start()
         return if (networkMonitor.isConnected.value && refresh) {
             fetchFromNetwork(estatusVentaIds, startDate, endDate)
         }
@@ -31,11 +32,23 @@ class GetPendingSalesRepositoryImp @Inject constructor(
         startDate: String,
         endDate: String,
     ): Pair<List<SalesModel>?, String?> {
-        Log.i("PendingSales___", "call db Sales")
-        val sales = salesDao.getSalesBetween(startDate, endDate, estatusVentaIds)
+        val estatusInt = estatusVentaIds.toIntOrNull() ?: 0
+        
+        // Log para depuración
+        val allSales = salesDao.getSalesByEstatusDebug(2)
+        Log.d("DEBUG_LOCAL", "Total en base de datos: ${allSales.size}")
+        allSales.forEach {
+            Log.d("DEBUG_LOCAL", it.toString())
+        }
+
+        val sales = salesDao.getSalesBetween(startDate, endDate, estatusInt)
+        Log.d("DEBUG_LOCAL", "Querying: start=$startDate, end=$endDate, status=$estatusInt")
+        Log.d("DEBUG_LOCAL", "Result count: ${sales.size}")
+
         val entity = ArrayList(sales.map { it.toDb() })
         return Pair(entity, null)
     }
+
     private suspend fun fetchFromNetwork(
         estatusVentaIds: String,
         startDate: String,
@@ -47,17 +60,17 @@ class GetPendingSalesRepositoryImp @Inject constructor(
             if (body != null) {
                 try {
                     withContext(Dispatchers.IO) {
-                        Log.i("PendingSales___", "update db Sales")
+                        Log.i("PendingSales___", "body: ${body.size}")
                         val data = body.map { it.toDB() }
+                        Log.i("PendingSales___", "body: ${data.size}")
                         val totalSales = salesDao.getAllSales()
+                        Log.i("PendingSales___", "Save: ${totalSales.size < data.size}")
                         Log.i("PendingSales___", "Save: ${totalSales.size < data.size}")
                         //salesDao.deleteAllSales()
                         salesDao.insertAllSales(data)
-                        val total = salesDao.getAllSales()
-                        Log.i("PendingSales___", "Total: ${total.size}")
                     }
                 } catch (e: Exception) {
-                    MainActivity.mainDialogMsg.value = "Error: ${e.message.toString()}"
+                    MainActivity.mainDialogMsg.value = "Error 1001001"
                     MainActivity.mainDialog.value = true
                 }
                 return Pair(ArrayList(body), null)
@@ -66,72 +79,7 @@ class GetPendingSalesRepositoryImp @Inject constructor(
             }
         }
         else {
-            val errorMsj = r.errorBody()?.string()
-            val error = try {
-                Gson().fromJson(errorMsj, ErrorModel::class.java)
-            }
-            catch (e: Exception) {
-                return Pair(null, "Error ${e.message.toString()}")
-            }
-            return Pair(null, "Error ${r.code()}: ${error}")
+            return Pair(null, "Error en red")
         }
     }
-    /*
-    suspend operator fun invoke(
-        estatusVentaIds: String,
-        startDate: String,
-        endDate: String,
-        refresh: Boolean
-    ): Pair<ArrayList<SalesModel>?, String?> {
-        return try {
-            if (refresh) {
-                val r = apiService.getPendingSales(fechaInicio = startDate, fechaFin = endDate, estatusVentaIds = estatusVentaIds)
-                if (r.isSuccessful) {
-                    val body = r.body()
-                    if (body != null) {
-                        try {
-                            withContext(Dispatchers.IO) {
-                                Log.i("Sales___", "update db Sales")
-                                val data = body.map { it.toDB() }
-                                val totalSales = salesDao.getAllSales()
-                                Log.i("Sales___", "Save: ${totalSales.size < data.size}")
-                                //salesDao.deleteAllSales()
-                                salesDao.insertAllSales(data)
-                                val total = salesDao.getAllSales()
-                                Log.i("Sales___", "Total: ${total.size}")
-                            }
-                        }
-                        catch (e: Exception) {
-                            MainActivity.mainDialogMsg.value = "Error: ${e.message.toString()}"
-                            MainActivity.mainDialog.value = true
-                        }
-                        Pair(ArrayList(body), null)
-                    }
-                    else { Pair(arrayListOf(), null) }
-                }
-                else {
-                    val errorMsj = r.errorBody()?.string()
-                    val error = try {
-                        Gson().fromJson(errorMsj, ErrorModel::class.java)
-                    }
-                    catch (e: Exception) {
-                        Pair(null, "Error ${e.message.toString()}")
-                    }
-                    Pair(null, "Error ${r.code()}: ${error}")
-                }
-            }
-            else {
-                Log.i("Sales___", "call db Sales")
-                val sales = salesDao.getSalesBetween(startDate, endDate, estatusVentaIds)
-                val entity = ArrayList(sales.map { it.toDb() })
-                Pair(entity, null)
-            }
-        } catch (e: Exception) {
-            Log.e("Sales___", "Error in invoke: ${e.message}")
-            MainActivity.mainDialogMsg.value = e.message.toString()
-            MainActivity.mainDialog.value = true
-            Pair(null, e.message.toString())
-        }
-    }
-     */
 }

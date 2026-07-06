@@ -171,9 +171,9 @@ fun NewSaleView(
                                 onDismissRequest = { onDissmissSearchBar() },
                                 modifier = Modifier
                                     .fillMaxWidth(.9f)
-                                    .padding()
-                                    .heightIn(max = maxHeight),
-                                properties = PopupProperties(focusable = false)
+                                    .heightIn(max = maxHeight)
+                                    .background(Color.White),
+                                properties = PopupProperties(focusable = true) // ✅ Cambiado de false a true
                             ) {
                                 opcions.take(10).forEach { option ->
                                     Column(

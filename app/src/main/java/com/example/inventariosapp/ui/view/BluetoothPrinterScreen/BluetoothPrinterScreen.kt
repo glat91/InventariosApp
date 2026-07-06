@@ -163,7 +163,7 @@ suspend fun connectAndPrint(
             showToastOnMain(context, "Conectado a ${device.name}")
 
             val output = socket!!.outputStream
-            printBitmap(context, output, R.drawable.casajordan)
+            printBitmap(context, output, R.drawable.rb_letters)
             val recivo = ("--------------------------------\n" +
                     "        Recibo de impresión\n" +
                     "Cliente: $clientName\n" +

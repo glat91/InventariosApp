@@ -1,5 +1,6 @@
 package com.example.inventariosapp.domain.repository.sales
 
+import android.util.Log
 import com.example.inventariosapp.MainActivity
 import com.example.inventariosapp.api.ApiService
 import com.example.inventariosapp.local.dao.SalesDao
@@ -27,7 +28,7 @@ class GetSalesInProcessRepositoryImp @Inject constructor(
 
     private suspend fun fetchFromLocal(startDate: String, endDate: String): Pair<List<SalesModel>?, String?>{
         try {
-            val sales = salesDao.getSalesBetween(startDate, endDate, "1")
+            val sales = salesDao.getSalesBetween(startDate, endDate, 1)
             val entity = ArrayList(sales.map { it.toDb() })
             return Pair(entity, null)
         }
@@ -40,7 +41,6 @@ class GetSalesInProcessRepositoryImp @Inject constructor(
 
     private suspend fun fetchFromNetwork(startDate: String, endDate: String): Pair<List<SalesModel>?, String?>{
         val r = apiService.getPendingSales(fechaInicio = startDate, fechaFin = endDate)
-
         val response = try {
             if (r.isSuccessful) {
                 try {
@@ -56,15 +56,15 @@ class GetSalesInProcessRepositoryImp @Inject constructor(
                 var error: ErrorModel
                 val errorMsj = r.errorBody()?.string()
                 error = Gson().fromJson(errorMsj, ErrorModel::class.java)
-                MainActivity.mainDialogMsg.value = error.MsgError.toString()
+                MainActivity.mainDialogMsg.value = "Error en la peticion favor de intentar mas tarde"
                 MainActivity.mainDialog.value = true
-                Pair(null, error.MsgError.toString())
+                Pair(null, "Error en la peticion favor de intentar mas tarde")
             }
         }
         catch (e: Exception){
-            MainActivity.mainDialogMsg.value = e.toString()
+            MainActivity.mainDialogMsg.value = "Error 1001001"
             MainActivity.mainDialog.value = true
-            Pair(null, e.toString())
+            Pair(null, "Error 1001001")
         }
         return response
     }

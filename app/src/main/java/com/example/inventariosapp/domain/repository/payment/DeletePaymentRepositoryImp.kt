@@ -19,8 +19,8 @@ class DeletePaymentRepositoryImp @Inject constructor(
                     if (response.isSuccessful) { Result.success(Unit)
                     } else {
                         MainActivity.mainDialog.value = true
-                        MainActivity.mainDialogMsg.value = "Error ${response.code()}: ${response.errorBody()?.string()}"
-                        Result.failure(Exception("Error ${response.code()}: ${response.errorBody()?.string()}"))
+                        MainActivity.mainDialogMsg.value = "Error en la peticion favor de intentar mas tarde"
+                        Result.failure(Exception("Error en la peticion favor de intentar mas tarde"))
                     }
                 }
                 else{
@@ -34,7 +34,7 @@ class DeletePaymentRepositoryImp @Inject constructor(
             }
         }
         catch (e: Exception) {
-            MainActivity.mainDialogMsg.value = e.message.toString()
+            MainActivity.mainDialogMsg.value = "Error 1001001"
             MainActivity.mainDialog.value = true
             Result.failure(e)
         }

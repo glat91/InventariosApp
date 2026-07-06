@@ -10,13 +10,14 @@ data class InventoryEntity(
     val producto: String?,
     val almacen: String?,
     val unidadMedida: String?,
-    val total: Int?,
-    val stockMaximo: Int?,
-    val stockMinimo: Int?,
+    val total: Double?,
+    val stockMaximo: Double?,
+    val stockMinimo: Double?,
     val msgStockMaximo: String?,
     val msgStockMinimo: String?,
     val msgCaducidad: String?,
-    val porCaducar: Int?
+    val porCaducar: Double?,
+    val inventario: Double?
 )
 
 fun InventoryEntity.toModel() = InventarioRseponeModel(
@@ -30,5 +31,6 @@ fun InventoryEntity.toModel() = InventarioRseponeModel(
     msgStockMaximo = msgStockMaximo,
     msgStockMinimo = msgStockMinimo,
     msgCaducidad = msgCaducidad,
-    porCaducar = porCaducar
+    porCaducar = porCaducar,
+    inventario = inventario
 )
