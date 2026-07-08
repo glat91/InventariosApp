@@ -17,10 +17,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.lang.Thread.sleep
 import javax.inject.Inject
 
 data class UserPaymentsUiState(
-    val penndingPayments: List<NewPayModel> = arrayListOf()
+    val penndingPayments: List<NewPayModel> = arrayListOf(),
+    val enableBtn: Boolean = true
 )
 @HiltViewModel
 class UserPaymentsViewModel @Inject constructor(
@@ -40,9 +42,15 @@ class UserPaymentsViewModel @Inject constructor(
     private fun updatePenndingPayments(penndingPayments: List<NewPayModel>) {
         _uiState.update { it.copy(penndingPayments = penndingPayments) }
     }
+    fun updateBtnStatus(boolean: Boolean) {
+        _uiState.update { it.copy(enableBtn = boolean) }
+    }
     // endregion
 
     fun setPayment() {
+        updateBtnStatus(false)
+        val randomLong = (1L..9L).random()
+        sleep(randomLong)
         val currentPayments = uiState.value.penndingPayments
         if (currentPayments.isNotEmpty()) {
             baseViewModel.showLoader()
@@ -57,14 +65,23 @@ class UserPaymentsViewModel @Inject constructor(
                 }
                 val internetUse = Helpers.isInternetAvailable(cnx)
                 if (internetUse) {
-                    val r = postPaymentUseCase(
-                        internetUse = internetUse,
-                        newPay = updatedPayments
-                    )
-                    if (r.isSuccess) {
-                        newPayDao.deleteAll()
-                        getPenndingPayments()
-                        MainActivity.mainDialogMsg.value = "Pago realizado con exito"
+                    try {
+                        val r = postPaymentUseCase(
+                            internetUse = internetUse,
+                            newPay = updatedPayments
+                        )
+                        if (r.isSuccess) {
+                            newPayDao.deleteAll()
+                            getPenndingPayments()
+                            MainActivity.mainDialogMsg.value = "Pago realizado con exito"
+                            MainActivity.mainDialog.value = true
+                        } else {
+                            MainActivity.mainDialogMsg.value = r.exceptionOrNull()?.message ?: "Error al procesar el pago"
+                            MainActivity.mainDialog.value = true
+                        }
+                    } catch (e: Exception) {
+                        Log.e("UserPaymentsViewModel", "Error de conexión", e)
+                        MainActivity.mainDialogMsg.value = "Error de conexión con el servidor. Intente nuevamente."
                         MainActivity.mainDialog.value = true
                     }
                 } else {
@@ -77,6 +94,7 @@ class UserPaymentsViewModel @Inject constructor(
             MainActivity.mainDialogMsg.value = "No tiene pagos pendientes por subir"
             MainActivity.mainDialog.value = true
         }
+        updateBtnStatus(true)
     }
 
     fun getPenndingPayments() {

@@ -33,6 +33,7 @@ fun UserPaymentsScreen(navController: NavHostController) {
     // region Screen
     UserPaymentsView(
         data = uiState.penndingPayments,
+        btnEnabled = uiState.enableBtn,
         onClickBack = { navController.popBackStack() },
         onClickMenu = { viewModel.baseViewModel.openMenu() },
         onClickUpdate = { viewModel.setPayment() }

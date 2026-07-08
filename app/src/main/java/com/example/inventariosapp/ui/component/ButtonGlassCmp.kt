@@ -47,10 +47,11 @@ data class Shard(
 
 @Composable
 fun GlassButton(
+    modifier: Modifier = Modifier,
     label: String? = null,
     icon: ImageVector? = null,
+    enabled: Boolean = true,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier,
     width: Dp = 220.dp,
     height: Dp = 56.dp,
 ) {
@@ -110,7 +111,8 @@ fun GlassButton(
             .size(width, height)
             .graphicsLayer { scaleX = pressScale; scaleY = pressScale }
             .clip(RoundedCornerShape(16.dp))
-            .pointerInput(Unit) {
+            .pointerInput(enabled) {
+                if (!enabled) return@pointerInput
                 detectTapGestures(
                     onPress = { offset ->
                         if (glassState == GlassState.IDLE) {
@@ -171,9 +173,6 @@ fun GlassButton(
                 modifier = Modifier.graphicsLayer { alpha = textAlpha }
             )
         }
-
-
-
     }
 }
 

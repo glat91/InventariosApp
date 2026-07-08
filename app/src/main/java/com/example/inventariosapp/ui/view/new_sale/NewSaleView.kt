@@ -90,8 +90,10 @@ fun NewSaleView(
     expandedSearchBar: Boolean,
     canModify: Boolean,
     onChangueSearch: (TextFieldValue) -> Unit,
+    enableSaveBtn: Boolean,
     onDissmissSearchBar: () -> Unit,
     onClickOpcion: (ClientResponseModel) -> Unit,
+    onClear: () -> Unit,
     onClickBack: () -> Unit,
     onClickMenu: () -> Unit,
     onClickProduct: () -> Unit,
@@ -169,11 +171,15 @@ fun NewSaleView(
                             DropdownMenu(
                                 expanded = expandedSearchBar && canModify,
                                 onDismissRequest = { onDissmissSearchBar() },
+                                properties = PopupProperties(
+                                    focusable = false,
+                                    dismissOnBackPress = true,
+                                    dismissOnClickOutside = true
+                                ),
                                 modifier = Modifier
                                     .fillMaxWidth(.9f)
                                     .heightIn(max = maxHeight)
                                     .background(Color.White),
-                                properties = PopupProperties(focusable = true) // ✅ Cambiado de false a true
                             ) {
                                 opcions.take(10).forEach { option ->
                                     Column(
@@ -224,6 +230,7 @@ fun NewSaleView(
                                 HorizontalDivider(thickness = 1.dp, color = UI_Divier, )
                             }
                         },
+                        onClickClear = { onClear() }
                     )
                 }
                 HorizontalDivider(thickness = 15.dp, color = Color.Transparent)
@@ -241,6 +248,7 @@ fun NewSaleView(
                     )
                     ButtonWithImgCmp(
                         text = "Guardar",
+                        enable = enableSaveBtn,
                         backgroundColor = Color(0xFF378ADD),
                         icon = Icons.Filled.Create,
                         onClick = onClickSave
@@ -353,12 +361,14 @@ fun NewSaleViewPreview(){
         canModify = false,
         opcions = arrayListOf(),
         onClickOpcion = {},
+        onClear = {},
         onClickDelete = {},
         onClickBack = {},
         onClickProduct = {},
         onClickSave = { },
         onClickMenu = {},
         onChangueSearch = {},
-        onDissmissSearchBar = {}
+        onDissmissSearchBar = {},
+        enableSaveBtn = true
     )
 }

@@ -24,6 +24,7 @@ import javax.inject.Inject
 data class PenndingSalesUiState(
     var penndingSales: ArrayList<PostSaleWithProducts> = arrayListOf(),
     val selectedPenndigSale: PostSaleWithProducts? = null,
+    val enableBtn: Boolean = true,
     val dialogProduct: Boolean = false,
     val totalInventory: ProductIdResponseModel = ProductIdResponseModel()
 )
@@ -46,6 +47,9 @@ class PenndingSalesViewModel @Inject constructor(
     fun updateTotalInventory(totalInventory: ProductIdResponseModel) {
         _uiState.update { it.copy(totalInventory = totalInventory) }
     }
+    fun updateBtnStatus(boolean: Boolean) {
+        _uiState.update { it.copy(enableBtn = boolean) }
+    }
     fun updateSelectedPenndigSale(selectedPenndigSale: PostSaleWithProducts?) {
         _uiState.update { it.copy(selectedPenndigSale = selectedPenndigSale) }
     }
@@ -67,6 +71,9 @@ class PenndingSalesViewModel @Inject constructor(
         }
     }
     fun updateSales(){
+        updateBtnStatus(false)
+        val randomLong = (1L..9L).random()
+        Thread.sleep(randomLong)
         if (uiState.value.penndingSales.size > 0){
             baseViewModel.showLoader()
             viewModelScope.launch {
@@ -88,6 +95,10 @@ class PenndingSalesViewModel @Inject constructor(
                             MainActivity.mainDialogMsg.value = "Ventas guardadas"
                             MainActivity.mainDialog.value = true
                         }
+                        else {
+                            MainActivity.mainDialogMsg.value = "Error al procesar la venta"
+                            MainActivity.mainDialog.value = true
+                        }
                     }
                     else{
                         MainActivity.mainDialogMsg.value = "No hay conexion a internet"
@@ -99,11 +110,13 @@ class PenndingSalesViewModel @Inject constructor(
                 }
             }
             baseViewModel.hideLoader()
+
         }
         else{
             MainActivity.mainDialogMsg.value = "No tiene ventas pendientes por subir"
             MainActivity.mainDialog.value = true
         }
+        updateBtnStatus(true)
     }
     // endregion
     fun deleteSale(id: Int) {

@@ -18,6 +18,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -36,6 +38,7 @@ import com.example.inventariosapp.util.CustomEnums
 @Composable
 fun PenndingSalesView(
     data: ArrayList<PostSaleWithProducts>,
+    btnEnabled: Boolean,
     onClickBack: () -> Unit,
     onClickMenu: () -> Unit,
     onclickRow: (PostSaleWithProducts) -> Unit,
@@ -104,6 +107,7 @@ fun PenndingSalesView(
         floatingActionButton = {
             GlassButton(
                 icon = Icons.Filled.ArrowCircleUp,
+                enabled = btnEnabled,
                 onClick = { onClickUpdate() },
                 width = 60.dp,
                 height = 60.dp
@@ -117,6 +121,7 @@ fun PenndingSalesView(
 private fun PenndingSalesViewPreview(){
     PenndingSalesView(
         data = arrayListOf(),
+        btnEnabled = true,
         onClickBack = {  },
         onClickMenu = {  },
         onclickRow = {  },

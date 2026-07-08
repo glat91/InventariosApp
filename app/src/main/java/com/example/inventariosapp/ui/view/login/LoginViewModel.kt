@@ -22,6 +22,7 @@ import javax.inject.Inject
 data class LoginUiState(
     val user: String = "",
     val password: String = "",
+    val enableBtn: Boolean = false,
     val rememberUser: Boolean = false,
     val serverValidateUser: Boolean = false
 )

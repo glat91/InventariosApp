@@ -107,6 +107,7 @@ fun LoginView(
                                 HorizontalDivider(thickness = 20.dp, color = Color.Transparent)
                                 ButtonCmp(
                                     modifier = Modifier.width(200.dp),
+                                    enable = uiState.enableBtn,
                                     text = "Entrar",
                                     textSize = 15.sp,
                                     backGroundColor = Color.White,

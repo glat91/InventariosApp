@@ -71,6 +71,7 @@ fun NewSaleScreen(navController: NavHostController) {
         canModify = saleUiState.canModifyClient,
         onChangueSearch = { viewModel.updateClient(it) },
         onDissmissSearchBar = { viewModel.updateExpandenSearchBarD(false) },
+        enableSaveBtn = saleUiState.enableSaveBtn,
         onClickOpcion = {
             if (saleUiState.canModifyClient) {
                 viewModel.updateNewClient(it)
@@ -79,11 +80,17 @@ fun NewSaleScreen(navController: NavHostController) {
                 viewModel.updateExpandenSearchBarS(false)
             }
         },
+        onClear = {
+            viewModel.updateClient(TextFieldValue(""))
+            viewModel.updateExpandenSearchBarS(false)
+            viewModel.updateNewClient(null)
+        },
         onClickDelete = { viewModel.deleteRow(it) },
         onClickProduct = {
             viewModel.updateDialogProduct(true)
         },
         onClickSave = {
+            viewModel.updateEnableSaveBtn(false)
             if (saleUiState.sale.ventaId == null) {
                 if (viewModel.products.isNotEmpty() && saleUiState.newClient != null) {
                     viewModel.createSale()
@@ -97,6 +104,7 @@ fun NewSaleScreen(navController: NavHostController) {
                         MainActivity.mainDialogMsg.value = "No hay cliente para guardar"
                         MainActivity.mainDialog.value = true
                     }
+                    viewModel.updateEnableSaveBtn(true)
 
                 }
             } else {
@@ -106,6 +114,7 @@ fun NewSaleScreen(navController: NavHostController) {
                     MainActivity.mainDialogMsg.value = "Modo offline no activado"
                     MainActivity.mainDialog.value = true
                 }
+                viewModel.updateEnableSaveBtn(true)
             }
         },
         onClickBack = {

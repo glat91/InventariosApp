@@ -463,7 +463,7 @@ fun PaymentsScreen(navController: NavHostController) {
                                                 MainActivity.mainDialog.value = true
                                             }
                                         },
-                                        enable = !uiState.payTotalPayment.isEmpty(),
+                                        enable = uiState.enableBtn,
                                         shape = RoundedCornerShape(10.dp),
                                         txtColor = Color.White,
                                         maxLines = 1,

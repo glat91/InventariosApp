@@ -53,6 +53,7 @@ data class NewSaleUiState(
 
     val dialogProduct: Boolean = false,
     val expandenSearchBarD: Boolean = false,
+    val enableSaveBtn: Boolean = false,
     var search: TextFieldValue = TextFieldValue(""),
     val inventory: ArrayList<ProductsResponseModel>? = arrayListOf(),
     val filterInventory: ArrayList<ProductsResponseModel> = arrayListOf(),
@@ -270,7 +271,7 @@ class NewSaleViewModel @Inject constructor(
             if (_uiState.value.newClient == null) {
                 _uiState.update { it.copy(expandenSearchBarS = true) }
             }
-            Log.i("Else___1", _uiState.value.saleData.folio.toString())
+            Log.i("Else___1", _uiState.value.newClient.toString())
             ArrayList(_uiState.value.clients.filter {
                 it.nombreCliente!!.contains(_uiState.value.client.text, ignoreCase = true)
             })
@@ -405,6 +406,7 @@ class NewSaleViewModel @Inject constructor(
             } else {
                 baseViewModel.dialogLogin.value = true
             }
+            updateEnableSaveBtn(true)
             baseViewModel.hideLoader()
         }
     }
@@ -440,6 +442,9 @@ class NewSaleViewModel @Inject constructor(
     }
     fun updateExpandenSearchBarS(expandenSearchBarS: Boolean){
         _uiState.update { it.copy(expandenSearchBarS = expandenSearchBarS) }
+    }
+    fun updateEnableSaveBtn(enableSaveBtn: Boolean){
+        _uiState.update { it.copy(enableSaveBtn = enableSaveBtn) }
     }
     fun updateExpandenSearchBarD(expandenSearchBarD: Boolean){
         _uiState.update { it.copy(expandenSearchBarD = expandenSearchBarD) }

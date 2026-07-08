@@ -24,11 +24,12 @@ fun PenndingSalesScreen(navController: NavHostController) {
 
     PenndingSalesView(
         data = uiState.penndingSales,
+        btnEnabled = uiState.enableBtn,
         onclickRow = {
             viewModel.updateSelectedPenndigSale(it)
             viewModel.updateDialogProduct(true)
         },
-        onClickUpdate = { viewModel.updateSales()},
+        onClickUpdate = { viewModel.updateSales() },
         onClickMenu = { viewModel.baseViewModel.openMenu() },
         onClickBack = { navController.popBackStack() },
     )

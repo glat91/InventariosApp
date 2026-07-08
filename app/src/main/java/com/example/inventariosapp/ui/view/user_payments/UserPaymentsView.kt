@@ -35,6 +35,7 @@ import com.example.inventariosapp.util.CustomEnums
 @Composable
 fun UserPaymentsView(
     data: List<NewPayModel>,
+    btnEnabled: Boolean,
     onClickBack: () -> Unit,
     onClickMenu: () -> Unit,
     onClickUpdate: () -> Unit,
@@ -95,6 +96,7 @@ fun UserPaymentsView(
         floatingActionButton = {
             GlassButton(
                 icon = Icons.Filled.Cached,
+                enabled = btnEnabled,
                 onClick = { onClickUpdate() },
                 width = 60.dp,
                 height = 60.dp
@@ -108,6 +110,7 @@ fun UserPaymentsView(
 fun UserPaymentsViewPreview(){
     UserPaymentsView(
         data = arrayListOf(),
+        btnEnabled = true,
         onClickBack = {},
         onClickMenu = {},
         onClickUpdate = {}

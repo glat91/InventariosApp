@@ -78,6 +78,7 @@ data class PaymentsUiState(
     val payments: ArrayList<PayModel> = arrayListOf(),
     val dialogBT: Boolean = false,
     val hasPermissions: Boolean = false,
+    val enableBtn: Boolean = true,
     val permissions: List<String> = emptyList(),
     val printerUUID: UUID = UUID.fromString(Constants.PRINTER_UUID),
     val bluetoothAdapter: BluetoothAdapter =  BluetoothAdapter.getDefaultAdapter(),
