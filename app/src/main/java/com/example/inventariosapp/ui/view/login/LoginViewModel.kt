@@ -22,7 +22,7 @@ import javax.inject.Inject
 data class LoginUiState(
     val user: String = "",
     val password: String = "",
-    val enableBtn: Boolean = false,
+    val enableBtn: Boolean = true,
     val rememberUser: Boolean = false,
     val serverValidateUser: Boolean = false
 )
@@ -50,6 +50,7 @@ class LoginViewModel @Inject constructor(
         baseViewModel.showLoader()
         viewModelScope.launch {
             if (internetUse) {
+
                 val v = valitdaeUserUseCase(uiState.value.user, uiState.value.password)
                 if (v.first != null) {
                     val perfilID = v.first!!.perfilId!!
@@ -111,6 +112,9 @@ class LoginViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             baseViewModel.showLoader()
+            if (MainActivity.versionID.value > 1){
+                baseViewModel.logout()
+            }
             val session = baseViewModel.isSessionValid()
             val user = cnx.readPersistData(Constants.USUARIO_ID, 0)
             baseViewModel.setUsarId(user)

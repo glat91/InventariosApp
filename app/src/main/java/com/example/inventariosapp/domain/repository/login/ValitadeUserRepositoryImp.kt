@@ -2,6 +2,7 @@ package com.example.inventariosapp.domain.repository.login
 
 import android.os.Build
 import com.example.inventariosapp.api.ApiService
+import com.example.inventariosapp.domain.model.login.LoginRequest
 import com.example.inventariosapp.domain.model.login.LoginResponseModel
 import com.google.gson.Gson
 import java.io.IOException
@@ -12,13 +13,15 @@ class ValitdateUserRepositoryImp @Inject constructor(
 ) {
     suspend operator fun invoke(user: String, password: String): Pair<LoginResponseModel?, String?> {
         return try {
-            val manufacturer = Build.MANUFACTURER
-            val brand = Build.BRAND
-            val model = Build.MODEL
-            val device = Build.DEVICE
-            val product = Build.PRODUCT
-            val deviceInfo = "$manufacturer $model"
-
+            val request = LoginRequest(
+                LoginName = user,
+                Contrasenia = password,
+                Manufacturer = Build.MANUFACTURER,
+                Brand = Build.BRAND,
+                Model = Build.MODEL,
+                Sdk = Build.VERSION.SDK_INT.toString(),
+                AndroidVersion = Build.VERSION.RELEASE
+            )
             val response = apiService.validateUser(user, password)
 
             if (response.isSuccessful) { Pair(response.body(), null) }

@@ -88,13 +88,13 @@ class UserPaymentsViewModel @Inject constructor(
                     MainActivity.mainDialogMsg.value = "No hay conexion a internet"
                     MainActivity.mainDialog.value = true
                 }
+                updateBtnStatus(true)
                 baseViewModel.hideLoader()
             }
         } else {
             MainActivity.mainDialogMsg.value = "No tiene pagos pendientes por subir"
             MainActivity.mainDialog.value = true
         }
-        updateBtnStatus(true)
     }
 
     fun getPenndingPayments() {

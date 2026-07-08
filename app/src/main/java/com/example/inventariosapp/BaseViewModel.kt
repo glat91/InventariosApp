@@ -95,6 +95,8 @@ class BaseViewModel @Inject constructor(
         }
     }
 
+    fun logout(){ viewModelScope.launch { sessionManager.logout() } }
+
     fun logoutWithMsj(){
         viewModelScope.launch {
             sessionManager.logout()

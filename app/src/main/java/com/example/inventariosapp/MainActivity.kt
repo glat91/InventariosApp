@@ -60,6 +60,7 @@ class MainActivity : ComponentActivity() {
         val endDate = mutableStateOf("")
         // endregion
         var currentRoute: MutableState<String?> = mutableStateOf(null)
+        val versionID = mutableStateOf(0L)
     }
 
     @RequiresApi(Build.VERSION_CODES.S)
@@ -69,7 +70,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-
+            val pInfo = packageManager.getPackageInfo(packageName, 0)
+            versionID.value = pInfo.longVersionCode
             InventariosAppTheme() {
                 val navController = rememberNavController()
                 scope = rememberCoroutineScope()

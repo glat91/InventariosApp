@@ -109,6 +109,7 @@ class PenndingSalesViewModel @Inject constructor(
                     baseViewModel.dialogLogin.value = true
                 }
             }
+            updateBtnStatus(true)
             baseViewModel.hideLoader()
 
         }
@@ -116,7 +117,7 @@ class PenndingSalesViewModel @Inject constructor(
             MainActivity.mainDialogMsg.value = "No tiene ventas pendientes por subir"
             MainActivity.mainDialog.value = true
         }
-        updateBtnStatus(true)
+
     }
     // endregion
     fun deleteSale(id: Int) {
