@@ -17,9 +17,9 @@
         android:screenOrientation="portrait"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/rb_logo"
+        android:icon="@mipmap/ic_casajordan"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/rb_logo"
+        android:roundIcon="@mipmap/ic_casajordan"
         android:supportsRtl="true"
         android:theme="@style/Theme.InventariosApp">
         <activity

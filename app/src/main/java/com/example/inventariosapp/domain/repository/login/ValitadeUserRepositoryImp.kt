@@ -14,8 +14,8 @@ class ValitdateUserRepositoryImp @Inject constructor(
     suspend operator fun invoke(user: String, password: String): Pair<LoginResponseModel?, String?> {
         return try {
             val request = LoginRequest(
-                LoginName = user,
-                Contrasenia = password,
+                user = user,
+                password = password,
                 Manufacturer = Build.MANUFACTURER,
                 Brand = Build.BRAND,
                 Model = Build.MODEL,

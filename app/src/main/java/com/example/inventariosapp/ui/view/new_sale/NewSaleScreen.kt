@@ -71,7 +71,6 @@ fun NewSaleScreen(navController: NavHostController) {
         canModify = saleUiState.canModifyClient,
         onChangueSearch = { viewModel.updateClient(it) },
         onDissmissSearchBar = { viewModel.updateExpandenSearchBarD(false) },
-        enableSaveBtn = saleUiState.enableSaveBtn,
         onClickOpcion = {
             if (saleUiState.canModifyClient) {
                 viewModel.updateNewClient(it)

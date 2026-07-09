@@ -90,7 +90,6 @@ fun NewSaleView(
     expandedSearchBar: Boolean,
     canModify: Boolean,
     onChangueSearch: (TextFieldValue) -> Unit,
-    enableSaveBtn: Boolean,
     onDissmissSearchBar: () -> Unit,
     onClickOpcion: (ClientResponseModel) -> Unit,
     onClear: () -> Unit,
@@ -227,7 +226,6 @@ fun NewSaleView(
                                         }
                                     }
                                 }
-                                HorizontalDivider(thickness = 1.dp, color = UI_Divier, )
                             }
                         },
                         onClickClear = { onClear() }
@@ -248,7 +246,6 @@ fun NewSaleView(
                     )
                     ButtonWithImgCmp(
                         text = "Guardar",
-                        enable = enableSaveBtn,
                         backgroundColor = Color(0xFF378ADD),
                         icon = Icons.Filled.Create,
                         onClick = onClickSave
@@ -369,6 +366,5 @@ fun NewSaleViewPreview(){
         onClickMenu = {},
         onChangueSearch = {},
         onDissmissSearchBar = {},
-        enableSaveBtn = true
     )
 }

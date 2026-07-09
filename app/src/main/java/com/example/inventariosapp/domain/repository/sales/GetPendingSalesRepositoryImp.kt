@@ -33,7 +33,7 @@ class GetPendingSalesRepositoryImp @Inject constructor(
         endDate: String,
     ): Pair<List<SalesModel>?, String?> {
         val estatusInt = estatusVentaIds.toIntOrNull() ?: 0
-        
+
         // Log para depuración
         val allSales = salesDao.getSalesByEstatusDebug(2)
         Log.d("DEBUG_LOCAL", "Total en base de datos: ${allSales.size}")
@@ -59,16 +59,11 @@ class GetPendingSalesRepositoryImp @Inject constructor(
             val body = r.body()
             if (body != null) {
                 try {
-                    withContext(Dispatchers.IO) {
-                        Log.i("PendingSales___", "body: ${body.size}")
-                        val data = body.map { it.toDB() }
-                        Log.i("PendingSales___", "body: ${data.size}")
-                        val totalSales = salesDao.getAllSales()
-                        Log.i("PendingSales___", "Save: ${totalSales.size < data.size}")
-                        Log.i("PendingSales___", "Save: ${totalSales.size < data.size}")
-                        //salesDao.deleteAllSales()
-                        salesDao.insertAllSales(data)
-                    }
+                    Log.i("PendingSales___", "body: ${body.size}")
+                    val data = body.map { it.toDB() }
+                    Log.i("PendingSales___", "body: ${data.size}")
+                    salesDao.deleteAllSales()
+                    salesDao.insertAllSales(data)
                 } catch (e: Exception) {
                     MainActivity.mainDialogMsg.value = "Error 1001001"
                     MainActivity.mainDialog.value = true

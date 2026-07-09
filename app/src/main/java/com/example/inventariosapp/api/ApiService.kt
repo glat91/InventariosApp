@@ -23,24 +23,24 @@ import retrofit2.http.Query
 
 interface ApiService {
     // region login
-    @GET("${Constants.BYNDS}/Api/usuario/{user},{password}")
+    @GET("${Constants.CASA_JORDAN}/Api/usuario/{user},{password}")
     suspend fun validateUser(
         @Path("user") user: String,
         @Path("password") password: String
     ): Response<LoginResponseModel>
     // endregion
     // region productos
-    @GET("${Constants.BYNDS}/Api/Producto")
+    @GET("${Constants.CASA_JORDAN}/Api/Producto")
     suspend fun getProducts(
         @Query("EsActivo") esActivo: Boolean = true
     ): Response<List<ProductsResponseModel>>
 
-    @GET("${Constants.BYNDS}/Api/Producto/GetByIdData")
+    @GET("${Constants.CASA_JORDAN}/Api/Producto/GetByIdData")
     suspend fun getProductId(
         @Query("productoId") productId: Int
     ): Response<ProductIdResponseModel>
 
-    @GET("${Constants.BYNDS}/Api/Inventario")
+    @GET("${Constants.CASA_JORDAN}/Api/Inventario")
     suspend fun getInventario(
         @Query("EsActivo") esActivo: Boolean = true
     ): Response<List<InventarioRseponeModel>>
@@ -48,7 +48,7 @@ interface ApiService {
 
 
     // region clientes
-    @GET("${Constants.BYNDS}/Api/Cliente")
+    @GET("${Constants.CASA_JORDAN}/Api/Cliente")
     suspend fun getClient(
         @Query("EsActivo") esActivo: Boolean = true
     ): Response<List<ClientResponseModel>>
@@ -56,28 +56,28 @@ interface ApiService {
 
 
     // region payment
-    @GET("${Constants.BYNDS}/Api/TipoPago")
+    @GET("${Constants.CASA_JORDAN}/Api/TipoPago")
     suspend fun getPaymentMethod(
         @Query("EsActivo") esActivo: Boolean = true
     ): Response<List<GetPaymentResponseModel>>
 
-    @GET("${Constants.BYNDS}/Api/VentaPago/{pagoId}")
+    @GET("${Constants.CASA_JORDAN}/Api/VentaPago/{pagoId}")
     suspend fun getPaymentById(
         @Path("pagoId") pagoId: String
     ): Response<GetPaymentResponseModel>
 
-    @GET("${Constants.BYNDS}/Api/VentaPago")
+    @GET("${Constants.CASA_JORDAN}/Api/VentaPago")
     suspend fun getPayment(
         @Query("VentaID") ventaID: String,
         @Query("EsActivo") esActivo: Boolean = true
     ): Response<List<PayModel>>
 
-    @POST("${Constants.BYNDS}/Api/VentaPago")
+    @POST("${Constants.CASA_JORDAN}/Api/VentaPago")
     suspend fun setPayment(
         @Body payments: List<NewPayModel>
     ): Response<Unit>
 
-    @DELETE("${Constants.BYNDS}/Api/VentaPago/{pagoId}")
+    @DELETE("${Constants.CASA_JORDAN}/Api/VentaPago/{pagoId}")
     suspend fun deletePayment(
         @Path("pagoId") pagoId: Int
     ): Response<Unit>
@@ -85,20 +85,20 @@ interface ApiService {
 
 
     // region ventas
-    @POST("${Constants.BYNDS}/Api/Venta")
+    @POST("${Constants.CASA_JORDAN}/Api/Venta")
     suspend fun postSale(
         @Body sales: List<PostSalesModel>
     ): Response<Unit>
 
-    @GET("${Constants.BYNDS}/Api/Venta/{saleId}")
+    @GET("${Constants.CASA_JORDAN}/Api/Venta/{saleId}")
     suspend fun getSalesById(
         @Path("saleId") saleId: String
     ): Response<GetSalesByIdResponse>
 
-    @PUT("${Constants.BYNDS}/Api/Venta/{ventaId}")
+    @PUT("${Constants.CASA_JORDAN}/Api/Venta/{ventaId}")
     suspend fun editSale(@Body venta: GetSalesByIdResponse, @Path("ventaId") ventaId: String) : Response<Unit>
 
-    @GET("${Constants.BYNDS}/Api/Venta")
+    @GET("${Constants.CASA_JORDAN}/Api/Venta")
     suspend fun getSalesInProcess(
         @Query("esActivo") esActivo: Boolean = true,
         @Query("EstatusVentaIds") statusSales: String,
@@ -106,7 +106,7 @@ interface ApiService {
         @Query("fechaFin") endDate: String
     ): Response<List<SalesModel>>
 
-    @GET("${Constants.BYNDS}/Api/Venta")
+    @GET("${Constants.CASA_JORDAN}/Api/Venta")
     suspend fun getPendingSales(
         @Query("esActivo") esActivo: Boolean = true,
         @Query("estatusVentaIds") estatusVentaIds: String = "1,2",
@@ -114,7 +114,7 @@ interface ApiService {
         @Query("fechaFin") fechaFin: String
     ): Response<List<SalesModel>>
 
-    @GET("${Constants.BYNDS}/Api/VentaPago")
+    @GET("${Constants.CASA_JORDAN}/Api/VentaPago")
     suspend fun getSalePayments(
         @Query("VentaId") pagoId: String,
         @Query("EsActivo") esActivo: Boolean = true
