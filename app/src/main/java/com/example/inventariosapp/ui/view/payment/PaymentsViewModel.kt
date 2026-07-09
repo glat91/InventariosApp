@@ -311,7 +311,7 @@ class PaymentsViewModel @Inject constructor(
 
                 val output = socket!!.outputStream
                 repeat(2) {
-                    printBitmap(context, output, R.drawable.casajordan)
+                    printBitmap(context, output, R.drawable.rb_letters)
                     val recivo = ("--------------------------------\n" +
                             "        Recibo de impresion\n" +
                             "Cliente: ${_uiState.value.select?.nombreCliente!!}\n" +
@@ -390,7 +390,7 @@ class PaymentsViewModel @Inject constructor(
                 showToastOnMain(context, "Conectado a ${device.name}")
 
                 val output = socket!!.outputStream
-                printBitmap(context, output, R.drawable.casajordan)
+                printBitmap(context, output, R.drawable.rb_letters)
                 val recivo = ("--------------------------------\n" +
                         "        Recibo de impresion\n" +
                         "Cliente: ${_uiState.value.select?.nombreCliente!!}\n" +

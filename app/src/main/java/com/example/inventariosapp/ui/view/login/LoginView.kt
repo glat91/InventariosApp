@@ -52,7 +52,7 @@ fun LoginView(
 
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
-            painter = painterResource(id = R.drawable.modern_blue_bg),
+            painter = painterResource(id = R.drawable.login_bg),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
@@ -64,7 +64,7 @@ fun LoginView(
                     content = {
                         Box(modifier = Modifier.fillMaxSize()) {
                             Image(
-                                painter = painterResource(id = R.drawable.modern_blue_bg),
+                                painter = painterResource(id = R.drawable.login_bg),
                                 contentDescription = null,
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier.fillMaxSize()
@@ -83,10 +83,10 @@ fun LoginView(
                                     elevation = CardDefaults.elevatedCardElevation(8.dp)
                                 ){
                                     Image(
-                                        painter = painterResource(id = R.drawable.logo_casajordan),
+                                        painter = painterResource(id = R.drawable.rb_letters),
                                         contentDescription = "Logo de la app",
                                         modifier = Modifier.size(150.dp),
-                                        contentScale = ContentScale.Fit
+                                        contentScale = ContentScale.Crop
                                     )
                                 }
                                 HorizontalDivider(thickness = 20.dp, color = Color.Transparent)
