@@ -76,6 +76,7 @@ data class PaymentsUiState(
     val dialogDeposit: Boolean = false,
     val showDeposit: Boolean = false,
     val payments: ArrayList<PayModel> = arrayListOf(),
+    val btnDeposit: Boolean = true,
     val dialogBT: Boolean = false,
     val hasPermissions: Boolean = false,
     val permissions: List<String> = emptyList(),
@@ -138,6 +139,9 @@ class PaymentsViewModel @Inject constructor(
     }
     fun updateShowDeposit(showDeposit: Boolean) {
         _uiState.update { it.copy(showDeposit = showDeposit) }
+    }
+    fun updateBtnDeposit(btnDeposit: Boolean) {
+        _uiState.update { it.copy(btnDeposit = btnDeposit) }
     }
     fun updatePayTotalPayment(payTotalPayment: String) {
         _uiState.update { it.copy(payTotalPayment = payTotalPayment) }
@@ -252,6 +256,7 @@ class PaymentsViewModel @Inject constructor(
             } else {
                 baseViewModel.dialogLogin.value = true
             }
+            updateBtnDeposit(true)
         }
     }
 

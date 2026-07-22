@@ -89,6 +89,7 @@ fun NewSaleView(
     opcions: ArrayList<ClientResponseModel>,
     expandedSearchBar: Boolean,
     canModify: Boolean,
+    btnEnable: Boolean,
     onChangueSearch: (TextFieldValue) -> Unit,
     onDissmissSearchBar: () -> Unit,
     onClickOpcion: (ClientResponseModel) -> Unit,
@@ -246,6 +247,7 @@ fun NewSaleView(
                     )
                     ButtonWithImgCmp(
                         text = "Guardar",
+                        enable = btnEnable,
                         backgroundColor = Color(0xFF378ADD),
                         icon = Icons.Filled.Create,
                         onClick = onClickSave
@@ -356,6 +358,7 @@ fun NewSaleViewPreview(){
         salesData = remember { mutableStateListOf() },
         expandedSearchBar = true,
         canModify = false,
+        btnEnable = true,
         opcions = arrayListOf(),
         onClickOpcion = {},
         onClear = {},

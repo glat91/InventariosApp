@@ -49,8 +49,6 @@ class UserPaymentsViewModel @Inject constructor(
 
     fun setPayment() {
         updateBtnStatus(false)
-        val randomLong = (1L..9L).random()
-        sleep(randomLong)
         val currentPayments = uiState.value.penndingPayments
         if (currentPayments.isNotEmpty()) {
             baseViewModel.showLoader()

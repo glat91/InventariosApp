@@ -53,7 +53,8 @@ data class NewSaleUiState(
 
     val dialogProduct: Boolean = false,
     val expandenSearchBarD: Boolean = false,
-    val enableSaveBtn: Boolean = false,
+    val enableSaveBtn: Boolean = true, // Default to true
+    val isSubmitting: Boolean = false, // Added explicit submitting state
     var search: TextFieldValue = TextFieldValue(""),
     val inventory: ArrayList<ProductsResponseModel>? = arrayListOf(),
     val filterInventory: ArrayList<ProductsResponseModel> = arrayListOf(),
@@ -103,16 +104,12 @@ class NewSaleViewModel @Inject constructor(
                 val r = getSalesByIdUseCase(idSale, internetUse)
                 if (r.first != null) {
                     _uiState.update { it.copy(saleData = r.first!!) }
-                    for (p in _uiState.value.saleData.ventaProductos) {
-                        Log.i("Sales___", "${p}")
-                    }
                     products.clear()
                     products.addAll(_uiState.value.saleData.ventaProductos)
                 }
             } else {
                 baseViewModel.dialogLogin.value = true
             }
-            //if (setLoading())baseViewModel.hideLoader()
         }
     }
 
@@ -154,11 +151,14 @@ class NewSaleViewModel @Inject constructor(
     }
 
     fun editSale() {
-        _uiState.update { it.copy(canModifyClient = false) }
+        if (_uiState.value.isSubmitting) return
+        _uiState.update { it.copy(isSubmitting = true, enableSaveBtn = false) }
+        
         baseViewModel.showLoader()
         viewModelScope.launch {
             if (!validateProductsWithDb()) {
                 baseViewModel.hideLoader()
+                _uiState.update { it.copy(isSubmitting = false, enableSaveBtn = true) }
                 return@launch
             }
             val internetUse = Helpers.isInternetAvailable(cnx)
@@ -167,7 +167,6 @@ class NewSaleViewModel @Inject constructor(
                 ventaIdInterno = null
             )
             _uiState.update { it.copy(saleData = updatedSaleData) }
-            Log.i("Sale___", products.toString())
             val r = editSaleUseCase(updatedSaleData, _uiState.value.idSale, internetUse)
             if (r.first != null) {
                 MainActivity.mainDialogMsg.value = "Venta modificada"
@@ -180,6 +179,7 @@ class NewSaleViewModel @Inject constructor(
                 }
             }
             baseViewModel.hideLoader()
+            _uiState.update { it.copy(isSubmitting = false, enableSaveBtn = true) }
         }
     }
 
@@ -191,7 +191,6 @@ class NewSaleViewModel @Inject constructor(
             val precio = p.PrecioVenta ?: 0.0
             val cantidad = p.Cantidad ?: 0
             newTotal += (precio * cantidad.toDouble()).toBigDecimal()
-            Log.i("Total_Product___", "$precio * $cantidad = $newTotal")
         }
 
         _uiState.update {
@@ -219,8 +218,6 @@ class NewSaleViewModel @Inject constructor(
         }
 
         var newTotal = BigDecimal(0.0)
-        val p = if (_uiState.value.canModifyClient) data.productoId ?: 0 else 0
-        Log.i("C___", productState.comentarios)
         products.add(
             SaleProductModel(
                 VentaProductoId = 0,
@@ -238,7 +235,6 @@ class NewSaleViewModel @Inject constructor(
         )
         for (prod in products) {
             newTotal += (prod.PrecioVenta!! * prod.Cantidad!!.toDouble()).toBigDecimal()
-            Log.i("Total_Product___", "${prod.PrecioVenta} * ${prod.Cantidad} = ${newTotal}")
         }
         _uiState.update {
             it.copy(
@@ -258,20 +254,17 @@ class NewSaleViewModel @Inject constructor(
                 _uiState.update { it.copy(clients = r.first!!) }
             }
             _uiState.update { it.copy(serviceClientStatus = true) }
-            ///if (setLoading()) baseViewModel.hideLoader()
         }
     }
 
     fun filterClients(): ArrayList<ClientResponseModel> {
         val opcions = if (_uiState.value.client.text.isBlank()) {
-            Log.i("If___1", _uiState.value.saleData.folio.toString())
             _uiState.update { it.copy(expandenSearchBarS = false) }
             arrayListOf()
         } else {
             if (_uiState.value.newClient == null) {
                 _uiState.update { it.copy(expandenSearchBarS = true) }
             }
-            Log.i("Else___1", _uiState.value.newClient.toString())
             ArrayList(_uiState.value.clients.filter {
                 it.nombreCliente!!.contains(_uiState.value.client.text, ignoreCase = true)
             })
@@ -288,7 +281,6 @@ class NewSaleViewModel @Inject constructor(
     fun getFilter(filter: TextFieldValue){
         _uiState.update { it.copy(search = filter) }
         updateExpandenSearchBarD(true)
-        Log.i("Filtro___", _uiState.value.search.text.trim())
         val data = _uiState.value.inventory ?: arrayListOf()
         val query = _uiState.value.search.text.trim()
         val filterInventory =
@@ -333,7 +325,6 @@ class NewSaleViewModel @Inject constructor(
                 val r2 = getInventarioUseCase(MainActivity.internetBtn.value)
                 if (r2.first != null) {
                     val filtro = r2.first!!.firstOrNull { it.productoId == productId }
-                    Log.i("Filtro___", filtro.toString())
                     _uiState.update { it.copy(inventoryOffline = filtro) }
                 }
             }
@@ -345,10 +336,14 @@ class NewSaleViewModel @Inject constructor(
 
     // region New Sale
     fun createSale() {
+        if (_uiState.value.isSubmitting) return
+        _uiState.update { it.copy(isSubmitting = true, enableSaveBtn = false) }
+        
         baseViewModel.showLoader()
         viewModelScope.launch {
             if (!validateProductsWithDb()) {
                 baseViewModel.hideLoader()
+                _uiState.update { it.copy(isSubmitting = false, enableSaveBtn = true) }
                 return@launch
             }
             val usuarioSesionId = baseViewModel.getUsiarioId()
@@ -406,7 +401,7 @@ class NewSaleViewModel @Inject constructor(
             } else {
                 baseViewModel.dialogLogin.value = true
             }
-            updateEnableSaveBtn(true)
+            _uiState.update { it.copy(isSubmitting = false, enableSaveBtn = true) }
             baseViewModel.hideLoader()
         }
     }

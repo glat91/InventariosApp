@@ -108,9 +108,9 @@ class PenndingSalesViewModel @Inject constructor(
                 else{
                     baseViewModel.dialogLogin.value = true
                 }
+                updateBtnStatus(true)
+                baseViewModel.hideLoader()
             }
-            updateBtnStatus(true)
-            baseViewModel.hideLoader()
 
         }
         else{

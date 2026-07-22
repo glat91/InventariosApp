@@ -1,5 +1,6 @@
 package com.example.inventariosapp.ui.view.user_sales
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -29,7 +30,8 @@ fun PenndingSalesScreen(navController: NavHostController) {
             viewModel.updateSelectedPenndigSale(it)
             viewModel.updateDialogProduct(true)
         },
-        onClickUpdate = { viewModel.updateSales() },
+        onClickUpdate = {
+            viewModel.updateSales() },
         onClickMenu = { viewModel.baseViewModel.openMenu() },
         onClickBack = { navController.popBackStack() },
     )

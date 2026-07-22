@@ -1,5 +1,6 @@
 package com.example.inventariosapp.ui.view.user_payments
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -36,7 +37,9 @@ fun UserPaymentsScreen(navController: NavHostController) {
         btnEnabled = uiState.enableBtn,
         onClickBack = { navController.popBackStack() },
         onClickMenu = { viewModel.baseViewModel.openMenu() },
-        onClickUpdate = { viewModel.setPayment() }
+        onClickUpdate = {
+            viewModel.setPayment()
+        }
     )
     // endregion
     // region dialog

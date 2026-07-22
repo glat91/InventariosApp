@@ -69,6 +69,7 @@ fun NewSaleScreen(navController: NavHostController) {
         expandedSearchBar = saleUiState.expandenSearchBarS,
         opcions = viewModel.filterClients(),
         canModify = saleUiState.canModifyClient,
+        btnEnable = saleUiState.enableSaveBtn,
         onChangueSearch = { viewModel.updateClient(it) },
         onDissmissSearchBar = { viewModel.updateExpandenSearchBarD(false) },
         onClickOpcion = {
@@ -89,31 +90,23 @@ fun NewSaleScreen(navController: NavHostController) {
             viewModel.updateDialogProduct(true)
         },
         onClickSave = {
-            viewModel.updateEnableSaveBtn(false)
-            if (saleUiState.sale.ventaId == null) {
-                if (viewModel.products.isNotEmpty() && saleUiState.newClient != null) {
-                    viewModel.createSale()
-                }
-                else {
-                    if (viewModel.products.isEmpty()){
-                        MainActivity.mainDialogMsg.value = "No hay productos para guardar"
-                        MainActivity.mainDialog.value = true
-                    }
-                    if (saleUiState.newClient != null){
-                        MainActivity.mainDialogMsg.value = "No hay cliente para guardar"
-                        MainActivity.mainDialog.value = true
-                    }
-                    viewModel.updateEnableSaveBtn(true)
-
-                }
-            } else {
-                if (MainActivity.internetBtn.value) {
-                    if (viewModel.products.isNotEmpty()) { viewModel.editSale() }
-                } else {
-                    MainActivity.mainDialogMsg.value = "Modo offline no activado"
+            if (uiState.enableBtn){
+                if (viewModel.products.isEmpty()) {
+                    MainActivity.mainDialogMsg.value = "No hay productos para guardar"
                     MainActivity.mainDialog.value = true
+                } else if (saleUiState.newClient == null) {
+                    MainActivity.mainDialogMsg.value = "No hay cliente seleccionado"
+                    MainActivity.mainDialog.value = true
+                } else if (saleUiState.sale.ventaId == null) {
+                    viewModel.createSale()
+                } else {
+                    if (MainActivity.internetBtn.value) {
+                        viewModel.editSale()
+                    } else {
+                        MainActivity.mainDialogMsg.value = "Modo offline no activado"
+                        MainActivity.mainDialog.value = true
+                    }
                 }
-                viewModel.updateEnableSaveBtn(true)
             }
         },
         onClickBack = {

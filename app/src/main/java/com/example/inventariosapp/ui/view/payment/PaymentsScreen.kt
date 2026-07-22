@@ -442,32 +442,35 @@ fun PaymentsScreen(navController: NavHostController) {
                                         modifier = Modifier,
                                         text = "Agregar",
                                         onClick = {
-                                            val monto = uiState.payTotalPayment.toDoubleOrNull() ?: 0.0
-                                            if (monto > 0.01 && monto <= uiState.select?.montoPorPagar!!) {
-                                                viewModel.setPayment(
-                                                    ventaId = uiState.select!!.ventaId!!,
-                                                    montoPago = monto,
-                                                    observaciones = uiState.payObservation,
-                                                    onSuccess = {
-                                                        permissionLauncher.launch(viewModel.permissions)
-                                                    }
-                                                )
-                                                viewModel.updateShowDeposit(true)
-                                            } else {
-                                                if (monto > uiState.select?.montoPorPagar!!) {
-                                                    MainActivity.mainDialogMsg.value = "El monto debe ser menor al adeudo"
+                                            if (uiState.btnDeposit) {
+                                                viewModel.updateBtnDeposit(false)
+                                                val monto = uiState.payTotalPayment.toDoubleOrNull() ?: 0.0
+                                                if (monto > 0.01 && monto <= uiState.select?.montoPorPagar!!) {
+                                                    viewModel.setPayment(
+                                                        ventaId = uiState.select!!.ventaId!!,
+                                                        montoPago = monto,
+                                                        observaciones = uiState.payObservation,
+                                                        onSuccess = {
+                                                            permissionLauncher.launch(viewModel.permissions)
+                                                        }
+                                                    )
+                                                    viewModel.updateShowDeposit(true)
                                                 } else {
-                                                    MainActivity.mainDialogMsg.value = "El monto debe ser mayor a .01 centavo"
+                                                    if (monto > uiState.select?.montoPorPagar!!) {
+                                                        MainActivity.mainDialogMsg.value = "El monto debe ser menor al adeudo"
+                                                    } else {
+                                                        MainActivity.mainDialogMsg.value = "El monto debe ser mayor a .01 centavo"
+                                                    }
+                                                    viewModel.cleanPayment()
+                                                    MainActivity.mainDialog.value = true
                                                 }
-                                                viewModel.cleanPayment()
-                                                MainActivity.mainDialog.value = true
                                             }
                                         },
                                         shape = RoundedCornerShape(10.dp),
                                         txtColor = Color.White,
                                         maxLines = 1,
                                         backGroundColor = UI_Backround_Btn_Accept,
-                                        disableBackGroundColor = Color.Gray,
+                                        enable = uiState.btnDeposit,
                                         elevation = ButtonDefaults.buttonElevation(defaultElevation = 6.dp, pressedElevation = 0.dp)
                                     )
                                 }
