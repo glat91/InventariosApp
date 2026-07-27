@@ -44,7 +44,6 @@ import java.io.IOException
 import java.lang.reflect.Method
 import java.time.Instant
 import java.time.LocalDate
-import java.time.ZoneId
 import java.util.UUID
 import javax.inject.Inject
 import kotlinx.coroutines.flow.update
@@ -79,9 +78,8 @@ data class PaymentsUiState(
     val btnDeposit: Boolean = true,
     val dialogBT: Boolean = false,
     val hasPermissions: Boolean = false,
-    val permissions: List<String> = emptyList(),
     val printerUUID: UUID = UUID.fromString(Constants.PRINTER_UUID),
-    val bluetoothAdapter: BluetoothAdapter =  BluetoothAdapter.getDefaultAdapter(),
+    val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter(),
     val bondedDevices: ArrayList<BluetoothDevice> =  arrayListOf<BluetoothDevice>(),
 )
 
@@ -99,27 +97,30 @@ class PaymentsViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(PaymentsUiState())
     val uiState = _uiState.asStateFlow()
     // endregion
+
+    val permissions: Array<String> = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        arrayOf(Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN)
+    } else {
+        arrayOf(Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN)
+    }
+
     // region init
     init {
         getPendingSales()
-        _uiState.value = _uiState.value.copy(
-            hasPermissions = ContextCompat.checkSelfPermission(
-                cnx,
-                Manifest.permission.BLUETOOTH_CONNECT
-            ) == PackageManager.PERMISSION_GRANTED &&
-                    ContextCompat.checkSelfPermission(
-                        cnx,
-                        Manifest.permission.BLUETOOTH_SCAN
-                    ) == PackageManager.PERMISSION_GRANTED
-        )
+        checkPermissions()
     }
-    val permissions = buildList {
-        add(Manifest.permission.BLUETOOTH_CONNECT)
-        add(Manifest.permission.BLUETOOTH_SCAN)
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R) {
-            add(Manifest.permission.ACCESS_FINE_LOCATION)
+
+    fun checkPermissions(): Boolean {
+        val hasPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            ContextCompat.checkSelfPermission(cnx, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED &&
+                    ContextCompat.checkSelfPermission(cnx, Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true
         }
-    }.toTypedArray()
+        _uiState.update { it.copy(hasPermissions = hasPermissions) }
+        return hasPermissions
+    }
+    
     // endregion
     // region Update uiState
     fun updateSearch(query: TextFieldValue) {
@@ -133,7 +134,23 @@ class PaymentsViewModel @Inject constructor(
     }
     fun updateDialogBT(dialogBT: Boolean) {
         _uiState.update { it.copy(dialogBT = dialogBT) }
+        // Si el usuario abre el diálogo, intenta cargar dispositivos si tenemos permiso
+        if (dialogBT && checkPermissions()) {
+            loadBondedDevices()
+        }
     }
+    
+    @SuppressLint("MissingPermission")
+    private fun loadBondedDevices() {
+        val adapter = _uiState.value.bluetoothAdapter
+        if (adapter != null && adapter.isEnabled) {
+            val bonded = adapter.bondedDevices
+            if (bonded != null) {
+                _uiState.update { it.copy(bondedDevices = ArrayList(bonded)) }
+            }
+        }
+    }
+
     fun updateShowDatePicker(showDatePicker: Boolean) {
         _uiState.update { it.copy(showDatePicker = showDatePicker) }
     }
@@ -249,7 +266,7 @@ class PaymentsViewModel @Inject constructor(
                 var r = postPaymentUseCase(internetUse = internetUse, newPay = listOf(createPostSale))
                 if (r.isSuccess) {
                     onSuccess()
-                    MainActivity.mainDialogMsg.value = if (internetUse) "Pago realizado con exito" else "Pago guardado en modo offline"
+                    MainActivity.mainDialogMsg.value = (if (internetUse) "Pago realizado con exito" else "Pago guardado en modo offline")
                     MainActivity.mainDialog.value = true
                 }
                 getPendingSales()
@@ -287,6 +304,7 @@ class PaymentsViewModel @Inject constructor(
         context: Context,
         device: BluetoothDevice
     ) {
+        if (!checkPermissions()) return
         baseViewModel.showLoader()
         _uiState.value = _uiState.value.copy(dialogBT = false, dialogDeposit = false)
         withContext(Dispatchers.IO) {
@@ -363,6 +381,7 @@ class PaymentsViewModel @Inject constructor(
         context: Context,
         device: BluetoothDevice
     ) {
+        if (!checkPermissions()) return
         baseViewModel.showLoader()
         _uiState.value = _uiState.value.copy(dialogBT = false, dialogDeposit = false)
         withContext(Dispatchers.IO) {

@@ -7,12 +7,12 @@ import android.bluetooth.BluetoothClass
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,8 +21,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
-import com.example.inventariosapp.R
 import com.example.inventariosapp.util.Constants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,8 +31,6 @@ import java.io.IOException
 import java.lang.reflect.Method
 import java.util.UUID
 
-@RequiresApi(Build.VERSION_CODES.S)
-@SuppressLint("MissingPermission")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BluetoothPrinterScreen(navController: NavHostController) {
@@ -41,14 +39,23 @@ fun BluetoothPrinterScreen(navController: NavHostController) {
     val scope = rememberCoroutineScope()
     val bluetoothAdapter = remember { BluetoothAdapter.getDefaultAdapter() }
     val bondedDevices = remember { mutableStateListOf<BluetoothDevice>() }
-    var hasPermissions by remember { mutableStateOf(false) }
+    
+    fun hasBluetoothPermissions(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED &&
+            ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true
+        }
+    }
+
+    var hasPermissions by remember { mutableStateOf(hasBluetoothPermissions()) }
 
     // --- PERMISOS ---
     val permissions = buildList {
-        add(Manifest.permission.BLUETOOTH_CONNECT)
-        add(Manifest.permission.BLUETOOTH_SCAN)
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R) {
-            add(Manifest.permission.ACCESS_FINE_LOCATION)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            add(Manifest.permission.BLUETOOTH_CONNECT)
+            add(Manifest.permission.BLUETOOTH_SCAN)
         }
     }.toTypedArray()
 
@@ -59,7 +66,9 @@ fun BluetoothPrinterScreen(navController: NavHostController) {
     }
 
     LaunchedEffect(Unit) {
-        permissionLauncher.launch(permissions)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !hasPermissions) {
+            permissionLauncher.launch(permissions)
+        }
     }
 
     // --- UI ---
@@ -70,7 +79,10 @@ fun BluetoothPrinterScreen(navController: NavHostController) {
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize()) {
             if (!hasPermissions) {
-                Text("Se necesitan permisos Bluetooth", modifier = Modifier)
+                Text("Se necesitan permisos Bluetooth")
+                Button(onClick = { permissionLauncher.launch(permissions) }) {
+                    Text("Conceder permisos")
+                }
                 return@Column
             }
 
@@ -81,15 +93,22 @@ fun BluetoothPrinterScreen(navController: NavHostController) {
             }
 
             // Cargar dispositivos emparejados
-            LaunchedEffect(Unit) {
-                bondedDevices.clear()
-                bluetoothAdapter.bondedDevices?.forEach { device ->
-
-                    val hasPrinterUUID = device.uuids?.any { it.uuid == printerUUID } == true
-
-                    val isImagingDevice = device.bluetoothClass?.majorDeviceClass == BluetoothClass.Device.Major.IMAGING
-
-                    if (hasPrinterUUID || isImagingDevice) { bondedDevices.add(device) }
+            LaunchedEffect(hasPermissions) {
+                if (hasPermissions) {
+                    bondedDevices.clear()
+                    try {
+                        @SuppressLint("MissingPermission")
+                        val bonded = bluetoothAdapter.bondedDevices
+                        bonded?.forEach { device ->
+                            val hasPrinterUUID = device.uuids?.any { it.uuid == printerUUID } == true
+                            val isImagingDevice = device.bluetoothClass?.majorDeviceClass == BluetoothClass.Device.Major.IMAGING
+                            if (hasPrinterUUID || isImagingDevice) {
+                                bondedDevices.add(device)
+                            }
+                        }
+                    } catch (e: SecurityException) {
+                        Log.e("BluetoothPrinter", "Permission missing when accessing bondedDevices", e)
+                    }
                 }
             }
 
@@ -104,22 +123,26 @@ fun BluetoothPrinterScreen(navController: NavHostController) {
                         )
                         Button(
                             onClick = {
-                                scope.launch {
-                                    connectAndPrint(
-                                        clientName = "",
-                                        clientDir = "",
-                                        folio = "",
-                                        total = "",
-                                        date = "",
-                                        balance = "",
-                                        vendor = "",
-                                        context = context,
-                                        device = device,
-                                    )
+                                if (hasBluetoothPermissions()) {
+                                    scope.launch {
+                                        connectAndPrint(
+                                            clientName = "",
+                                            clientDir = "",
+                                            folio = "",
+                                            total = "",
+                                            date = "",
+                                            balance = "",
+                                            vendor = "",
+                                            context = context,
+                                            device = device,
+                                        )
+                                    }
+                                } else {
+                                    permissionLauncher.launch(permissions)
                                 }
                             },
                             content = { Text(text = "Imprimir") },
-                            )
+                        )
                     }
                 }
             }
@@ -163,7 +186,6 @@ suspend fun connectAndPrint(
             showToastOnMain(context, "Conectado a ${device.name}")
 
             val output = socket!!.outputStream
-            printBitmap(context, output, R.drawable.rb_letters)
             val recivo = ("--------------------------------\n" +
                     "        Recibo de impresión\n" +
                     "Cliente: $clientName\n" +
@@ -189,6 +211,9 @@ suspend fun connectAndPrint(
 
             socket!!.close()
             showToastOnMain(context, "Impresión enviada correctamente")
+        } catch (e: SecurityException) {
+            Log.e("Printer", "SecurityException: falta permiso BLUETOOTH_CONNECT", e)
+            showToastOnMain(context, "Error de permisos al conectar")
         } catch (e: Exception) {
             showToastOnMain(context, "Error al imprimir: ${e.message}")
         }

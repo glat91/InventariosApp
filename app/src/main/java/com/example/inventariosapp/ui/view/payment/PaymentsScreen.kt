@@ -5,7 +5,6 @@ import android.bluetooth.BluetoothClass
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresPermission
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -86,11 +85,26 @@ fun PaymentsScreen(navController: NavHostController) {
     val lviewModel: LoginViewModel = hiltViewModel()
     val cnx = LocalContext.current
 
-    @OptIn(ExperimentalMaterial3Api::class)
-    var datePickerState = rememberDatePickerState()
-
     val uiState by viewModel.uiState.collectAsState()
     val luiState by lviewModel.uiState.collectAsState()
+
+    // Cargar dispositivos emparejados
+    LaunchedEffect(Unit) {
+        if (viewModel.checkPermissions()) {
+            uiState.bondedDevices.clear()
+            uiState.bluetoothAdapter?.bondedDevices?.forEach { device ->
+                val hasPrinterUUID = device.uuids?.any {
+                    it.uuid == uiState.printerUUID
+                } == true
+                val isImagingDevice =
+                    device.bluetoothClass?.majorDeviceClass == BluetoothClass.Device.Major.IMAGING
+
+                if (hasPrinterUUID || isImagingDevice) {
+                    uiState.bondedDevices.add(device)
+                }
+            }
+        }
+    }
 
     PaymentsView(
         data = viewModel.filterPayments(),
@@ -110,49 +124,27 @@ fun PaymentsScreen(navController: NavHostController) {
         }
     )
 
-    // region BT
-    LaunchedEffect(Unit) {
-        //viewModel.hasPermissions = viewModel.hasPermissions(cnx)
-    }
     val scope = rememberCoroutineScope()
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { result ->
         viewModel.updateHasPermissions(result.values.all { it })
-        if (uiState.hasPermissions) { viewModel.updateDialogBT(true) }
+        if (viewModel.checkPermissions()) { viewModel.updateDialogBT(true) }
     }
     if (uiState.dialogBT && uiState.hasPermissions) {
         BasicDialogCmp(
             color = UI_BT,
             content = {
                 Column(modifier = Modifier) {
-                    if (!uiState.hasPermissions) {
+                    if (!viewModel.checkPermissions()) {
                         Text("Se necesitan permisos Bluetooth", modifier = Modifier)
                         return@Column
                     }
 
-                    val isEnabled = uiState.bluetoothAdapter.isEnabled
+                    val isEnabled = uiState.bluetoothAdapter?.isEnabled == true
                     if (!isEnabled) {
                         Text("Activa el Bluetooth e intenta de nuevo")
                         return@Column
-                    }
-
-                    // Cargar dispositivos emparejados
-                    LaunchedEffect(Unit) @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT) {
-                        uiState.bondedDevices.clear()
-                        uiState.bluetoothAdapter.bondedDevices?.forEach { device ->
-
-                            val hasPrinterUUID = device.uuids?.any {
-                                it.uuid == uiState.printerUUID
-                            } == true
-
-                            val isImagingDevice =
-                                device.bluetoothClass?.majorDeviceClass == BluetoothClass.Device.Major.IMAGING
-
-                            if (hasPrinterUUID || isImagingDevice) {
-                                uiState.bondedDevices.add(device)
-                            }
-                        }
                     }
 
                     if (uiState.bondedDevices.isEmpty()) {
@@ -442,6 +434,7 @@ fun PaymentsScreen(navController: NavHostController) {
                                         modifier = Modifier,
                                         text = "Agregar",
                                         onClick = {
+                                            Log.i("Click_____", "click")
                                             if (uiState.btnDeposit) {
                                                 viewModel.updateBtnDeposit(false)
                                                 val monto = uiState.payTotalPayment.toDoubleOrNull() ?: 0.0
