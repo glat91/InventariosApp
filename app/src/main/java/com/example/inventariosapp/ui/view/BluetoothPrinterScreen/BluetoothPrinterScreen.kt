@@ -164,9 +164,10 @@ suspend fun connectAndPrint(
     device: BluetoothDevice
 ) {
     withContext(Dispatchers.IO) {
+        var socket: BluetoothSocket? = null
         try {
             val PRINTER_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb")
-            var socket: BluetoothSocket? = null
+            
             try {
                 socket = device.createRfcommSocketToServiceRecord(PRINTER_UUID)
                 socket.connect()
@@ -185,37 +186,52 @@ suspend fun connectAndPrint(
 
             showToastOnMain(context, "Conectado a ${device.name}")
 
-            val output = socket!!.outputStream
-            val recivo = ("--------------------------------\n" +
-                    "        Recibo de impresión\n" +
-                    "Cliente: $clientName\n" +
-                    "Direccion: $clientDir\n" +
-                    "Folio: $folio  Total: $$total\n" +
-                    "--------------------------------\n" +
-                    "Fecha de pago: $date\n" +
-                    "Saldo Restante: $$balance\n" +
-                    "Vendedor: $vendor \n" +
-                    "\n" +
-                    "              FIRMA\n" +
-                    "\n" +
-                    "\n" +
-                    " ____________________________\n" +
-                    "\n" +
-                    "\n" +
-                    "\n" +
-                    "\n" +
-                    "\n").toByteArray()
+            // Usamos un bloque para asegurar el cierre del stream
+            socket.outputStream.use { output ->
+                val recivo = ("--------------------------------\n" +
+                        "        Recibo de impresión\n" +
+                        "Cliente: $clientName\n" +
+                        "Direccion: $clientDir\n" +
+                        "Folio: $folio  Total: $$total\n" +
+                        "--------------------------------\n" +
+                        "Fecha de pago: $date\n" +
+                        "Saldo Restante: $$balance\n" +
+                        "Vendedor: $vendor \n" +
+                        "\n" +
+                        "              FIRMA\n" +
+                        "\n" +
+                        "\n" +
+                        " ____________________________\n" +
+                        "\n" +
+                        "\n" +
+                        "\n" +
+                        "\n" +
+                        "\n").toByteArray()
 
-            output.write(recivo)
-            output.flush()
+                output.write(recivo)
+                output.flush()
+                
+                // Pequeña pausa para asegurar que el buffer se envíe antes de cerrar
+                Thread.sleep(1000)
+            }
 
-            socket!!.close()
+            socket.close()
             showToastOnMain(context, "Impresión enviada correctamente")
         } catch (e: SecurityException) {
             Log.e("Printer", "SecurityException: falta permiso BLUETOOTH_CONNECT", e)
             showToastOnMain(context, "Error de permisos al conectar")
+        } catch (e: IOException) {
+            Log.e("Printer", "IOException: $e", e)
+            showToastOnMain(context, "Error de conexión: ${e.message}")
         } catch (e: Exception) {
+            Log.e("Printer", "Exception: $e", e)
             showToastOnMain(context, "Error al imprimir: ${e.message}")
+        } finally {
+            try {
+                socket?.close()
+            } catch (e: IOException) {
+                Log.e("Printer", "Error al cerrar socket", e)
+            }
         }
     }
 }

@@ -9,9 +9,6 @@ import com.example.inventariosapp.domain.model.error.ErrorModel
 import com.example.inventariosapp.domain.model.sales.SalesModel
 import com.example.inventariosapp.domain.model.sales.toDB
 import com.example.inventariosapp.util.NetworkMonitor
-import kotlinx.coroutines.withContext
-import com.google.gson.Gson
-import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 
 class GetPendingSalesRepositoryImp @Inject constructor(
@@ -20,7 +17,6 @@ class GetPendingSalesRepositoryImp @Inject constructor(
     private val networkMonitor: NetworkMonitor,
 ) {
     suspend operator fun invoke(estatusVentaIds: String, startDate: String, endDate: String, refresh: Boolean): Pair<List<SalesModel>?, String?> {
-        networkMonitor.start()
         return if (networkMonitor.isConnected.value && refresh) {
             fetchFromNetwork(estatusVentaIds, startDate, endDate)
         }

@@ -1,5 +1,6 @@
 package com.example.inventariosapp.ui.view.new_sale
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -68,17 +69,15 @@ fun NewSaleScreen(navController: NavHostController) {
         salesData = viewModel.products,
         expandedSearchBar = saleUiState.expandenSearchBarS,
         opcions = viewModel.filterClients(),
-        canModify = saleUiState.canModifyClient,
+        canModify = true,
         btnEnable = saleUiState.enableSaveBtn,
         onChangueSearch = { viewModel.updateClient(it) },
         onDissmissSearchBar = { viewModel.updateExpandenSearchBarD(false) },
         onClickOpcion = {
-            if (saleUiState.canModifyClient) {
-                viewModel.updateNewClient(it)
-                viewModel.updateClient(TextFieldValue(it.nombreCliente.toString()))
-                viewModel.updateSale(saleUiState.sale.copy(nombreCliente = it.nombreCliente.toString()))
-                viewModel.updateExpandenSearchBarS(false)
-            }
+            viewModel.updateNewClient(it)
+            viewModel.updateClient(TextFieldValue(it.nombreCliente.toString()))
+            viewModel.updateSale(saleUiState.sale.copy(nombreCliente = it.nombreCliente.toString()))
+            viewModel.updateExpandenSearchBarS(false)
         },
         onClear = {
             viewModel.updateClient(TextFieldValue(""))
@@ -94,10 +93,12 @@ fun NewSaleScreen(navController: NavHostController) {
                 if (viewModel.products.isEmpty()) {
                     MainActivity.mainDialogMsg.value = "No hay productos para guardar"
                     MainActivity.mainDialog.value = true
-                } else if (saleUiState.newClient == null) {
+                }
+                else if (saleUiState.newClient == null && saleUiState.sale.ventaId == null) {
                     MainActivity.mainDialogMsg.value = "No hay cliente seleccionado"
                     MainActivity.mainDialog.value = true
-                } else if (saleUiState.sale.ventaId == null) {
+                }
+                else if (saleUiState.sale.ventaId == null) {
                     viewModel.createSale()
                 } else {
                     if (MainActivity.internetBtn.value) {

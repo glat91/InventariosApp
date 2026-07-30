@@ -163,6 +163,7 @@ class NewSaleViewModel @Inject constructor(
             }
             val internetUse = Helpers.isInternetAvailable(cnx)
             val updatedSaleData = _uiState.value.saleData.copy(
+                cliente = _uiState.value.newClient,
                 ventaProductos = java.util.ArrayList(products),
                 ventaIdInterno = null
             )
@@ -263,7 +264,18 @@ class NewSaleViewModel @Inject constructor(
             arrayListOf()
         } else {
             if (_uiState.value.newClient == null) {
-                _uiState.update { it.copy(expandenSearchBarS = true) }
+                if (_uiState.value.saleData.ventaId != null){
+                    Log.i("filter____", _uiState.value.client.text)
+                    if (_uiState.value.client.text.length > 9){
+                        _uiState.update { it.copy(expandenSearchBarS = false) }
+                    }
+                    else {
+                        _uiState.update { it.copy(expandenSearchBarS = true) }
+                    }
+                }
+                else{
+                    _uiState.update { it.copy(expandenSearchBarS = true) }
+                }
             }
             ArrayList(_uiState.value.clients.filter {
                 it.nombreCliente!!.contains(_uiState.value.client.text, ignoreCase = true)

@@ -7,7 +7,7 @@ import android.graphics.Color
 import java.io.OutputStream
 
 fun printBitmap(context: Context, output: OutputStream, resId: Int, maxWidthPx: Int = 384) {
-// 1) Cargar y escalar manteniendo proporción
+    // 1) Cargar y escalar manteniendo proporción
     val original = BitmapFactory.decodeResource(context.resources, resId)
     val scaled = if (original.width > maxWidthPx) {
         val newHeight = (original.height.toFloat() * (maxWidthPx.toFloat() / original.width.toFloat())).toInt()
@@ -63,17 +63,15 @@ fun printBitmap(context: Context, output: OutputStream, resId: Int, maxWidthPx: 
         }
     }
 
-    try {
-        output.write(bytes.toByteArray())
-        output.flush()
-        Thread.sleep(2200) // Sleep para que no imprima ruido
+    // 5) Escribir al output, usando .use para asegurar cierre si es necesario, 
+    // pero aquí ya se pasa el stream abierto, así que solo escribimos y flush.
+    output.write(bytes.toByteArray())
+    output.flush()
+    Thread.sleep(2200) // Sleep para que la impresora procese
 
-        output.write(byteArrayOf(0x0A, 0x0A)) // 2 saltos de línea
-        output.write(byteArrayOf(0x1B, 0x40)) // ESC @ -> Reset de impresora
-        output.flush()
-    } catch (e: Exception) {
-        e.printStackTrace()
-    }
+    output.write(byteArrayOf(0x0A, 0x0A)) // 2 saltos de línea
+    output.write(byteArrayOf(0x1B, 0x40)) // ESC @ -> Reset de impresora
+    output.flush()
 }
 
 /** Convierte a B/W usando umbral promedio simple */

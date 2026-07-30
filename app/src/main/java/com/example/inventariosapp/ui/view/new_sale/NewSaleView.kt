@@ -169,7 +169,7 @@ fun NewSaleView(
                         opcionContent = {
                             val maxHeight = rememberAvailableHeight()
                             DropdownMenu(
-                                expanded = expandedSearchBar && canModify,
+                                expanded = expandedSearchBar,
                                 onDismissRequest = { onDissmissSearchBar() },
                                 properties = PopupProperties(
                                     focusable = false,
