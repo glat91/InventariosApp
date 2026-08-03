@@ -162,9 +162,8 @@ class NewSaleViewModel @Inject constructor(
                 return@launch
             }
             val internetUse = Helpers.isInternetAvailable(cnx)
-            val cliente = _uiState.value.client.text.ifEmpty { _uiState.value.newClient }
             val updatedSaleData = _uiState.value.saleData.copy(
-                clienteId = _uiState.value.newClient!!.clienteId,
+                clienteId = _uiState.value.newClient?.clienteId ?: _uiState.value.saleData.clienteId,
                 ventaProductos = java.util.ArrayList(products),
                 ventaIdInterno = null
             )
