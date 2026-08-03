@@ -88,7 +88,6 @@ fun PaymentsScreen(navController: NavHostController) {
     val uiState by viewModel.uiState.collectAsState()
     val luiState by lviewModel.uiState.collectAsState()
 
-    // Cargar dispositivos emparejados
     LaunchedEffect(Unit) {
         if (viewModel.checkPermissions()) {
             uiState.bondedDevices.clear()

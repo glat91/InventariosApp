@@ -35,9 +35,9 @@ interface SalesDao {
 
     @Query("""
         SELECT * FROM sales 
-    WHERE strftime('%Y-%m-%d', fechaVenta) BETWEEN :startDate AND :endDate 
-    AND estatusVentaId = :estatusVenta
-    ORDER BY fechaVenta DESC
+        WHERE fechaVenta BETWEEN :startDate AND :endDate 
+        AND estatusVentaId = :estatusVenta
+        ORDER BY fechaVenta DESC
     """)
     suspend fun getSalesBetween(startDate: String, endDate: String, estatusVenta: Int): List<SalesEntity>
 }

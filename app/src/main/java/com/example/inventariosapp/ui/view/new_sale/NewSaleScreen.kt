@@ -8,6 +8,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -30,6 +31,7 @@ fun NewSaleScreen(navController: NavHostController) {
     val cnx = LocalContext.current
     val uiState by lviewModel.uiState.collectAsState()
     val addproductUiState by addProductViewModel.uiState.collectAsState()
+    val currentSaleUiState by rememberUpdatedState(saleUiState)
 
     LaunchedEffect(saleUiState.expandenSearchBarS) {
         if (saleUiState.newClient != null) {
@@ -78,6 +80,7 @@ fun NewSaleScreen(navController: NavHostController) {
             viewModel.updateClient(TextFieldValue(it.nombreCliente.toString()))
             viewModel.updateSale(saleUiState.sale.copy(nombreCliente = it.nombreCliente.toString()))
             viewModel.updateExpandenSearchBarS(false)
+            Log.i("Cliente", saleUiState.newClient.toString())
         },
         onClear = {
             viewModel.updateClient(TextFieldValue(""))
@@ -89,19 +92,19 @@ fun NewSaleScreen(navController: NavHostController) {
             viewModel.updateDialogProduct(true)
         },
         onClickSave = {
-            if (uiState.enableBtn){
+            if (uiState.enableBtn) {
                 if (viewModel.products.isEmpty()) {
                     MainActivity.mainDialogMsg.value = "No hay productos para guardar"
                     MainActivity.mainDialog.value = true
                 }
-                else if (saleUiState.newClient == null && saleUiState.sale.ventaId == null) {
+                else if (saleUiState.newClient == null && saleUiState.client.text.isEmpty()) {
                     MainActivity.mainDialogMsg.value = "No hay cliente seleccionado"
                     MainActivity.mainDialog.value = true
                 }
                 else if (saleUiState.sale.ventaId == null) {
                     viewModel.createSale()
                 } else {
-                    if (MainActivity.internetBtn.value) {
+                    if (MainActivity.internetBtn.value && saleUiState.client.text.isNotEmpty()) {
                         viewModel.editSale()
                     } else {
                         MainActivity.mainDialogMsg.value = "Modo offline no activado"

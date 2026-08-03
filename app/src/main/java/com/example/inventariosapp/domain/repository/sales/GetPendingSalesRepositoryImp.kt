@@ -31,11 +31,8 @@ class GetPendingSalesRepositoryImp @Inject constructor(
         val estatusInt = estatusVentaIds.toIntOrNull() ?: 0
 
         // Log para depuración
-        val allSales = salesDao.getSalesByEstatusDebug(2)
-        Log.d("DEBUG_LOCAL", "Total en base de datos: ${allSales.size}")
-        allSales.forEach {
-            Log.d("DEBUG_LOCAL", it.toString())
-        }
+        val allSales = salesDao.getSalesByEstatusDebug(estatusInt)
+        Log.d("DEBUG_LOCAL", "Total en base de datos para estatus $estatusInt: ${allSales.size}")
 
         val sales = salesDao.getSalesBetween(startDate, endDate, estatusInt)
         Log.d("DEBUG_LOCAL", "Querying: start=$startDate, end=$endDate, status=$estatusInt")
@@ -55,10 +52,10 @@ class GetPendingSalesRepositoryImp @Inject constructor(
             val body = r.body()
             if (body != null) {
                 try {
-                    Log.i("PendingSales___", "body: ${body.size}")
+                    Log.i("PendingSales___", "body count: ${body.size}")
                     val data = body.map { it.toDB() }
-                    Log.i("PendingSales___", "body: ${data.size}")
-                    salesDao.deleteAllSales()
+                    
+                    // Ya no usamos deleteAllSales() para evitar borrar datos offline
                     salesDao.insertAllSales(data)
                 } catch (e: Exception) {
                     MainActivity.mainDialogMsg.value = "Error 1001001"
