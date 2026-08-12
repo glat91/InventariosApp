@@ -71,6 +71,7 @@ class PenndingSalesViewModel @Inject constructor(
         }
     }
     fun updateSales(){
+        if (!_uiState.value.enableBtn) return
         updateBtnStatus(false)
         val randomLong = (1L..9L).random()
         Thread.sleep(randomLong)

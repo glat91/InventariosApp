@@ -1,5 +1,7 @@
 package com.example.inventariosapp.ui.view.new_sale
 
+import android.content.Context
+import android.net.ConnectivityManager
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModelProvider
@@ -47,6 +49,9 @@ class NewSaleViewModelTest {
     private val getInventarioProductoUseCase = mockk<GetInventarioProductoUseCase>()
     private val getInventarioUseCase = mockk<GetInventarioUseCase>()
     private val baseViewModel = mockk<BaseViewModel>()
+
+    private lateinit var context: Context
+    private lateinit var connectivityManager: ConnectivityManager
     
     @Before
     fun setUp() {
@@ -61,9 +66,14 @@ class NewSaleViewModelTest {
         coEvery { getClientsUseCase.invoke(any()) } returns Pair(emptyList(), null)
         coEvery { getInventarioProductoUseCase.invoke(any(), any()) } returns Pair(mockk(), null)
         coEvery { getInventarioUseCase.invoke(any()) } returns Pair(emptyList(), null)
-        
+
         coEvery { baseViewModel.isSessionValid() } returns true
         coEvery { baseViewModel.getUsiarioId() } returns 1
+
+        context = mockk()
+        connectivityManager = mockk()
+
+        every { context.getSystemService(Context.CONNECTIVITY_SERVICE) } returns connectivityManager
     }
     
     @Test
@@ -213,7 +223,7 @@ class NewSaleViewModelTest {
             getInventarioProductoUseCase,
             getInventarioUseCase,
             baseViewModel,
-            mockk()
+            context
         )
         
         val product = com.example.inventariosapp.domain.model.sales.SaleProductModel().apply {

@@ -238,6 +238,16 @@ fun AddProductDialogCmp(
                                 offlineProduct = offlineProduct,
                                 onUpdateState = { onUpdateState(it) }
                             )
+                            inventario.inventario?.let {
+                                if(it < 1.0)
+                                    TextCmp(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        text = "Hay 0 productos en exsistencia",
+                                        fontSize = 13.sp,
+                                        color = Color.Red,
+                                        textAlign = TextAlign.Center
+                                    )
+                            }
                         }
 
                         HorizontalDivider(thickness = PADDING_8, color = Color.Transparent)

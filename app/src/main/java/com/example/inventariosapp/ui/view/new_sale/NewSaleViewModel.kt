@@ -218,6 +218,23 @@ class NewSaleViewModel @Inject constructor(
             return
         }
 
+        // Validate inventory availability
+        val internetUse = Helpers.isInternetAvailable(cnx)
+        val requestedQuantity = productState.quantity.toIntOrNull() ?: 0
+        if (MainActivity.internetBtn.value && internetUse) {
+            val inventoryAvailable = _uiState.value.totalInventory.inventario ?: 0.0
+            if (inventoryAvailable <= 0) {
+                MainActivity.mainDialogMsg.value = "No hay inventario del producto ${_uiState.value.selectedProduct?.descripcionPresentacion}"
+                MainActivity.mainDialog.value = true
+                return
+            }
+            if (requestedQuantity > inventoryAvailable) {
+                MainActivity.mainDialogMsg.value = "No hay suficiente inventario del producto. Disponible: $inventoryAvailable"
+                MainActivity.mainDialog.value = true
+                return
+            }
+        }
+
         var newTotal = BigDecimal(0.0)
         products.add(
             SaleProductModel(

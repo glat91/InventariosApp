@@ -37,7 +37,7 @@ class GetClientsRepositoryImpTest {
     
     @Before
     fun setUp() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
+        val context = mockk<Context>(relaxed = true)
         db = Room.inMemoryDatabaseBuilder(context, CompanyDatabase::class.java).build()
         // Mockear isConnected para que siempre sea true en las pruebas
         every { networkMonitor.isConnected } returns MutableStateFlow(true)

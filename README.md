@@ -64,7 +64,7 @@ com.example.inventariosapp/
 └── MainActivity.kt
 
 
-## 🏗️ Arquitectura General
+## Arquitectura General
 
 Esta es una aplicación móvil **Android** construida con:
 - **Lenguaje:** Kotlin 100%
@@ -79,7 +79,7 @@ Esta es una aplicación móvil **Android** construida con:
 
 ---
 
-## 📁 Estructura de Carpetas (Organizada por Dominio)
+## Estructura de Carpetas (Organizada por Dominio)
 
 ### `/api`
 Contiene las interfaces y configuraciones para la comunicación con el servidor.
@@ -167,7 +167,7 @@ Utilidades del sistema y constantes.
 
 ---
 
-## 🧠 Arquitectura de Datos
+## Arquitectura de Datos
 
 1. **UI (ViewModel)** llama a un UseCase.
 2. UseCase invoca al repositorio correspondiente.
@@ -176,11 +176,11 @@ Utilidades del sistema y constantes.
    - Si no hay internet → lee directamente desde Room.
 4. Los datos fluyen hacia la UI como `StateFlow` o `MutableState`.
 
-> 📌 **Importante:** El repositorio es el encargado de la lógica de "cache" (fuentes múltiples).
+>  **Importante:** El repositorio es el encargado de la lógica de "cache" (fuentes múltiples).
 
 ---
 
-## 🔐 Flujo de Sesion
+## Flujo de Sesion
 
 1. Usuario ingresa credenciales → `LoginViewModel`.
 2. Se llama a `ValitdateUserUseCase` → `ValidateUserRepositoryImp`.
@@ -189,7 +189,7 @@ Utilidades del sistema y constantes.
 
 ---
 
-## 📱 Pantallas Principales
+## Pantallas Principales
 
 | Pantalla | Descripción |
 |----------|-------------|
@@ -203,7 +203,7 @@ Utilidades del sistema y constantes.
 
 ---
 
-## ⚙️ Configuración del Proyecto
+## Configuración del Proyecto
 
 | Clave | Valor |
 |-------|-------|
@@ -220,7 +220,7 @@ Utilidades del sistema y constantes.
 
 ---
 
-## 🧪 Buenas Prácticas Observadas
+## Buenas Prácticas Observadas
 
 - ✅ **UI Descriptiva:** Uso intensivo de Jetpack Compose.
 - ✅ **Separación clara:** Capas `domain`, `data` (local), `data` (remote).
@@ -231,9 +231,9 @@ Utilidades del sistema y constantes.
 
 ---
 
-## 🔧 Flujo de Desarrollo (Para IA)
+## Flujo de Desarrollo (Para IA)
 
-1. **Aggiungi una nueva funcionalidad**:
+1. **Agregar una nueva funcionalidad**:
    - Crea el modelo en `/domain/model`.
    - Agrega el método a `ApiService` (`/api`).
    - Implementa la lógica del repositorio (`/domain/repository`).
